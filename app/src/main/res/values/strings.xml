@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My Movie Library</string>
+    <string name="bad_request">Invalid request data</string>
+</resources>
