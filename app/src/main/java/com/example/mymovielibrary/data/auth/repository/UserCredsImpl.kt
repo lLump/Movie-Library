@@ -4,12 +4,10 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.example.mymovielibrary.domain.auth.repository.UserStore
+import com.example.mymovielibrary.domain.auth.repository.UserCredentials
 import com.example.mymovielibrary.domain.auth.model.UserInfo
-import javax.inject.Singleton
 
-@Singleton
-class UserStoreImpl(context: Context): UserStore {
+class UserCredsImpl(context: Context): UserCredentials {
     private val key = MasterKey.Builder(context)
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
@@ -21,9 +19,6 @@ class UserStoreImpl(context: Context): UserStore {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
     private val editor = sharedPrefs.edit()
-
-    override var requestToken = "noToken"
-    override var sessionId = "noSessionId"
 
     override fun saveUserCredentials(user: UserInfo) {
         editor.run {
@@ -47,5 +42,5 @@ class UserStoreImpl(context: Context): UserStore {
         return UserInfo(login, password)
     }
 
-    fun clearPrefs() { editor.clear().apply() }
+    private fun clearPrefs() { editor.clear().apply() }
 }

@@ -24,15 +24,15 @@ class AuthRepoImpl(private val api: AuthApi) : AuthRepository {
     override suspend fun getToken(): Result<String, DataError.Network> {
         return try {
             val response = api.getRequestToken()
-            if (!response.success) throw Exception("Token request Failed")
+            if (!response.success) throw Exception("Token request failed")
 
             Result.Success(response.request_token)
         } catch (e: HttpException) {
             e.printStackTrace()
-            Result.Error(DataError.Network(e.message()))
+            Result.Error(DataError.Network(e.message?: "Token request failed"))
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(DataError.Network(e.message?: "Empty error message"))
+            Result.Error(DataError.Network(e.message?: "Token request failed"))
         }
     }
 
@@ -55,10 +55,10 @@ class AuthRepoImpl(private val api: AuthApi) : AuthRepository {
             Result.Success(true)
         } catch (e: HttpException) {
             e.printStackTrace()
-            Result.Error(DataError.Network(e.message()))
+            Result.Error(DataError.Network(e.message?: "Validation unsuccessful"))
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(DataError.Network(e.message?: "Empty error message"))
+            Result.Error(DataError.Network(e.message?: "Validation unsuccessful"))
         }
     }
 
@@ -70,10 +70,10 @@ class AuthRepoImpl(private val api: AuthApi) : AuthRepository {
             Result.Success(response.guest_session_id)
         } catch (e: HttpException) {
             e.printStackTrace()
-            Result.Error(DataError.Network(e.message()))
+            Result.Error(DataError.Network(e.message?: "Guest login currently unavailable"))
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(DataError.Network(e.message?: "Empty error message"))
+            Result.Error(DataError.Network(e.message?: "Guest login currently unavailable"))
         }
     }
 
@@ -83,15 +83,15 @@ class AuthRepoImpl(private val api: AuthApi) : AuthRepository {
             val body = RequestBody.create(mediaType, "{\"request_token\":\"$token\"}")
 
             val response = api.createSession(body)
-            if (!response.success) throw Exception("Session creation Failed")
+            if (!response.success) throw Exception("Session creation failed")
 
             Result.Success(response.session_id)
         } catch (e: HttpException) {
             e.printStackTrace()
-            Result.Error(DataError.Network(e.message()))
+            Result.Error(DataError.Network(e.message?: "Session creation failed"))
         } catch (e: Exception) {
             e.printStackTrace()
-            Result.Error(DataError.Network(e.message?: "Empty error message"))
+            Result.Error(DataError.Network(e.message?: "Session creation failed"))
         }
     }
 

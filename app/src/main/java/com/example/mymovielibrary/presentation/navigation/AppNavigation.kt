@@ -13,17 +13,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.example.mymovielibrary.data.navigation.GetStartScreen
+import com.example.mymovielibrary.data.navigation.GetStartScreenFactory
 import com.example.mymovielibrary.presentation.auth.navigation.addAuthScreen
 import com.example.mymovielibrary.presentation.viewmodel.AppViewModel
 import com.example.mymovielibrary.presentation.model.UiEvent
 import com.example.mymovielibrary.presentation.model.uiText.UiText
 import com.example.mymovielibrary.presentation.model.LoadingState
+import javax.inject.Inject
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     val viewModel = hiltViewModel<AppViewModel>()
-
 //    AttachDisposableEffectTo(viewModel, LocalLifecycleOwner.current)
 //    LaunchedEffect(Unit) {
 //        viewModel.events.collect { event ->
@@ -56,10 +58,6 @@ fun AppNavigation() {
             }
         }
     }
-}
-
-private fun showToast(message: UiText, context: Context) {
-    Toast.makeText(context, message.asString(context), Toast.LENGTH_LONG).show()
 }
 
 @Composable

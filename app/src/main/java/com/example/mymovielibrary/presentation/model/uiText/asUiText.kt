@@ -25,7 +25,7 @@ fun Result.Error<*, DataError>.asErrorUiText(): UiText {
 
 fun DataError.asUiText(): UiText {
     return when (this) {
-        DataError.Local.DISK_FULL -> TODO()
+//        DataError.Local.DISK_FULL -> TODO()
         is DataError.Network -> UiText.DynamicString(this.error)
     }
 }

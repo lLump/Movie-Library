@@ -1,7 +1,6 @@
 package com.example.mymovielibrary.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.domain.auth.model.Event
 import com.example.mymovielibrary.domain.auth.model.AuthEvent.*
 import com.example.mymovielibrary.domain.auth.model.AuthEvent
@@ -13,13 +12,9 @@ import com.example.mymovielibrary.domain.model.Result
 import com.example.mymovielibrary.presentation.model.UiEvent
 import com.example.mymovielibrary.presentation.model.uiText.asErrorUiText
 import com.example.mymovielibrary.presentation.model.UiEventListener
-import com.example.mymovielibrary.presentation.model.LoadingState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,15 +23,6 @@ class AppViewModel @Inject constructor(
 ) : ViewModel(), UiEventListener {
     private val eventChannel = Channel<UiEvent>()
     val events = eventChannel.receiveAsFlow()
-
-    private val _loadingState = MutableStateFlow(LoadingState.EMPTY)
-//    val loadingState = _loadingState.asStateFlow()
-
-    // Сделать через di, ссилку на ивент установить при помощи функции. Которая будет во втором интерфейсе
-    // лоад ивент сделать uiEvent'ом
-//    private val authHelper: AuthHelper =
-//        AuthHelperImpl(viewModelScope, authRepo, userStore, _loadingState, this::collectUiEvent)
-
 
     init {
 //        (authHelper as UiEventListener).setCollector(this::collectUiEvent)
@@ -47,9 +33,8 @@ class AppViewModel @Inject constructor(
         when (event) {
             is AuthEvent -> {
                 when (event) {
-                    is LoginSession -> authHelper.login(
-                        login = event.user.username,
-                        password = event.user.password,
+                    is LoginSession -> authHelper.performLogin(
+                        user = event.user,
                         needToSave = event.needToSave
                     )
 

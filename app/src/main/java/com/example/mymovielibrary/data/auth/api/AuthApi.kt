@@ -12,19 +12,19 @@ import retrofit2.http.POST
 
 interface AuthApi {
 
-    @GET("token/new")
+    @GET("authentication/token/new")
     suspend fun getRequestToken(): Token
 
-    @POST("token/validate_with_login")
+    @POST("authentication/token/validate_with_login")
     suspend fun validateSession(
         @Body requestBody: RequestBody,
         @Header("content_type") type: String = "application/json"
     ): ValidateSessionResponse
 
-    @GET("guest_session/new")
+    @GET("authentication/guest_session/new")
     suspend fun createGuestSession(): SessionGuestResponse
 
-    @POST("session/new")
+    @POST("authentication/session/new")
     suspend fun createSession(
         @Body requestBody: RequestBody,
         @Header("content_type") type: String = "application/json"

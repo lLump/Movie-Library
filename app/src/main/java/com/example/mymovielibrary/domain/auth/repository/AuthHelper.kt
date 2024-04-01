@@ -1,5 +1,6 @@
 package com.example.mymovielibrary.domain.auth.repository
 
+import com.example.mymovielibrary.domain.auth.model.UserInfo
 import com.example.mymovielibrary.presentation.model.UiEventListener //FIXME
 
 interface AuthHelper {
@@ -7,5 +8,5 @@ interface AuthHelper {
     fun getStartScreen(): String
 
     fun guestLogin()
-    fun login(login: String, password: String, needToSave: Boolean)
+    fun performLogin(user: UserInfo, needToSave: Boolean)
 }
