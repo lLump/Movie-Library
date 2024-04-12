@@ -62,7 +62,7 @@ class AuthRepoImpl(private val api: AuthApi) : AuthRepository {
         }
     }
 
-    override suspend fun createGuestSession(): Result<String, DataError.Network> {
+    override suspend fun getGuestSessionId(): Result<String, DataError.Network> {
         return try {
             val response = api.createGuestSession()
             if (!response.success) throw Exception("Guest session wasn't created")
@@ -77,7 +77,7 @@ class AuthRepoImpl(private val api: AuthApi) : AuthRepository {
         }
     }
 
-    override suspend fun createSession(token: String): Result<String, DataError.Network> {
+    override suspend fun getSessionId(token: String): Result<String, DataError.Network> {
         return try {
             val mediaType = MediaType.parse("application/json")
             val body = RequestBody.create(mediaType, "{\"request_token\":\"$token\"}")

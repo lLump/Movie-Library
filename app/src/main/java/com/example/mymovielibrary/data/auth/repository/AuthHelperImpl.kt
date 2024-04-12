@@ -9,7 +9,6 @@ import com.example.mymovielibrary.domain.auth.model.UserInfo
 import com.example.mymovielibrary.presentation.model.LoadingState
 import com.example.mymovielibrary.presentation.model.UiEvent
 import com.example.mymovielibrary.presentation.model.uiText.asErrorUiText
-import com.example.mymovielibrary.presentation.navigation.Navigation
 import com.example.mymovielibrary.presentation.navigation.NavigationRoute
 import com.example.mymovielibrary.presentation.navigation.Screen
 import com.example.mymovielibrary.domain.model.Result
@@ -25,7 +24,6 @@ class AuthHelperImpl(
     private val userCreds: UserCredentials,
     private val idGetter: AccountIdGetter
 ) : AuthHelper {
-
     private lateinit var eventListener: UiEventListener
 
     init {
@@ -43,11 +41,11 @@ class AuthHelperImpl(
 //    }
 
     override fun getStartScreen(): String {
-        var screenRoute: NavigationRoute = Navigation.MAIN
+        var screenRoute: NavigationRoute = Screen.HOME
         userCreds.getUserIfSaved { (isSaved, user) ->
             screenRoute = if (isSaved) {
                 performLogin(user, false)
-                Navigation.MAIN
+                Screen.HOME
             } else Screen.AUTH
         }
         return screenRoute()
@@ -56,8 +54,8 @@ class AuthHelperImpl(
     override fun guestLogin() {
         scope.launch(Dispatchers.IO) {
             eventListener.collectUiEvent(UiEvent.Loading(LoadingState.LOADING))
-            TempTmdbData.sessionId =
-                executeApiCall { authRepo.createGuestSession() } ?: "noSessionId"
+            TempTmdbData.sessionId = //getting & saving guestSessionId
+                executeApiCall { authRepo.getGuestSessionId() } ?: "noSessionId"
             if (TempTmdbData.sessionId == "noSessionId") {
                 eventListener.collectUiEvent(UiEvent.Loading(LoadingState.FAILURE))
             } else {
@@ -74,10 +72,9 @@ class AuthHelperImpl(
                 if (needToSave) { //saving user into prefs
                     userCreds.saveUserCredentials(user)
                 }
-                TempTmdbData.sessionId = //getting sessionId
-                    executeApiCall { authRepo.createSession(TempTmdbData.requestToken) }
-                        ?: "noSessionId"
-                TempTmdbData.accountId = //getting accountId
+                TempTmdbData.sessionId = //getting & saving sessionId
+                    executeApiCall { authRepo.getSessionId(TempTmdbData.requestToken) } ?: "noSessionId"
+                TempTmdbData.accountId = //getting & saving accountId
                     executeApiCall { idGetter.getAccountId(TempTmdbData.sessionId) } ?: 0
             } else eventListener.collectUiEvent(UiEvent.Loading(LoadingState.FAILURE))
         }

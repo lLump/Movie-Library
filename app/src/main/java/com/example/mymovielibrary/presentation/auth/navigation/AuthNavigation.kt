@@ -27,11 +27,8 @@ fun NavGraphBuilder.addAuthScreen(
             event = loadingState,
             onEvent = authEvent,
             navigateToHome = {
-                navController.navigate(Navigation.MAIN()) {
-                    popUpTo(Navigation.MAIN()) {
-                        inclusive = true
-                    }
-                }
+                navController.popBackStack() //clear authScreen from backStack
+                navController.navigate(Screen.HOME())
             },
             registration = {
                 redirectToRegistration(

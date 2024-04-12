@@ -1,9 +1,6 @@
 package com.example.mymovielibrary.data.account.api
 
 import com.example.mymovielibrary.data.account.model.AccountDetails
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 

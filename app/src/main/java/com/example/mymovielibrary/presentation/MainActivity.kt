@@ -27,27 +27,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-//@Composable
-//fun TestApiCalls(vm: AuthViewModel) {
-//    Row(modifier = Modifier.padding(15.dp)) {
-//        Button(
-//            modifier = Modifier.size(150.dp),
-//            onClick = { /*vm.onEvent(AuthEvent.GetToken)*/ }
-//        ) {
-//            Text(text = "Token")
-//        }
-//        Button(
-//            modifier = Modifier.size(150.dp),
-//            onClick = { vm::onEvent }
-//        ) {
-//            Text(text = "Validate session")
-//        }
-//        Button(
-//            modifier = Modifier.size(150.dp),
-//            onClick = { vm.onEvent(AuthEvent.DefaultSession) }
-//        ) {
-//            Text(text = "Session")
-//        }
-//    }
-//}

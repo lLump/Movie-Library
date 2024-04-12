@@ -1,7 +1,7 @@
 package com.example.mymovielibrary.data
 
 object TempTmdbData {
-    lateinit var requestToken: String
-    lateinit var sessionId: String
-    var accountId = 0
+    var requestToken: String = "noToken"
+    var sessionId: String = "noSessionId"
+    var accountId: Int = 0
 }

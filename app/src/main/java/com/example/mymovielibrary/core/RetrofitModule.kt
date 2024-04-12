@@ -1,6 +1,7 @@
 package com.example.mymovielibrary.core
 
 import com.example.mymovielibrary.data.ApiData
+import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -8,6 +9,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -24,10 +26,6 @@ annotation class RetrofitAccountId
 @InstallIn(SingletonComponent::class)
 class RetrofitModule {
 
-    //    @Provides
-//    fun baseUrlV3(): URL {
-//        return URL("https://api.themoviedb.org/3/")
-//    }
     @Provides
     @Singleton
     fun retrofitUrlV3(): Retrofit = Retrofit.Builder()

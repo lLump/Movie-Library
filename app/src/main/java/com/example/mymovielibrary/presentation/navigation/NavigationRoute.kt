@@ -6,7 +6,9 @@ interface NavigationRoute {
 
 enum class Screen(private val route: String) : NavigationRoute {
     AUTH("auth"),
-    HOME("home");
+    HOME("home"),
+    PROFILE("profile"),
+    LISTS("favorite");
 
      override operator fun invoke() = route
 }

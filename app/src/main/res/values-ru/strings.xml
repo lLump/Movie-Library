@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Моя фильмотека</string>
+    <string name="auth">Аутентификация</string>
+    <string name="login">Логин</string>
+    <string name="username">Имя пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="registration">Регистрация</string>
+    <string name="login_guest">Войти как гость</string>
+    <string name="remember_password">Запомнить пароль?</string>
+    <string name="home">Главная</string>
+    <string name="lists">Списки</string>
+    <string name="profile">Профиль</string>
+</resources>

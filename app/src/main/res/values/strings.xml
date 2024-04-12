@@ -1,4 +1,18 @@
 <resources>
     <string name="app_name">My Movie Library</string>
-    <string name="bad_request">Invalid request data</string>
+
+    <string name="auth">Authenticate</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="login_guest">Log in as a guest</string>
+    <string name="registration">Registration</string>
+    <string name="remember_password">Remember your password?</string>
+
+    <!-- BottomBar -->
+    <string name="home">Home</string>
+    <string name="lists">Lists</string>
+    <string name="profile">Profile</string>
+    <!-- BottomBar -->
+
 </resources>

@@ -1,5 +1,8 @@
 package com.example.mymovielibrary.data.account.model
 
+import com.squareup.moshi.JsonClass
+
+@JsonClass(generateAdapter = true)
 data class AccountDetails(
     val avatar: Avatar,
     val id: Int,
@@ -10,15 +13,18 @@ data class AccountDetails(
     val username: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Avatar(
     val gravatar: Gravatar,
     val tmdb: Tmdb
 )
 
+@JsonClass(generateAdapter = true)
 data class Gravatar(
     val hash: String
 )
 
+@JsonClass(generateAdapter = true)
 data class Tmdb(
     val avatar_path: String
 )

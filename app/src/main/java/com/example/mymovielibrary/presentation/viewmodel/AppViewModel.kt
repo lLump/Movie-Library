@@ -1,13 +1,13 @@
 package com.example.mymovielibrary.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.mymovielibrary.domain.auth.model.Event
 import com.example.mymovielibrary.domain.auth.model.AuthEvent.*
 import com.example.mymovielibrary.domain.auth.model.AuthEvent
-import com.example.mymovielibrary.domain.auth.model.CustomEvent.*
-import com.example.mymovielibrary.domain.auth.model.CustomEvent
+import com.example.mymovielibrary.domain.auth.model.DataEvent.*
+import com.example.mymovielibrary.domain.auth.model.DataEvent
 import com.example.mymovielibrary.domain.auth.repository.AuthHelper
 import com.example.mymovielibrary.domain.model.DataError
+import com.example.mymovielibrary.domain.model.Event
 import com.example.mymovielibrary.domain.model.Result
 import com.example.mymovielibrary.presentation.model.UiEvent
 import com.example.mymovielibrary.presentation.model.uiText.asErrorUiText
@@ -44,9 +44,9 @@ class AppViewModel @Inject constructor(
                 }
             }
 
-            is CustomEvent -> {
+            is DataEvent -> {
                 when (event) {
-                    OnStartUp -> {
+                    is TmdbData -> {
 //                        initToken()
 //                        checkIfUserSaved()
                     }

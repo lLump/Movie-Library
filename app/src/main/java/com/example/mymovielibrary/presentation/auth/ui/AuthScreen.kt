@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.auth.model.AuthEvent
 import com.example.mymovielibrary.domain.auth.model.UserInfo
 import com.example.mymovielibrary.presentation.model.LoadingState
@@ -38,8 +40,8 @@ fun AuthScreen(
     navigateToHome: () -> Unit,
     registration: () -> Unit
 ) {
-    var username by remember { mutableStateOf("lLump") }
-    var password by remember { mutableStateOf("bomber2002") }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var isSaveChecked by remember { mutableStateOf(false) }
 
     Column(
@@ -50,7 +52,7 @@ fun AuthScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Аутентификация",
+            text = stringResource(id = R.string.auth),
             fontSize = 24.sp,
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -58,7 +60,7 @@ fun AuthScreen(
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Имя пользователя") },
+            label = { Text(text = stringResource(id = R.string.username)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -67,7 +69,7 @@ fun AuthScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Пароль") },
+            label = { Text(text = stringResource(id = R.string.password)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -81,7 +83,7 @@ fun AuthScreen(
                 onCheckedChange = { isSaveChecked = it }
             )
             Text(
-                text = "Запомнить пароль",
+                text = stringResource(id = R.string.remember_password),
                 modifier = Modifier.padding(start = 8.dp)
             )
         }
@@ -102,7 +104,7 @@ fun AuthScreen(
                 )
             }
         ) {
-            Text("Логин")
+            Text(text = stringResource(id = R.string.login))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -111,7 +113,7 @@ fun AuthScreen(
             onClick = { registration() },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Регистрация")
+            Text(text = stringResource(id = R.string.registration))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -122,7 +124,7 @@ fun AuthScreen(
                 onEvent(AuthEvent.GuestSession)
             }
         ) {
-            Text("Войти как гость")
+            Text(text = stringResource(id = R.string.login_guest))
         }
 
         Spacer(modifier = Modifier.height(16.dp))
