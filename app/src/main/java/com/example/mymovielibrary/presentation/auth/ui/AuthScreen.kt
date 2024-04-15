@@ -27,9 +27,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.mymovielibrary.R
-import com.example.mymovielibrary.domain.auth.model.AuthEvent
+import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.auth.model.UserInfo
-import com.example.mymovielibrary.presentation.model.LoadingState
+import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 import com.example.mymovielibrary.presentation.model.UiEvent
 import kotlinx.coroutines.delay
 

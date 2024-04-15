@@ -1,17 +1,15 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.mymovielibrary.presentation.account.ui
+package com.example.mymovielibrary.presentation.profile.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,47 +23,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.mymovielibrary.R
+import com.example.mymovielibrary.data.TmdbData
+import com.example.mymovielibrary.domain.account.model.LanguageDetails
+import com.example.mymovielibrary.domain.model.events.ProfileEvent
+import com.example.mymovielibrary.presentation.viewmodel.states.ProfileState
 
-@Preview
-@Composable
-fun PreviewProfileScreen() {
-    ProfileScreen()
-}
+//
+//@Preview
+//@Composable
+//fun PreviewProfileScreen() {
+//    ProfileScreen()
+//}
 
 @Composable
-fun ProfileScreen() {
-//    Scaffold(
-//        modifier = Modifier.padding(8.dp),
-//        content = { padding ->
-//             ProfileContent(
-//                 Modifier
-//                     .fillMaxSize()
-//                     .padding(padding)
-//             )
-//                  },
-// //       topBar = { TopAppBar(title = {
-// //          Text(
-// //               text = "Профиль",
-// //           )
-// //       })
-///*    }) */ )
+fun ProfileScreen(
+    onEvent: (ProfileEvent) -> Unit,
+    state: ProfileState
+) {
+    onEvent(ProfileEvent.LoadLanguages) //Fixme
     Column(modifier = Modifier.fillMaxSize()) {
         ProfileCard()
-        DropdownLanguageMenu()
+        DropdownLanguageMenu(state.listLanguages, onEvent)
     }
 }
 
 @Composable
-fun DropdownLanguageMenu() {
+fun DropdownLanguageMenu(languagesList: List<LanguageDetails>, onEvent: (ProfileEvent) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    val items = listOf(
-        "Настройки",
-        "Выход",
-        "sadsa",
-    )
 
     Box {
         Text(
@@ -82,11 +68,19 @@ fun DropdownLanguageMenu() {
                 .padding(8.dp)
                 .align(Alignment.CenterStart)
         ) {
-            items.forEach { label ->
+            languagesList.forEach {language ->
                 DropdownMenuItem(
-                    text = { Text(text = label) },
+                    text = {
+                        Row {
+                            Text(text = language.name)
+        //                            Spacer(modifier = Modifier.width(4.dp))
+        //                            Divider(color = Color.Black, modifier = Modifier.fillMaxHeight())
+        //                            Spacer(modifier = Modifier.width(4.dp))
+        //                            Text(text = language.iso)
+                        }
+                    },
                     onClick = {
-                        // Обработка нажатия на элемент списка
+                        TmdbData.languageIso = language.iso
                         expanded = false
                     })
             }
@@ -113,7 +107,9 @@ fun ProfileCard() {
 //                .clip(shape = CircleShape)
 //                .padding(start = 16.dp, top = 16.dp)
         )
-        Column(modifier = Modifier.padding(start = 75.dp).weight(1f)) {
+        Column(modifier = Modifier
+            .padding(start = 75.dp)
+            .weight(1f)) {
             Text(text = "Username")
             Text(text = "Full name")
         }

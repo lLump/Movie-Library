@@ -15,12 +15,7 @@ import javax.inject.Singleton
 
 @Qualifier
 @Retention(AnnotationRetention.RUNTIME)
-annotation class RetrofitAccount
-
-@Qualifier
-@Retention(AnnotationRetention.RUNTIME)
 annotation class RetrofitAccountId
-
 
 @Module
 @InstallIn(SingletonComponent::class)

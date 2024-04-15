@@ -1,6 +1,6 @@
 package com.example.mymovielibrary.presentation.navigation
 
-interface NavigationRoute {
+sealed interface NavigationRoute {
     operator fun invoke(): String
 }
 

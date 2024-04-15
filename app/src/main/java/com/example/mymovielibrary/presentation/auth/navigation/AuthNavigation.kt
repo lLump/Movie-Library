@@ -9,10 +9,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.mymovielibrary.presentation.auth.ui.AuthScreen
-import com.example.mymovielibrary.domain.auth.model.AuthEvent
-import com.example.mymovielibrary.presentation.model.LoadingState
+import com.example.mymovielibrary.domain.model.events.AuthEvent
+import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 import com.example.mymovielibrary.presentation.model.UiEvent
-import com.example.mymovielibrary.presentation.navigation.Navigation
 import com.example.mymovielibrary.presentation.navigation.Screen
 import kotlinx.coroutines.flow.Flow
 

@@ -5,6 +5,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -14,10 +16,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mymovielibrary.presentation.account.ui.ProfileScreen
+import com.example.mymovielibrary.presentation.profile.ui.ProfileScreen
 import com.example.mymovielibrary.presentation.auth.navigation.addAuthScreen
+import com.example.mymovielibrary.presentation.model.UiEvent
 import com.example.mymovielibrary.presentation.navigation.bottomBar.MyBottomBar
 import com.example.mymovielibrary.presentation.viewmodel.AppViewModel
+import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 
 @Composable
 fun AppNavigation() {
@@ -54,21 +58,25 @@ fun AppNavigation() {
             }
         },
         content = { padding ->
-            padding
+            padding //Fixme
             NavHost(navController = navController, startDestination = viewModel.getStartScreen()) {
                 addAuthScreen(
                     navController = navController,
                     authEvent = viewModel::onEvent,
                     state = viewModel.events
                 )
+                composable(Screen.HOME()) {
+                    HomeScreen()
+                }
                 composable(Screen.LISTS()) {
                     MainScreen()
                 }
                 composable(Screen.PROFILE()) {
-                    ProfileScreen()
-                }
-                composable(Screen.HOME()) {
-                    HomeScreen()
+                    val profileState by viewModel.profileState.collectAsState()
+                    ProfileScreen(
+                        state = profileState,
+                        onEvent = viewModel::onEvent
+                    )
                 }
             }
         }

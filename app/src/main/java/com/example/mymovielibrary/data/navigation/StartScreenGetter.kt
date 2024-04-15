@@ -1,6 +1,6 @@
 package com.example.mymovielibrary.data.navigation
 
-import com.example.mymovielibrary.domain.auth.model.AuthEvent
+import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.auth.repository.UserCredentials
 import com.example.mymovielibrary.presentation.navigation.Navigation
 import com.example.mymovielibrary.presentation.navigation.NavigationRoute
@@ -8,7 +8,6 @@ import com.example.mymovielibrary.presentation.navigation.Screen
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import javax.inject.Inject
 
 class GetStartScreen  @AssistedInject constructor(
     private val userCreds: UserCredentials,

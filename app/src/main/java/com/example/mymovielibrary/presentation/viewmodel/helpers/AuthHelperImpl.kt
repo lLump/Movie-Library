@@ -1,12 +1,12 @@
-package com.example.mymovielibrary.data.auth.repository
+package com.example.mymovielibrary.presentation.viewmodel.helpers
 
-import com.example.mymovielibrary.data.TempTmdbData
-import com.example.mymovielibrary.domain.account.repository.AccountIdGetter
-import com.example.mymovielibrary.domain.auth.repository.AuthHelper
+import com.example.mymovielibrary.data.TmdbData
+import com.example.mymovielibrary.domain.account.repository.GetAccountId
+import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.auth.repository.AuthRepository
 import com.example.mymovielibrary.domain.auth.repository.UserCredentials
 import com.example.mymovielibrary.domain.auth.model.UserInfo
-import com.example.mymovielibrary.presentation.model.LoadingState
+import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 import com.example.mymovielibrary.presentation.model.UiEvent
 import com.example.mymovielibrary.presentation.model.uiText.asErrorUiText
 import com.example.mymovielibrary.presentation.navigation.NavigationRoute
@@ -22,9 +22,11 @@ class AuthHelperImpl(
     private val scope: CoroutineScope,
     private val authRepo: AuthRepository,
     private val userCreds: UserCredentials,
-    private val idGetter: AccountIdGetter
-) : AuthHelper {
-    private lateinit var eventListener: UiEventListener
+    private val getAccountId: GetAccountId
+) : AuthHelper, UiEventListener {
+//    private lateinit var eventListener: UiEventListener
+    private lateinit var sendUiEvent: suspend (UiEvent) -> Unit
+
 
     init {
         scope.launch(Dispatchers.IO) {
@@ -32,13 +34,13 @@ class AuthHelperImpl(
         }
     }
 
-    override fun setEventListener(listener: UiEventListener) {
-        eventListener = listener
-    }
-
-//    override fun setCollector(collectUiEvent: (UiEvent) -> Unit) {
-//        sendUiEvent = collectUiEvent
+//    override fun setEventListener(listener: UiEventListener) {
+//        eventListener = listener
 //    }
+
+    override fun setCollector(collectUiEvent: suspend (UiEvent) -> Unit) {
+        sendUiEvent = collectUiEvent
+    }
 
     override fun getStartScreen(): String {
         var screenRoute: NavigationRoute = Screen.HOME
@@ -53,30 +55,30 @@ class AuthHelperImpl(
 
     override fun guestLogin() {
         scope.launch(Dispatchers.IO) {
-            eventListener.collectUiEvent(UiEvent.Loading(LoadingState.LOADING))
-            TempTmdbData.sessionId = //getting & saving guestSessionId
+            sendUiEvent(UiEvent.Loading(LoadingState.LOADING))
+            TmdbData.sessionId = //getting & saving guestSessionId
                 executeApiCall { authRepo.getGuestSessionId() } ?: "noSessionId"
-            if (TempTmdbData.sessionId == "noSessionId") {
-                eventListener.collectUiEvent(UiEvent.Loading(LoadingState.FAILURE))
+            if (TmdbData.sessionId == "noSessionId") {
+                sendUiEvent(UiEvent.Loading(LoadingState.FAILURE))
             } else {
-                eventListener.collectUiEvent(UiEvent.Loading(LoadingState.SUCCESS))
+                sendUiEvent(UiEvent.Loading(LoadingState.SUCCESS))
             }
         }
     }
 
     override fun performLogin(user: UserInfo, needToSave: Boolean) {
         scope.launch(Dispatchers.IO) {
-            eventListener.collectUiEvent(UiEvent.Loading(LoadingState.LOADING))
+            sendUiEvent(UiEvent.Loading(LoadingState.LOADING))
             if (isTokenValidated(user)) {
-                eventListener.collectUiEvent(UiEvent.Loading(LoadingState.SUCCESS))
+                sendUiEvent(UiEvent.Loading(LoadingState.SUCCESS))
                 if (needToSave) { //saving user into prefs
                     userCreds.saveUserCredentials(user)
                 }
-                TempTmdbData.sessionId = //getting & saving sessionId
-                    executeApiCall { authRepo.getSessionId(TempTmdbData.requestToken) } ?: "noSessionId"
-                TempTmdbData.accountId = //getting & saving accountId
-                    executeApiCall { idGetter.getAccountId(TempTmdbData.sessionId) } ?: 0
-            } else eventListener.collectUiEvent(UiEvent.Loading(LoadingState.FAILURE))
+                TmdbData.sessionId = //getting & saving sessionId
+                    executeApiCall { authRepo.getSessionId(TmdbData.requestToken) } ?: "noSessionId"
+                TmdbData.accountId = //getting & saving accountId
+                    executeApiCall { getAccountId(TmdbData.sessionId) } ?: 0
+            } else sendUiEvent(UiEvent.Loading(LoadingState.FAILURE))
         }
     }
 
@@ -84,7 +86,7 @@ class AuthHelperImpl(
         getTokenIfNotExist()
         return executeApiCall {
             authRepo.validateToken( //validation
-                token = TempTmdbData.requestToken,
+                token = TmdbData.requestToken,
                 username = user.username,
                 password = user.password
             )
@@ -92,20 +94,20 @@ class AuthHelperImpl(
     }
 
     private suspend fun getTokenIfNotExist() { //Костыль to fix 1 bug, when user opened app without internet
-        if (TempTmdbData.requestToken == "noToken") {
+        if (TmdbData.requestToken == "noToken") {
             initToken()
         }
     }
 
     private suspend fun initToken() {
-        TempTmdbData.requestToken = executeApiCall { authRepo.getToken() } ?: "noToken"
+        TmdbData.requestToken = executeApiCall { authRepo.getToken() } ?: "noToken"
     }
 
     private suspend fun <D> executeApiCall(request: suspend () -> Result<D, DataError>): D? {
         return when (val result = request.invoke()) {
             is Result.Success -> result.data
             is Result.Error -> {
-                eventListener.collectUiEvent(UiEvent.Error(result.asErrorUiText()))
+                sendUiEvent(UiEvent.Error(result.asErrorUiText()))
                 null
             }
         }
