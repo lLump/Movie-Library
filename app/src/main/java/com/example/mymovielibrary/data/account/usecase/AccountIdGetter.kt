@@ -1,6 +1,6 @@
 package com.example.mymovielibrary.data.account.usecase
 
-import com.example.mymovielibrary.data.ApiData
+import com.example.mymovielibrary.data.storage.ApiData
 import com.example.mymovielibrary.data.account.api.AccountApi
 import com.example.mymovielibrary.domain.account.repository.GetAccountId
 import com.example.mymovielibrary.domain.model.DataError
@@ -8,9 +8,7 @@ import com.example.mymovielibrary.domain.model.Result
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class AccountIdGetter @Inject constructor(
-    private val api: AccountApi
-) : GetAccountId {
+class AccountIdGetter(private val api: AccountApi) : GetAccountId {
 
     override suspend operator fun invoke(sessionId: String): Result<Int, DataError.Network> {
         return try {

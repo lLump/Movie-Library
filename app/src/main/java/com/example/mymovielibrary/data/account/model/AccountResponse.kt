@@ -1,5 +1,6 @@
 package com.example.mymovielibrary.data.account.model
 
+import com.example.mymovielibrary.domain.account.model.ProfileDetails
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -28,3 +29,12 @@ data class Gravatar(
 data class Tmdb(
     val avatar_path: String
 )
+
+fun AccountDetails.toProfileDetails(): ProfileDetails {
+    return ProfileDetails(
+        name = this.name,
+        username = this.username,
+        avatarPath = avatar.tmdb.avatar_path,
+        languageIso = iso_639_1
+    )
+}

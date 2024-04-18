@@ -1,18 +1,27 @@
 <resources>
     <string name="app_name">My Movie Library</string>
 
-    <string name="auth">Authenticate</string>
     <string name="username">Username</string>
+    <string name="full_name">Full name</string>
+
+    <!--Authenticate-->
+    <string name="auth">Authenticate</string>
     <string name="password">Password</string>
     <string name="login">Login</string>
     <string name="login_guest">Log in as a guest</string>
     <string name="registration">Registration</string>
     <string name="remember_password">Remember your password?</string>
+    <!--Authenticate-->
 
     <!-- BottomBar -->
     <string name="home">Home</string>
     <string name="lists">Lists</string>
     <string name="profile">Profile</string>
+    <string name="selected_language">" selected"</string>
     <!-- BottomBar -->
+
+    <!--Profile-->
+    <string name="choose_language">Choose language</string>
+    <!--Profile-->
 
 </resources>

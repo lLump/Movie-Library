@@ -8,8 +8,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.mymovielibrary.presentation.navigation.NavigationRoute
-import com.example.mymovielibrary.presentation.navigation.Screen
+import com.example.mymovielibrary.presentation.navigation.model.Screen
 
 sealed class BottomBarScreen(
     var route: String,

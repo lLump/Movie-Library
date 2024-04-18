@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.presentation.auth.navigation
+package com.example.mymovielibrary.presentation.ui.auth
 
 import android.content.Context
 import android.content.Intent
@@ -8,11 +8,10 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.example.mymovielibrary.presentation.auth.ui.AuthScreen
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 import com.example.mymovielibrary.presentation.model.UiEvent
-import com.example.mymovielibrary.presentation.navigation.Screen
+import com.example.mymovielibrary.presentation.navigation.model.Screen
 import kotlinx.coroutines.flow.Flow
 
 fun NavGraphBuilder.addAuthScreen(

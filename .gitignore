@@ -13,4 +13,4 @@
 .externalNativeBuild
 .cxx
 local.properties
-app/src/main/java/com/example/mymovielibrary/data/ApiData.kt
+app/src/main/java/com/example/mymovielibrary/data/storage/ApiData.kt

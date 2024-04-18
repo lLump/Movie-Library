@@ -1,14 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Моя фильмотека</string>
+
+    <string name="username">Никнейм</string>
+    <string name="full_name">Имя</string>
+
+    <!--Authenticate-->
     <string name="auth">Аутентификация</string>
     <string name="login">Логин</string>
-    <string name="username">Имя пользователя</string>
     <string name="password">Пароль</string>
     <string name="registration">Регистрация</string>
     <string name="login_guest">Войти как гость</string>
     <string name="remember_password">Запомнить пароль?</string>
+    <!--Authenticate-->
+
+    <!-- BottomBar -->
     <string name="home">Главная</string>
     <string name="lists">Списки</string>
     <string name="profile">Профиль</string>
+    <string name="selected_language">" выбран"</string>
+    <!-- BottomBar -->
+
+    <!--Profile-->
+    <string name="choose_language">Выберите язык</string>
+    <!--Profile-->
+
 </resources>

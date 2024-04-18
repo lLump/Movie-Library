@@ -13,6 +13,11 @@ interface AccountApi {
         @Query("session_id") sessionId: String
     ): AccountDetails
 
+    @GET("account")
+    suspend fun getAccountDetails(
+        @Query("account_id") accountId: String
+    ): AccountDetails
+
     @GET("configuration/languages")
     suspend fun getLanguages(): Array<LanguageResponse>
 

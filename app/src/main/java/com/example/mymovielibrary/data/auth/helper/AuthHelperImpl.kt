@@ -1,6 +1,6 @@
-package com.example.mymovielibrary.presentation.viewmodel.helpers
+package com.example.mymovielibrary.data.auth.helper
 
-import com.example.mymovielibrary.data.TmdbData
+import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.account.repository.GetAccountId
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.auth.repository.AuthRepository
@@ -9,8 +9,8 @@ import com.example.mymovielibrary.domain.auth.model.UserInfo
 import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 import com.example.mymovielibrary.presentation.model.UiEvent
 import com.example.mymovielibrary.presentation.model.uiText.asErrorUiText
-import com.example.mymovielibrary.presentation.navigation.NavigationRoute
-import com.example.mymovielibrary.presentation.navigation.Screen
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
+import com.example.mymovielibrary.presentation.navigation.model.Screen
 import com.example.mymovielibrary.domain.model.Result
 import com.example.mymovielibrary.domain.model.DataError
 import com.example.mymovielibrary.presentation.model.UiEventListener
@@ -24,19 +24,13 @@ class AuthHelperImpl(
     private val userCreds: UserCredentials,
     private val getAccountId: GetAccountId
 ) : AuthHelper, UiEventListener {
-//    private lateinit var eventListener: UiEventListener
     private lateinit var sendUiEvent: suspend (UiEvent) -> Unit
-
 
     init {
         scope.launch(Dispatchers.IO) {
-            initToken()
+            initToken() //TODO change to init in login functions
         }
     }
-
-//    override fun setEventListener(listener: UiEventListener) {
-//        eventListener = listener
-//    }
 
     override fun setCollector(collectUiEvent: suspend (UiEvent) -> Unit) {
         sendUiEvent = collectUiEvent

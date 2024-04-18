@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.presentation.auth.ui
+package com.example.mymovielibrary.presentation.ui.auth
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.auth.model.UserInfo
+import com.example.mymovielibrary.presentation.model.ShowToast
 import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 import com.example.mymovielibrary.presentation.model.UiEvent
 import kotlinx.coroutines.delay
@@ -40,8 +41,8 @@ fun AuthScreen(
     navigateToHome: () -> Unit,
     registration: () -> Unit
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("lLump") }
+    var password by remember { mutableStateOf("bomber2002") }
     var isSaveChecked by remember { mutableStateOf(false) }
 
     Column(
@@ -143,11 +144,3 @@ fun AuthScreen(
     }
 }
 
-@Composable
-private fun ShowToast(message: String) {
-    val context = LocalContext.current
-    LaunchedEffect(message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        delay(2000)
-    }
-}

@@ -1,7 +1,6 @@
 package com.example.mymovielibrary.core
 
-import com.example.mymovielibrary.data.ApiData
-import com.squareup.moshi.Moshi
+import com.example.mymovielibrary.data.storage.ApiData
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -10,12 +9,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
-import javax.inject.Qualifier
 import javax.inject.Singleton
-
-@Qualifier
-@Retention(AnnotationRetention.RUNTIME)
-annotation class RetrofitAccountId
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -35,13 +29,12 @@ class RetrofitModule {
                     it.proceed(request)
                 }.build()
         )
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create())
         .build()
 
-
     @Provides
-    @RetrofitAccountId
-    fun retrofitAccount(): Retrofit = Retrofit.Builder()
+    @AccountId
+    fun retrofitAccountId(): Retrofit = Retrofit.Builder()
         .baseUrl("https://api.themoviedb.org/3/")
         .client(
             OkHttpClient.Builder()
@@ -52,7 +45,15 @@ class RetrofitModule {
                     it.proceed(request)
                 }.build()
         )
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create())
         .build()
+
+    @Provides
+    @RetrofitImage
+    fun retrofitImage(): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://image.tmdb.org/t/p/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
 
 }

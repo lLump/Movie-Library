@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.data
+package com.example.mymovielibrary.data.storage
 
 object TmdbData {
     var requestToken: String = "noToken"

@@ -1,9 +1,12 @@
 package com.example.mymovielibrary.domain.account.helper
 
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
+import com.example.mymovielibrary.presentation.viewmodel.states.ProfileDisplay
 
 interface ProfileHelper {
+    var isLanguagesLoaded: Boolean
+    var isProfileLoaded: Boolean
+
     fun loadLanguages(callback: (List<LanguageDetails>) -> Unit)
-    fun loadAvatar(): ImageVector
+    fun loadProfileDisplay(callback: (ProfileDisplay) -> Unit)
 }

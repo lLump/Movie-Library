@@ -2,9 +2,8 @@ package com.example.mymovielibrary.data.navigation
 
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.auth.repository.UserCredentials
-import com.example.mymovielibrary.presentation.navigation.Navigation
-import com.example.mymovielibrary.presentation.navigation.NavigationRoute
-import com.example.mymovielibrary.presentation.navigation.Screen
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
+import com.example.mymovielibrary.presentation.navigation.model.Screen
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -14,11 +13,11 @@ class GetStartScreen  @AssistedInject constructor(
     @Assisted private val onEvent: (AuthEvent) -> Unit
 ) {
     operator fun invoke(): String {
-        var screenRoute: NavigationRoute = Navigation.MAIN
+        var screenRoute: NavigationRoute = Screen.HOME
         userCreds.getUserIfSaved { (isSaved, user) ->
             screenRoute = if (isSaved) {
                 onEvent(AuthEvent.LoginSession(user, false))
-                Navigation.MAIN
+                Screen.HOME
             } else Screen.AUTH
         }
         return screenRoute()

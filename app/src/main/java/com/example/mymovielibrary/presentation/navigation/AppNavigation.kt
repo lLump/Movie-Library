@@ -16,12 +16,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mymovielibrary.presentation.profile.ui.ProfileScreen
-import com.example.mymovielibrary.presentation.auth.navigation.addAuthScreen
-import com.example.mymovielibrary.presentation.model.UiEvent
+import com.example.mymovielibrary.data.storage.TmdbData
+import com.example.mymovielibrary.presentation.ui.profile.ProfileScreen
+import com.example.mymovielibrary.presentation.ui.auth.addAuthScreen
 import com.example.mymovielibrary.presentation.navigation.bottomBar.MyBottomBar
+import com.example.mymovielibrary.presentation.navigation.model.Screen
 import com.example.mymovielibrary.presentation.viewmodel.AppViewModel
-import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 
 @Composable
 fun AppNavigation() {
@@ -72,11 +72,16 @@ fun AppNavigation() {
                     MainScreen()
                 }
                 composable(Screen.PROFILE()) {
-                    val profileState by viewModel.profileState.collectAsState()
-                    ProfileScreen(
-                        state = profileState,
-                        onEvent = viewModel::onEvent
-                    )
+                    if (TmdbData.accountId != 0) {
+                        val profileState by viewModel.profileState.collectAsState()
+//                        viewModel.onEvent(ProfileEvent.LoadProfile) //TODO Test it
+                        ProfileScreen(
+                            state = profileState,
+                            onEvent = viewModel::onEvent
+                        )
+                    } else {
+                        //TODO отобразить экран для гостя
+                    }
                 }
             }
         }
@@ -92,32 +97,6 @@ private fun NavHostController.setupDestinationListener(visibilityBottomBar: Muta
         }
     }
 }
-
-//    NavHost(navController = navController, startDestination = viewModel.getStartScreen()) {
-//        addAuthScreen(
-//            navController = navController,
-//            authEvent = viewModel::onEvent,
-//            state = viewModel.events
-//        )
-////        navigation(startDestination = Screen.HOME(), route = Navigation.MAIN()) {
-//        composable(Navigation.MAIN()) { //Screen.home() when navigation was
-//            Scaffold(
-//                bottomBar = { MyBottomBar(navController) },
-//                content = {
-//                    ProfileScreen()
-//                    it
-//                }
-//            )
-//        }
-//        composable(Screen.PROFILE()) {
-//            ProfileScreen()
-//        }
-//        composable(Screen.HOME()) {
-//            HomeScreen()
-//        }
-////        }
-//    }
-//}
 
 @Composable
 private fun AttachDisposableEffectTo(viewModel: AppViewModel, lifecycleOwner: LifecycleOwner) {
