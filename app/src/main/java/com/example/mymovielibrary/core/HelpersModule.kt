@@ -9,6 +9,9 @@ import com.example.mymovielibrary.domain.auth.repository.UserCredentials
 import com.example.mymovielibrary.domain.images.repository.ImageRepository
 import com.example.mymovielibrary.data.auth.helper.AuthHelperImpl
 import com.example.mymovielibrary.data.account.helper.ProfileHelperImpl
+import com.example.mymovielibrary.data.lists.helper.ListHelperImpl
+import com.example.mymovielibrary.domain.lists.helper.ListHelper
+import com.example.mymovielibrary.domain.lists.repository.ListRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,11 +34,18 @@ class HelpersModule {
 
     @Provides
     fun profileHelper(
-        scope: CoroutineScope,
         profileRepo: ProfileRepository,
         imageRepo: ImageRepository
     ): ProfileHelper {
-        return ProfileHelperImpl(scope, profileRepo, imageRepo)
+        return ProfileHelperImpl(profileRepo, imageRepo)
+    }
+
+    @Provides
+    fun listHelper(
+        scope: CoroutineScope,
+        listRepo: ListRepository
+    ): ListHelper {
+        return ListHelperImpl(scope, listRepo)
     }
 
 }

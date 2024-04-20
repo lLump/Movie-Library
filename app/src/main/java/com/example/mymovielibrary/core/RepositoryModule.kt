@@ -1,23 +1,22 @@
 package com.example.mymovielibrary.core
 
-import android.content.Context
 import com.example.mymovielibrary.data.account.api.AccountApi
 import com.example.mymovielibrary.data.account.repository.ProfileRepoImpl
 import com.example.mymovielibrary.data.account.usecase.AccountIdGetter
 import com.example.mymovielibrary.data.auth.api.AuthApi
 import com.example.mymovielibrary.data.auth.repository.AuthRepoImpl
 import com.example.mymovielibrary.domain.auth.repository.AuthRepository
-import com.example.mymovielibrary.data.auth.repository.UserCredsImpl
 import com.example.mymovielibrary.data.images.api.ImageApi
 import com.example.mymovielibrary.data.images.repository.ImageRepoImpl
+import com.example.mymovielibrary.data.lists.api.ListApi
+import com.example.mymovielibrary.data.lists.repository.ListRepoImpl
 import com.example.mymovielibrary.domain.account.repository.GetAccountId
-import com.example.mymovielibrary.domain.auth.repository.UserCredentials
 import com.example.mymovielibrary.domain.account.repository.ProfileRepository
 import com.example.mymovielibrary.domain.images.repository.ImageRepository
+import com.example.mymovielibrary.domain.lists.repository.ListRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -42,8 +41,9 @@ class RepositoryModule {
     }
 
     @Provides
-    fun userCredentials(@ApplicationContext context: Context): UserCredentials {
-        return UserCredsImpl(context)
+    @Singleton
+    fun listRepo(api: ListApi): ListRepository {
+        return ListRepoImpl(api)
     }
 
     @Provides

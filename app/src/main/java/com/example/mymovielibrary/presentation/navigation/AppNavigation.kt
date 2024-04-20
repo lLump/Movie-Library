@@ -21,6 +21,7 @@ import com.example.mymovielibrary.presentation.ui.profile.ProfileScreen
 import com.example.mymovielibrary.presentation.ui.auth.addAuthScreen
 import com.example.mymovielibrary.presentation.navigation.bottomBar.MyBottomBar
 import com.example.mymovielibrary.presentation.navigation.model.Screen
+import com.example.mymovielibrary.presentation.ui.lists.ListsScreen
 import com.example.mymovielibrary.presentation.viewmodel.AppViewModel
 
 @Composable
@@ -69,7 +70,9 @@ fun AppNavigation() {
                     HomeScreen()
                 }
                 composable(Screen.LISTS()) {
-                    MainScreen()
+                    ListsScreen(
+                        onEvent = viewModel::onEvent
+                    )
                 }
                 composable(Screen.PROFILE()) {
                     if (TmdbData.accountId != 0) {

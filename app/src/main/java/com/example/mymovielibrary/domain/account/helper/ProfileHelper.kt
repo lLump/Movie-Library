@@ -7,6 +7,6 @@ interface ProfileHelper {
     var isLanguagesLoaded: Boolean
     var isProfileLoaded: Boolean
 
-    fun loadLanguages(callback: (List<LanguageDetails>) -> Unit)
-    fun loadProfileDisplay(callback: (ProfileDisplay) -> Unit)
+    suspend fun loadLanguages(callback: (List<LanguageDetails>) -> Unit)
+    suspend fun loadProfileDisplay(callback: (ProfileDisplay) -> Unit)
 }

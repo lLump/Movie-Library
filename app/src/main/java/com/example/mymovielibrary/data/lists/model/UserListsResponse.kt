@@ -1,6 +1,6 @@
 package com.example.mymovielibrary.data.lists.model
 
-import com.google.gson.annotations.JsonAdapter
+import com.example.mymovielibrary.domain.lists.model.UserCollection
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -22,3 +22,12 @@ data class UserList(
     val name: String,
     val poster_path: Any
 )
+
+fun UserList.toUserCollection(): UserCollection {
+    return UserCollection(
+        id = this.id,
+        name = this.name,
+        description = this.description,
+        itemCount = this.item_count
+    )
+}

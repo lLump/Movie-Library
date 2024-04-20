@@ -25,15 +25,14 @@ class AuthHelperImpl(
     private val getAccountId: GetAccountId
 ) : AuthHelper, UiEventListener {
     private lateinit var sendUiEvent: suspend (UiEvent) -> Unit
+    override fun setCollector(collectUiEvent: suspend (UiEvent) -> Unit) {
+        sendUiEvent = collectUiEvent
+    }
 
     init {
         scope.launch(Dispatchers.IO) {
             initToken() //TODO change to init in login functions
         }
-    }
-
-    override fun setCollector(collectUiEvent: suspend (UiEvent) -> Unit) {
-        sendUiEvent = collectUiEvent
     }
 
     override fun getStartScreen(): String {

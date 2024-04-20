@@ -16,47 +16,41 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 class ProfileHelperImpl(
-    private val scope: CoroutineScope,
     private val accConfig: ProfileRepository,
     private val imageRepo: ImageRepository
 ) : ProfileHelper, UiEventListener {
     private lateinit var sendUiEvent: suspend (UiEvent) -> Unit
-
-    override var isLanguagesLoaded = false
-    override var isProfileLoaded = false
-
     override fun setCollector(collectUiEvent: suspend (UiEvent) -> Unit) {
         sendUiEvent = collectUiEvent
     }
 
-    override fun loadLanguages(callback: (List<LanguageDetails>) -> Unit) {
-        if(!isLanguagesLoaded) {
-            scope.launch {
-                val list = executeApiCall { accConfig.getLanguages() }
-                if (!list.isNullOrEmpty()) {
-                    isLanguagesLoaded = true
-                    callback(list)
-                }
+    override var isLanguagesLoaded = false
+    override var isProfileLoaded = false
+
+    override suspend fun loadLanguages(callback: (List<LanguageDetails>) -> Unit) {
+        if (!isLanguagesLoaded) {
+            val list = executeApiCall { accConfig.getLanguages() }
+            if (!list.isNullOrEmpty()) {
+                isLanguagesLoaded = true
+                callback(list)
             }
         }
     }
 
-    override fun loadProfileDisplay(callback: (ProfileDisplay) -> Unit) {
-        if(!isProfileLoaded) {
-            scope.launch {
-                val profileDetails = executeApiCall { accConfig.getProfileDetails() }
-                if (profileDetails != null) {
-                    isProfileLoaded = true
+    override suspend fun loadProfileDisplay(callback: (ProfileDisplay) -> Unit) {
+        if (!isProfileLoaded) {
+            val profileDetails = executeApiCall { accConfig.getProfileDetails() }
+            if (profileDetails != null) {
+                isProfileLoaded = true
 
-                    val displayProfile = ProfileDisplay(
-                        avatar = loadAvatar(profileDetails.avatarPath),
-                        username = profileDetails.username,
-                        name = profileDetails.name,
-                        languageIso = profileDetails.languageIso
-                    )
+                val displayProfile = ProfileDisplay(
+                    avatar = loadAvatar(profileDetails.avatarPath),
+                    username = profileDetails.username,
+                    name = profileDetails.name,
+                    languageIso = profileDetails.languageIso
+                )
 
-                    callback(displayProfile)
-                }
+                callback(displayProfile)
             }
         }
     }
@@ -64,7 +58,7 @@ class ProfileHelperImpl(
     private suspend fun loadAvatar(path: String): ImageBitmap {
         val size = ImageSize.W500
         val icon = executeApiCall { imageRepo.getIcon(size, path) }
-        return icon?: ImageBitmap(1,1)
+        return icon ?: ImageBitmap(1, 1)
     }
 
     private suspend fun <D> executeApiCall(request: suspend () -> Result<D, DataError>): D? {

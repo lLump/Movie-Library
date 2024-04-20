@@ -39,7 +39,6 @@ fun ProfileScreen(
 ) {
     LaunchedEffect(Unit) {
         onEvent(ProfileEvent.LoadProfile)
-        onEvent(ProfileEvent.LoadLanguages)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
