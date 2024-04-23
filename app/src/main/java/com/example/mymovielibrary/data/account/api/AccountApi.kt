@@ -7,18 +7,18 @@ import retrofit2.http.Query
 
 interface AccountApi {
 
-    @GET("account")
+    @GET("3/account")
     suspend fun getAccountDetails(
         @Query("api_key") apiKey: String,
         @Query("session_id") sessionId: String
     ): AccountDetails
 
-    @GET("account")
+    @GET("3/account")
     suspend fun getAccountDetails(
         @Query("account_id") accountId: String
     ): AccountDetails
 
-    @GET("configuration/languages")
+    @GET("3/configuration/languages")
     suspend fun getLanguages(): Array<LanguageResponse>
 
 }

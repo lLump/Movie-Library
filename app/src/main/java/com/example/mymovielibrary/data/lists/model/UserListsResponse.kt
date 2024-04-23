@@ -20,7 +20,7 @@ data class UserList(
     val item_count: Int,
     val list_type: String,
     val name: String,
-    val poster_path: Any
+    val poster_path: String?
 )
 
 fun UserList.toUserCollection(): UserCollection {

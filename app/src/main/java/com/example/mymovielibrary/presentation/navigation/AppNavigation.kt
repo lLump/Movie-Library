@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mymovielibrary.data.storage.TmdbData
+import com.example.mymovielibrary.domain.lists.model.UserCollection
 import com.example.mymovielibrary.presentation.ui.profile.ProfileScreen
 import com.example.mymovielibrary.presentation.ui.auth.addAuthScreen
 import com.example.mymovielibrary.presentation.navigation.bottomBar.MyBottomBar
@@ -70,8 +71,10 @@ fun AppNavigation() {
                     HomeScreen()
                 }
                 composable(Screen.LISTS()) {
+                    val listState by viewModel.listState.collectAsState()
                     ListsScreen(
-                        onEvent = viewModel::onEvent
+                        onEvent = viewModel::onEvent,
+                        state = listState
                     )
                 }
                 composable(Screen.PROFILE()) {

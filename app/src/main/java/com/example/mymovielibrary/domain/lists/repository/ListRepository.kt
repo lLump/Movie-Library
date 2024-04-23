@@ -7,7 +7,9 @@ import retrofit2.http.GET
 
 interface ListRepository {
 
-    @GET("account/{account_id}/lists")
+    @GET("3/account/{account_id}/lists")
     suspend fun getUserCollections(): Result<List<UserCollection>, DataError.Network>
+
+
 
 }

@@ -21,9 +21,9 @@ class AuthRepoImpl(private val api: AuthApi) : AuthRepository {
 //        }
 //    }
 
-    override suspend fun getToken(): Result<String, DataError.Network> {
+    override suspend fun getTokenV3(): Result<String, DataError.Network> {
         return try {
-            val response = api.getRequestToken()
+            val response = api.getRequestTokenV3()
             if (!response.success) throw Exception("Token request failed")
 
             Result.Success(response.request_token)

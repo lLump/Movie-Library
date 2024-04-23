@@ -12,11 +12,14 @@ import com.example.mymovielibrary.domain.model.events.ProfileEvent.*
 import com.example.mymovielibrary.domain.model.events.ListEvent.*
 import com.example.mymovielibrary.presentation.model.UiEvent
 import com.example.mymovielibrary.presentation.model.UiEventListener
+import com.example.mymovielibrary.presentation.viewmodel.states.ListState
 import com.example.mymovielibrary.presentation.viewmodel.states.ProfileState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -33,6 +36,9 @@ class AppViewModel @Inject constructor(
 
     private val _profileState = MutableStateFlow(ProfileState())
     val profileState = _profileState.asStateFlow()
+
+    private val _listState = MutableStateFlow(ListState(emptyList()))
+    val listState = _listState.asStateFlow()
 
     init {
         (authHelper as UiEventListener).setCollector(this::collectUiEvent)
@@ -62,7 +68,11 @@ class AppViewModel @Inject constructor(
             }
 
             is ListEvent -> when (event) {
-                LoadCollections -> viewModelScope.launch { listHelper.getUserCollections() }
+                LoadCollections -> {
+                    viewModelScope.launch {
+                        _listState.value.collections = listHelper.getUserCollections()
+                    }
+                }
             }
         }
     }

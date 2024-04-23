@@ -17,8 +17,8 @@ class RetrofitModule {
 
     @Provides
     @Singleton
-    fun retrofitUrlV3(): Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.themoviedb.org/3/")
+    fun retrofitDefault(): Retrofit = Retrofit.Builder()
+        .baseUrl("https://api.themoviedb.org/")
         .client(
             OkHttpClient.Builder()
                 .addInterceptor {
@@ -35,7 +35,7 @@ class RetrofitModule {
     @Provides
     @AccountId
     fun retrofitAccountId(): Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.themoviedb.org/3/")
+        .baseUrl("https://api.themoviedb.org/")
         .client(
             OkHttpClient.Builder()
                 .addInterceptor {

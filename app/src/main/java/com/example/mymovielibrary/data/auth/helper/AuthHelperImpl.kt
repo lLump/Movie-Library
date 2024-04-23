@@ -29,12 +29,6 @@ class AuthHelperImpl(
         sendUiEvent = collectUiEvent
     }
 
-    init {
-        scope.launch(Dispatchers.IO) {
-            initToken() //TODO change to init in login functions
-        }
-    }
-
     override fun getStartScreen(): String {
         var screenRoute: NavigationRoute = Screen.HOME
         userCreds.getUserIfSaved { (isSaved, user) ->
@@ -48,6 +42,7 @@ class AuthHelperImpl(
 
     override fun guestLogin() {
         scope.launch(Dispatchers.IO) {
+            initToken()
             sendUiEvent(UiEvent.Loading(LoadingState.LOADING))
             TmdbData.sessionId = //getting & saving guestSessionId
                 executeApiCall { authRepo.getGuestSessionId() } ?: "noSessionId"
@@ -61,6 +56,7 @@ class AuthHelperImpl(
 
     override fun performLogin(user: UserInfo, needToSave: Boolean) {
         scope.launch(Dispatchers.IO) {
+            initToken()
             sendUiEvent(UiEvent.Loading(LoadingState.LOADING))
             if (isTokenValidated(user)) {
                 sendUiEvent(UiEvent.Loading(LoadingState.SUCCESS))
@@ -76,7 +72,6 @@ class AuthHelperImpl(
     }
 
     private suspend fun isTokenValidated(user: UserInfo): Boolean {
-        getTokenIfNotExist()
         return executeApiCall {
             authRepo.validateToken( //validation
                 token = TmdbData.requestToken,
@@ -86,14 +81,8 @@ class AuthHelperImpl(
         } ?: false
     }
 
-    private suspend fun getTokenIfNotExist() { //Костыль to fix 1 bug, when user opened app without internet
-        if (TmdbData.requestToken == "noToken") {
-            initToken()
-        }
-    }
-
     private suspend fun initToken() {
-        TmdbData.requestToken = executeApiCall { authRepo.getToken() } ?: "noToken"
+        TmdbData.requestToken = executeApiCall { authRepo.getTokenV3() } ?: "noToken"
     }
 
     private suspend fun <D> executeApiCall(request: suspend () -> Result<D, DataError>): D? {

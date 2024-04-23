@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.example.mymovielibrary.presentation.theme.MyMovieLibraryTheme
+import com.example.mymovielibrary.presentation.ui.theme.MyMovieLibraryTheme
 import com.example.mymovielibrary.presentation.navigation.AppNavigation
 import dagger.hilt.android.AndroidEntryPoint
 

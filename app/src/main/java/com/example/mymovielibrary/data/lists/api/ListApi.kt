@@ -7,7 +7,7 @@ import retrofit2.http.Path
 
 interface ListApi {
 
-    @GET("account/{account_id}/lists")
+    @GET("3/account/{account_id}/lists")
     suspend fun getUserLists(@Path("account_id") accountId: String = TmdbData.accountId.toString()): UserListsResponse
 
 }
