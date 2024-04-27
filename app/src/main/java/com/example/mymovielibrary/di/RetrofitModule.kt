@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.core
+package com.example.mymovielibrary.di
 
 import com.example.mymovielibrary.data.storage.ApiData
 import dagger.Module

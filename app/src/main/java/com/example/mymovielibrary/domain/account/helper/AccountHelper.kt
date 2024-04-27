@@ -3,7 +3,7 @@ package com.example.mymovielibrary.domain.account.helper
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.presentation.viewmodel.states.ProfileDisplay
 
-interface ProfileHelper {
+interface AccountHelper {
     var isLanguagesLoaded: Boolean
     var isProfileLoaded: Boolean
 

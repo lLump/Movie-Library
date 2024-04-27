@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.core
+package com.example.mymovielibrary.di
 
 import com.example.mymovielibrary.data.account.api.AccountApi
 import com.example.mymovielibrary.data.auth.api.AuthApi

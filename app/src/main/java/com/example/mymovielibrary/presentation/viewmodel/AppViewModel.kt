@@ -1,10 +1,12 @@
 package com.example.mymovielibrary.presentation.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
-import com.example.mymovielibrary.domain.account.helper.ProfileHelper
+import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.lists.helper.ListHelper
 import com.example.mymovielibrary.domain.model.events.*
 import com.example.mymovielibrary.domain.model.events.AuthEvent.*
@@ -17,9 +19,7 @@ import com.example.mymovielibrary.presentation.viewmodel.states.ProfileState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
@@ -28,9 +28,12 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val authHelper: AuthHelper,
-    private val profileHelper: ProfileHelper,
+    private val profileHelper: AccountHelper,
     private val listHelper: ListHelper
 ) : ViewModel() {
+    private val _token = MutableLiveData<String>()
+    val token: LiveData<String> = _token
+
     private val eventChannel = Channel<UiEvent>()
     val events = eventChannel.receiveAsFlow()
 
@@ -48,15 +51,20 @@ class AppViewModel @Inject constructor(
 
     fun onEvent(event: Event) {
         when (event) {
-            is AuthEvent -> when (event) {
-                is LoginSession -> {
-                    authHelper.performLogin(
-                        user = event.user,
-                        needToSave = event.needToSave
-                    )
-                }
 
-                GuestSession -> authHelper.guestLogin()
+            is AuthEvent -> when (event) {
+                LoginSession -> {
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val token = authHelper.getRequestToken()
+                        _token.postValue(token)
+                        TmdbData.requestToken = token
+                    }
+                }
+                ApproveToken -> {
+                    //not _token.value because of it deletes after approving (redirecting to url -> restart app)
+                    authHelper.saveTmdbInfo(TmdbData.requestToken)
+                }
+                GuestSession -> { }
             }
 
             is ProfileEvent -> when (event) {
@@ -91,10 +99,4 @@ class AppViewModel @Inject constructor(
     private suspend fun collectUiEvent(event: UiEvent) {
         eventChannel.send(event)
     }
-
-    // FIXME (If user saved, start screen is Main otherwise - Auth.
-    //       But also if saved we need to autologin him.
-    //       That's the reason why authHelper provides start screen.)
-    fun getStartScreen() = authHelper.getStartScreen()
-
 }

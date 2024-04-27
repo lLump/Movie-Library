@@ -1,6 +1,5 @@
 package com.example.mymovielibrary.presentation.ui.auth
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,16 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.model.events.AuthEvent
-import com.example.mymovielibrary.domain.auth.model.UserInfo
 import com.example.mymovielibrary.presentation.model.ShowToast
 import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 import com.example.mymovielibrary.presentation.model.UiEvent
-import kotlinx.coroutines.delay
 
 @Composable
 fun AuthScreen(
@@ -91,22 +86,22 @@ fun AuthScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                onEvent(
-                    AuthEvent.LoginSession(
-                        user = UserInfo(
-                            username = username,
-                            password = password
-                        ),
-                        needToSave = isSaveChecked
-                    )
-                )
-            }
-        ) {
-            Text(text = stringResource(id = R.string.login))
-        }
+//        Button(
+//            modifier = Modifier.fillMaxWidth(),
+//            onClick = {
+//                onEvent(
+//                    AuthEvent.LoginSession(
+//                        user = UserInfo(
+//                            username = username,
+//                            password = password
+//                        ),
+//                        needToSave = isSaveChecked
+//                    )
+//                )
+//            }
+//        ) {
+//            Text(text = stringResource(id = R.string.login))
+//        }
 
         Spacer(modifier = Modifier.height(8.dp))
 

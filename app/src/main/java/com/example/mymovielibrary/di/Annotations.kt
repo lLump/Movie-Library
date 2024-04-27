@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.core
+package com.example.mymovielibrary.di
 
 import javax.inject.Qualifier
 

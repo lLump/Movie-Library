@@ -4,13 +4,10 @@ import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.account.repository.GetAccountId
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.auth.repository.AuthRepository
-import com.example.mymovielibrary.domain.auth.repository.UserCredentials
-import com.example.mymovielibrary.domain.auth.model.UserInfo
+import com.example.mymovielibrary.domain.auth.repository.LocalUserInfo
 import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 import com.example.mymovielibrary.presentation.model.UiEvent
 import com.example.mymovielibrary.presentation.model.uiText.asErrorUiText
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
-import com.example.mymovielibrary.presentation.navigation.model.Screen
 import com.example.mymovielibrary.domain.model.Result
 import com.example.mymovielibrary.domain.model.DataError
 import com.example.mymovielibrary.presentation.model.UiEventListener
@@ -21,71 +18,63 @@ import kotlinx.coroutines.launch
 class AuthHelperImpl(
     private val scope: CoroutineScope,
     private val authRepo: AuthRepository,
-    private val userCreds: UserCredentials,
-    private val getAccountId: GetAccountId
+    private val userInfo: LocalUserInfo,
+    private val getAccountId: GetAccountId //TODO удалить
 ) : AuthHelper, UiEventListener {
     private lateinit var sendUiEvent: suspend (UiEvent) -> Unit
     override fun setCollector(collectUiEvent: suspend (UiEvent) -> Unit) {
         sendUiEvent = collectUiEvent
     }
 
-    override fun getStartScreen(): String {
-        var screenRoute: NavigationRoute = Screen.HOME
-        userCreds.getUserIfSaved { (isSaved, user) ->
-            screenRoute = if (isSaved) {
-                performLogin(user, false)
-                Screen.HOME
-            } else Screen.AUTH
+    private var isUserLoggedIn: Boolean //FIXME (костыль)
+
+    init {
+        isUserLoggedIn = isUserInfoExist()
+        if (!isUserLoggedIn) {
+//            guestLogin()
         }
-        return screenRoute()
     }
 
-    override fun guestLogin() {
-        scope.launch(Dispatchers.IO) {
-            initToken()
-            sendUiEvent(UiEvent.Loading(LoadingState.LOADING))
-            TmdbData.sessionId = //getting & saving guestSessionId
-                executeApiCall { authRepo.getGuestSessionId() } ?: "noSessionId"
-            if (TmdbData.sessionId == "noSessionId") {
-                sendUiEvent(UiEvent.Loading(LoadingState.FAILURE))
-            } else {
-                sendUiEvent(UiEvent.Loading(LoadingState.SUCCESS))
+    private fun isUserInfoExist(): Boolean {
+        var result = false
+        userInfo.getInfoIfExist { isSaved, accountId, sessionId ->
+            if (isSaved) {
+                TmdbData.run {
+                    this.accountIdV4 = accountId
+                    this.sessionId = sessionId
+                    //TODO language ISO
+                }
+                result = true
             }
         }
+        return result
     }
 
-    override fun performLogin(user: UserInfo, needToSave: Boolean) {
+    private fun guestLogin() {
         scope.launch(Dispatchers.IO) {
-            initToken()
-            sendUiEvent(UiEvent.Loading(LoadingState.LOADING))
-            if (isTokenValidated(user)) {
-                sendUiEvent(UiEvent.Loading(LoadingState.SUCCESS))
-                if (needToSave) { //saving user into prefs
-                    userCreds.saveUserCredentials(user)
-                }
-                TmdbData.sessionId = //getting & saving sessionId
-                    executeApiCall { authRepo.getSessionId(TmdbData.requestToken) } ?: "noSessionId"
-                TmdbData.accountId = //getting & saving accountId
-                    executeApiCall { getAccountId(TmdbData.sessionId) } ?: 0
-            } else sendUiEvent(UiEvent.Loading(LoadingState.FAILURE))
+            TmdbData.sessionId = //getting & saving guestSessionId
+                request { authRepo.getGuestSessionId() } ?: "noSessionId"
         }
     }
 
-    private suspend fun isTokenValidated(user: UserInfo): Boolean {
-        return executeApiCall {
-            authRepo.validateToken( //validation
-                token = TmdbData.requestToken,
-                username = user.username,
-                password = user.password
-            )
-        } ?: false
+    override suspend fun getRequestToken() = request { authRepo.createRequestTokenV4() } ?: "noToken"
+
+    override fun saveTmdbInfo(requestToken: String) {
+        scope.launch(Dispatchers.IO) {
+            val (accountId, token) = request { authRepo.createAccessTokenV4(requestToken) }
+                ?: Pair("", "noToken")
+            val sessionId = request { authRepo.getSessionIdV4(token) } ?: "noSessionId"
+            TmdbData.run {
+                this.accountIdV4 = accountId
+                this.accessToken = token
+                this.sessionId = sessionId
+            }
+            //TODO accountIdV3
+            userInfo.saveUserInfo(accountId, sessionId) //local save
+        }
     }
 
-    private suspend fun initToken() {
-        TmdbData.requestToken = executeApiCall { authRepo.getTokenV3() } ?: "noToken"
-    }
-
-    private suspend fun <D> executeApiCall(request: suspend () -> Result<D, DataError>): D? {
+    private suspend fun <D> request(request: suspend () -> Result<D, DataError>): D? {
         return when (val result = request.invoke()) {
             is Result.Success -> result.data
             is Result.Error -> {

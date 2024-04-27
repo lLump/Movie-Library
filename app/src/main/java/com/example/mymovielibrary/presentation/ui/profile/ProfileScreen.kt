@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.example.mymovielibrary.presentation.ui.profile
 
 import androidx.compose.foundation.Image
@@ -11,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,22 +29,46 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
+import com.example.mymovielibrary.domain.model.events.AuthEvent
+import com.example.mymovielibrary.domain.model.events.Event
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
+import com.example.mymovielibrary.presentation.model.ShowToast
+import com.example.mymovielibrary.presentation.model.UiEvent
+import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 import com.example.mymovielibrary.presentation.viewmodel.states.ProfileState
 
 @Composable
 fun ProfileScreen(
-    onEvent: (ProfileEvent) -> Unit,
-    state: ProfileState
+    onEvent: (Event) -> Unit,
+    state: ProfileState,
+    uiEvent: UiEvent,
+    registration: () -> Unit,
+    approveToken: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         onEvent(ProfileEvent.LoadProfile)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        Button(onClick = {
+            onEvent(AuthEvent.LoginSession)}
+        ) {
+            Text(stringResource(id = R.string.login))
+        }
         ProfileCard(state)
         DropdownLanguageMenu(state.listLanguages, onEvent)
     }
+//    when (uiEvent) {
+//        is UiEvent.Error -> { ShowToast(uiEvent.error.asString()) }
+//        is UiEvent.Loading -> {
+//            when (uiEvent.loading) {
+//                LoadingState.SUCCESS -> approveToken()
+//                LoadingState.EMPTY -> {}
+//                LoadingState.LOADING -> CircularProgressIndicator()
+//                LoadingState.FAILURE -> {}
+//            }
+//        }
+//    }
 }
 
 @Composable
@@ -87,35 +111,18 @@ fun DropdownLanguageMenu(languagesList: List<LanguageDetails>, onEvent: (Profile
 }
 
 @Composable
-fun ProfileCard(state: ProfileState) {
+fun ProfileCard(state: ProfileState, ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
 //        horizontalArrangement =
     ) {
-//        Image(
-//            modifier = Modifier
-//                .weight(0.45f)
-//                .padding(16.dp),
-////                .size(150.dp, 140.dp),
-//            painter = painterResource(id = R.drawable.ic_launcher_foreground),
-//            contentDescription = "Profile Photo",
-////            modifier = Modifier
-////                .size(120.dp)
-////                .clip(shape = CircleShape)
-////                .padding(start = 16.dp, top = 16.dp)
-//        )
         Image(
             bitmap = state.user.avatar,
             contentDescription = "Profile photo",
             modifier = Modifier
                 .padding(16.dp)
                 .clip(shape = CircleShape)
-////                .size(150.dp, 140.dp),
-////            modifier = Modifier
-////                .size(120.dp)
-////                .padding(start = 16.dp, top = 16.dp)
-//        )
         )
         Column(
             modifier = Modifier

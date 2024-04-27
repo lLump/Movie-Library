@@ -1,9 +1,10 @@
 package com.example.mymovielibrary.data.account.helper
 
 import androidx.compose.ui.graphics.ImageBitmap
+import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
-import com.example.mymovielibrary.domain.account.repository.ProfileRepository
-import com.example.mymovielibrary.domain.account.helper.ProfileHelper
+import com.example.mymovielibrary.domain.account.repository.AccountRepository
+import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.images.model.ImageSize
 import com.example.mymovielibrary.domain.images.repository.ImageRepository
 import com.example.mymovielibrary.domain.model.DataError
@@ -12,13 +13,11 @@ import com.example.mymovielibrary.presentation.model.UiEvent
 import com.example.mymovielibrary.presentation.model.UiEventListener
 import com.example.mymovielibrary.presentation.model.uiText.asErrorUiText
 import com.example.mymovielibrary.presentation.viewmodel.states.ProfileDisplay
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
-class ProfileHelperImpl(
-    private val accConfig: ProfileRepository,
+class AccountHelperImpl(
+    private val accConfig: AccountRepository,
     private val imageRepo: ImageRepository
-) : ProfileHelper, UiEventListener {
+) : AccountHelper, UiEventListener {
     private lateinit var sendUiEvent: suspend (UiEvent) -> Unit
     override fun setCollector(collectUiEvent: suspend (UiEvent) -> Unit) {
         sendUiEvent = collectUiEvent
@@ -38,27 +37,29 @@ class ProfileHelperImpl(
     }
 
     override suspend fun loadProfileDisplay(callback: (ProfileDisplay) -> Unit) {
-        if (!isProfileLoaded) {
-            val profileDetails = executeApiCall { accConfig.getProfileDetails() }
+        if (!isProfileLoaded && TmdbData.accountIdV4 != "noId") {
+            val profileDetails = executeApiCall { accConfig.getProfileDetails(TmdbData.sessionId) }
             if (profileDetails != null) {
                 isProfileLoaded = true
-
                 val displayProfile = ProfileDisplay(
                     avatar = loadAvatar(profileDetails.avatarPath),
                     username = profileDetails.username,
                     name = profileDetails.name,
                     languageIso = profileDetails.languageIso
                 )
-
+                TmdbData.accountIdV3 = profileDetails.id
                 callback(displayProfile)
             }
         }
     }
 
-    private suspend fun loadAvatar(path: String): ImageBitmap {
-        val size = ImageSize.W500
-        val icon = executeApiCall { imageRepo.getIcon(size, path) }
-        return icon ?: ImageBitmap(1, 1)
+    private suspend fun loadAvatar(path: String?): ImageBitmap {
+        val size = ImageSize.ORIGINAL
+        suspend fun defaultPhoto(): ImageBitmap = //Default photo from TMDB
+            executeApiCall { imageRepo.getIcon(size, "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg") }
+                ?: ImageBitmap(15, 15)
+        return if (path == null) defaultPhoto()
+        else executeApiCall { imageRepo.getIcon(size, path) } ?: defaultPhoto()
     }
 
     private suspend fun <D> executeApiCall(request: suspend () -> Result<D, DataError>): D? {

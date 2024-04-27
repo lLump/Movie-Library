@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.presentation.viewmodel.states.LoadingState
 import com.example.mymovielibrary.presentation.model.UiEvent
@@ -19,26 +20,21 @@ fun NavGraphBuilder.addAuthScreen(
     authEvent: (AuthEvent) -> Unit,
     state: Flow<UiEvent>
 ) {
-    composable(Screen.AUTH()) {
-        val loadingState by state.collectAsState(UiEvent.Loading(LoadingState.EMPTY))
-        AuthScreen(
-            event = loadingState,
-            onEvent = authEvent,
-            navigateToHome = {
-                navController.popBackStack() //clear authScreen from backStack
-                navController.navigate(Screen.HOME())
-            },
-            registration = {
-                redirectToRegistration(
-                    context = navController.context
-                )
-            }
-        )
-    }
-}
-
-private fun redirectToRegistration(context: Context) {
-    val url = "https://www.themoviedb.org/signup"
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-    context.startActivity(intent)
+//    composable(Screen.AUTH()) {
+//        val loadingState by state.collectAsState(UiEvent.Loading(LoadingState.EMPTY))
+//        AuthScreen(
+//            event = loadingState,
+//            onEvent = authEvent,
+//            navigateToHome = {
+////                navController.popBackStack() //clear authScreen from backStack
+////                navController.navigate(Screen.HOME())
+//                redirectToApproveToken(navController.context)
+//            },
+//            registration = {
+//                redirectToRegistration(
+//                    context = navController.context
+//                )
+//            }
+//        )
+//    }
 }

@@ -15,9 +15,10 @@ interface AccountApi {
 
     @GET("3/account")
     suspend fun getAccountDetails(
-        @Query("account_id") accountId: String
+        @Query("session_id") sessionId: String
     ): AccountDetails
 
+    //fixme вынести отсюда
     @GET("3/configuration/languages")
     suspend fun getLanguages(): Array<LanguageResponse>
 
