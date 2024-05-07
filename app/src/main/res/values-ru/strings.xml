@@ -2,8 +2,7 @@
 <resources>
     <string name="app_name">Моя фильмотека</string>
 
-    <string name="username">Никнейм</string>
-    <string name="full_name">Имя</string>
+    <string name="user_welcome">Здравствуй, </string>
 
     <!--Authenticate-->
     <string name="auth">Аутентификация</string>
@@ -23,6 +22,11 @@
 
     <!--Profile-->
     <string name="choose_language">Выберите язык</string>
+    <string name="watched">Просмотрено</string>
+    <string name="planned">В планах</string>
+    <string name="rated">Оценено</string>
+    <string name="favorite">Любимых</string>
+    <string name="total">Всего</string>
     <!--Profile-->
 
 </resources>

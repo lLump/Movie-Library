@@ -1,8 +1,7 @@
 <resources>
     <string name="app_name">My Movie Library</string>
 
-    <string name="username">Username</string>
-    <string name="full_name">Full name</string>
+    <string name="user_welcome">Welcome,</string>
 
     <!--Authenticate-->
     <string name="auth">Authenticate</string>
@@ -22,6 +21,11 @@
 
     <!--Profile-->
     <string name="choose_language">Choose language</string>
+    <string name="watched">Watched</string>
+    <string name="planned">Planned</string>
+    <string name="rated">Rated</string>
+    <string name="favorite">Favorite</string>
+    <string name="total">Total</string>
     <!--Profile-->
 
 </resources>

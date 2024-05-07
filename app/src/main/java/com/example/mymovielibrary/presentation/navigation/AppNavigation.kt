@@ -83,7 +83,6 @@ fun AppNavigation(isTokenApproved: Boolean) {
             }
         },
         content = { padding ->
-            padding //Fixme
             NavHost(navController = navController, startDestination = Screen.HOME()) {
                 addAuthScreen(
                     navController = navController,
@@ -105,18 +104,19 @@ fun AppNavigation(isTokenApproved: Boolean) {
                     val uiEvents by viewModel.events.collectAsState(UiEvent.Loading(LoadingState.EMPTY))
 //                        viewModel.onEvent(ProfileEvent.LoadProfile) //TODO Test it
                     ProfileScreen(
-                        state = profileState,
+                        profile = profileState,
                         onEvent = viewModel::onEvent,
-                        uiEvent = uiEvents,
-                        registration = {
-                            redirectToRegistration(navController.context)
-                        },
-                        approveToken = {
+                        padding = padding
+//                        uiEvent = uiEvents,
+//                        registration = {
+//                            redirectToRegistration(navController.context)
+//                        },
+//                        approveToken = {
 //                            redirectToApproving(
 //                                token = viewModel.token.value,
 //                                context = navController.context
 //                            )
-                        }
+//                        }
                     )
                 }
             }
@@ -163,9 +163,4 @@ private fun AttachDisposableEffectTo(viewModel: AppViewModel, lifecycleOwner: Li
 @Composable
 fun HomeScreen(viewModel: AppViewModel) {
     Text(text = "HOME", modifier = Modifier.fillMaxWidth())
-}
-
-@Composable
-fun MainScreen() {
-    Text(text = "Main", modifier = Modifier.fillMaxWidth())
 }

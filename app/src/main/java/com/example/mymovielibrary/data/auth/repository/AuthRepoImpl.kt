@@ -29,6 +29,9 @@ class AuthRepoImpl(private val api: AuthApi) : AuthRepository {
                 mediaType,
                 "{\"redirect_to\":\"https://www.example.mymovielibrary:\"}"
             )
+//            val mediaType = "application/json".toMediaType()
+//            val body = "{\"redirect_to\":\"https://www.example.mymovielibrary:\"}".toRequestBody(mediaType)
+
             val response = api.createRequestTokenV4(body)
             if (!response.success) throw Exception("Token request failed")
 
@@ -48,6 +51,8 @@ class AuthRepoImpl(private val api: AuthApi) : AuthRepository {
             val mediaType = MediaType.parse("application/json")
             val body =
                 RequestBody.create(mediaType, "{\"request_token\":\"${requestToken}\"}")
+//            val mediaType = "application/json".toMediaType()
+//            val body = "{\"request_token\":\"${requestToken}\"}".toRequestBody(mediaType)
 
             val response = api.createAccessTokenV4(body)
             if (!response.success) throw Exception("Session creation failed")
@@ -67,6 +72,8 @@ class AuthRepoImpl(private val api: AuthApi) : AuthRepository {
         return try {
             val mediaType = MediaType.parse("application/json")
             val body = RequestBody.create(mediaType, "{\"access_token\":\"${accessToken}\"}")
+//            val mediaType = "application/json".toMediaType()
+//            val body = "{\"access_token\":\"${accessToken}\"}".toRequestBody(mediaType)
 
             val response = api.createSessionWithV4Token(body)
             if (!response.success) throw Exception("Session creation failed")

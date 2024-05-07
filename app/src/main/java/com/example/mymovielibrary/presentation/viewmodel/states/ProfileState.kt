@@ -1,5 +1,6 @@
 package com.example.mymovielibrary.presentation.viewmodel.states
 
+import android.graphics.Bitmap
 import android.graphics.drawable.Icon
 import androidx.compose.ui.graphics.ImageBitmap
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
@@ -18,7 +19,7 @@ data class ProfileState(
 //}
 
 data class ProfileDisplay(
-    val avatar: ImageBitmap = ImageBitmap(1, 1),
+    val avatar: Bitmap = Bitmap.createBitmap(15, 15, Bitmap.Config.ARGB_8888),
     val username: String = "",
     val name: String = "",
     val languageIso: String = "en"

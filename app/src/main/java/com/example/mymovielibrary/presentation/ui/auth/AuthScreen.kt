@@ -56,7 +56,7 @@ fun AuthScreen(
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text(text = stringResource(id = R.string.username)) },
+            label = { Text(text = stringResource(id = R.string.user_welcome)) },
             modifier = Modifier.fillMaxWidth()
         )
 

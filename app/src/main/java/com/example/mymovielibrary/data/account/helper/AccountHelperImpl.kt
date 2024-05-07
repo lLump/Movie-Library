@@ -1,5 +1,6 @@
 package com.example.mymovielibrary.data.account.helper
 
+import android.graphics.Bitmap
 import androidx.compose.ui.graphics.ImageBitmap
 import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
@@ -53,11 +54,11 @@ class AccountHelperImpl(
         }
     }
 
-    private suspend fun loadAvatar(path: String?): ImageBitmap {
+    private suspend fun loadAvatar(path: String?): Bitmap {
         val size = ImageSize.ORIGINAL
-        suspend fun defaultPhoto(): ImageBitmap = //Default photo from TMDB
+        suspend fun defaultPhoto(): Bitmap = //Default photo from TMDB
             executeApiCall { imageRepo.getIcon(size, "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg") }
-                ?: ImageBitmap(15, 15)
+                ?: Bitmap.createBitmap(15, 15, Bitmap.Config.ARGB_8888)
         return if (path == null) defaultPhoto()
         else executeApiCall { imageRepo.getIcon(size, path) } ?: defaultPhoto()
     }
