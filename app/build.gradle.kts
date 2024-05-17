@@ -61,7 +61,14 @@ dependencies {
     val daggerHilt = "2.49"
     val moshi = "1.15.0"
 
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    implementation("io.coil-kt:coil-compose:2.6.0") //AsyncImage (Coil)
+
+    implementation ("androidx.compose.material:material-icons-extended:1.6.7")
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
+    implementation("androidx.palette:palette-ktx:1.0.0")
+
+//    implementation("androidx.security:security-crypto:1.1.0-alpha06") //encrypted prefs
 
     implementation("androidx.compose.material3:material3-android:1.2.1")
 //    implementation("androidx.compose.material3:material3")

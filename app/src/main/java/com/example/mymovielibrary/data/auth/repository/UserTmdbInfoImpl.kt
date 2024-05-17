@@ -2,21 +2,21 @@ package com.example.mymovielibrary.data.auth.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.auth.repository.LocalUserInfo
 
 class UserTmdbInfoImpl(context: Context): LocalUserInfo {
-    private val key = MasterKey.Builder(context)
-        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-        .build()
-    private val sharedPrefs: SharedPreferences = EncryptedSharedPreferences.create(
-        context,
-        "encrypted_prefs",
-        key,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+//    private val key = MasterKey.Builder(context)
+//        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+//        .build()
+//    private val sharedPrefs: SharedPreferences = EncryptedSharedPreferences.create(
+//        context,
+//        "encrypted_prefs",
+//        key,
+//        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+//        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+//    )
+    private val sharedPrefs: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
     private val editor = sharedPrefs.edit()
 
     override fun clearInfo() { editor.clear().apply() }
@@ -29,7 +29,19 @@ class UserTmdbInfoImpl(context: Context): LocalUserInfo {
         }
     }
 
-    override fun getInfoIfExist(info: (Boolean, String, String) -> Unit) {
+    override fun localSaveUserInfoIfExist() {
+        getInfoIfExist { isSaved, accountId, sessionId ->
+            if (isSaved) {
+                TmdbData.run {
+                    this.accountIdV4 = accountId
+                    this.sessionId = sessionId
+                    //TODO language ISO
+                }
+            }
+        }
+    }
+
+    private fun getInfoIfExist(info: (Boolean, String, String) -> Unit) {
         val (accountId, sessionId) = getUserInfo()
         if (accountId.isNotEmpty() || sessionId.isNotEmpty()) {
             info(true, accountId, sessionId)
@@ -38,8 +50,8 @@ class UserTmdbInfoImpl(context: Context): LocalUserInfo {
 
     //TODO проверить запрос к несуществующим полям и убрать в случае as String
     private fun getUserInfo(): Pair<String, String> {
-        val accountId = sharedPrefs.getString("account_id_v4", "") as String
-        val sessionId = sharedPrefs.getString("session_id", "") as String
+        val accountId = sharedPrefs.getString("account_id_v4", "noId") as String
+        val sessionId = sharedPrefs.getString("session_id", "noSessionId") as String
         return Pair(accountId, sessionId)
     }
 }

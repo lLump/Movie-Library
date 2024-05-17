@@ -1,8 +1,6 @@
 package com.example.mymovielibrary.domain.model
 
-interface Error
-
-sealed interface DataError: Error {
+sealed interface DataError {
     data class Network(val error: String): DataError
 //    enum class Network: DataError {
 //        BAD_REQUEST,

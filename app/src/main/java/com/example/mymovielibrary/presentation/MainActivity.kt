@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import com.example.mymovielibrary.data.auth.repository.UserTmdbInfoImpl
 import com.example.mymovielibrary.presentation.ui.theme.MyMovieLibraryTheme
 import com.example.mymovielibrary.presentation.navigation.AppNavigation
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +17,9 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        installSplashScreen()
+        UserTmdbInfoImpl(this).localSaveUserInfoIfExist()
 
         val isFromApproving = intent.scheme == "http" || intent.scheme == "https"
 
@@ -29,4 +34,5 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }

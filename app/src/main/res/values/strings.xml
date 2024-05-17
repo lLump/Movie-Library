@@ -3,15 +3,6 @@
 
     <string name="user_welcome">Welcome,</string>
 
-    <!--Authenticate-->
-    <string name="auth">Authenticate</string>
-    <string name="password">Password</string>
-    <string name="login">Login</string>
-    <string name="login_guest">Log in as a guest</string>
-    <string name="registration">Registration</string>
-    <string name="remember_password">Remember your password?</string>
-    <!--Authenticate-->
-
     <!-- BottomBar -->
     <string name="home">Home</string>
     <string name="lists">Lists</string>
@@ -20,6 +11,12 @@
     <!-- BottomBar -->
 
     <!--Profile-->
+        <!--Guest-->
+    <string name="login">Login</string>
+    <string name="registration">Registration</string>
+    <string name="not_logged_in">You\'re not logged in</string>
+    <string name="please_login">Please login or register to use all features.</string>
+        <!--Guest-->
     <string name="choose_language">Choose language</string>
     <string name="watched">Watched</string>
     <string name="planned">Planned</string>

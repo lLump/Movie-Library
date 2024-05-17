@@ -2,8 +2,6 @@ package com.example.mymovielibrary.presentation.ui.profile
 
 import android.graphics.Bitmap
 import androidx.annotation.StringRes
-import androidx.compose.animation.Animatable
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,33 +16,30 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
-import androidx.compose.material3.Divider
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -55,123 +50,144 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.model.events.AuthEvent
-import com.example.mymovielibrary.domain.model.events.Event
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
-import com.example.mymovielibrary.presentation.ui.theme.MyMovieLibraryTheme
-import com.example.mymovielibrary.presentation.ui.theme.Purple40
+import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
 import com.example.mymovielibrary.presentation.ui.theme.Typography
 import com.example.mymovielibrary.presentation.viewmodel.states.ProfileDisplay
-import com.example.mymovielibrary.presentation.viewmodel.states.ProfileState
-import com.example.mymovielibrary.util.GetVibrantColorFromPoster
+import com.example.mymovielibrary.presentation.viewmodel.states.UserStats
+import com.example.mymovielibrary.presentation.viewmodel.states.UserType
 
 @Composable
 fun ProfileScreen(
-    onEvent: (Event) -> Unit,
-    profile: ProfileState,
+    navController: NavController,
     padding: PaddingValues,
+    redirectToUrl: (String) -> Unit,
+    isFromApproving: Boolean
 ) {
-    LaunchedEffect(Unit) {
-        onEvent(ProfileEvent.LoadProfile)
-    }
-//    val uiState = profileViewModel.uiState.collectAsState().value
-
-//    when {
-//        uiState.loading -> {
-//            val title = stringResource(id = R.string.fetching_profile)
-//            LoadingColumn(title)
-//        }
-//        uiState.error != null -> {
-//            ErrorColumn(uiState.error.message.orEmpty())
-//        }
-//        uiState.profile != null -> {
-//            Profile(uiState.profile)
-//        }
+//    LaunchedEffect(Unit) {
+//        onEvent(ProfileEvent.LoadUserDetails)
 //    }
-//    Profile(state.user, onEvent, padding)
-    val colors = MaterialTheme.colorScheme
-    var screenHeight by remember { mutableIntStateOf(0) }
-    var avatarHeight by remember { mutableIntStateOf(0) }
 
-//    Surface(
-//        modifier = Modifier
-//            .onSizeChanged { screenHeight = it.height }
-//            .fillMaxSize()
-//            .padding(padding)
-//    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            Column {
-                ProfileCard(
-                    user = profile.user,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(0.3f)
-                        .shadow(
-                            elevation = 16.dp,
-                            shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp),
-                        )
-                        .padding(bottom = 4.dp) //доп layout снизу (баг?)
-                        .background(
-                            color = MaterialTheme.colorScheme.secondary,
-                            shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
-                        )
-                )
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .weight(0.7f)
-                        .padding(start = 12.dp, bottom = 12.dp, end = 12.dp)
-                        .background((Color.Yellow), RoundedCornerShape(16.dp))
+    val viewModel: ProfileViewModel = hiltViewModel()
+    val profile by viewModel.profileState.collectAsState()
+
+    if (profile.userDetails is UserType.Guest) { //if guest -> observe token
+        val lifecycle = LocalLifecycleOwner.current
+        ObserveToken(lifecycle, viewModel.token, redirectToUrl)
+    }
+
+    LaunchedEffect(Unit) {
+        if (isFromApproving) {
+            viewModel.onEvent(AuthEvent.ApproveToken)
+        }
+        viewModel.onEvent(ProfileEvent.LoadUserDetails)
+    }
+//    val uiEvents by vm.events.collectAsState()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
+    ) {
+        when (profile.userDetails) {
+            is UserType.LoggedIn -> {
+                UserProfile((profile.userDetails as UserType.LoggedIn).profile)
+                IconButton(
+                    modifier = Modifier.align(Alignment.TopEnd),
+                    onClick = { viewModel.onEvent(AuthEvent.Logout) }
                 ) {
-
+                    Icon(Icons.Default.Settings, contentDescription = "Settings")
                 }
             }
-        }
 
+            UserType.Guest -> {
+                GuestProfile(
+                    onLoginClick = { viewModel.onEvent(AuthEvent.Login) },
+                    onRegisterClick = { redirectToUrl("https://www.themoviedb.org/signup") }
+                )
+            }
+
+            UserType.Loading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 16.dp)
+                )
+            }
+        }
+//            IconButton(
+//                modifier = Modifier.align(Alignment.TopStart),
+//                onClick = { }
+//            ) {
+//                Icon(Icons.AutoMirrored.Default.ArrowBack, contentDescription = "Back")
+//            }
+    }
 }
 
 @Composable
-fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
+private fun UserProfile(user: ProfileDisplay) {
+    Column {
+        ProfileCard(
+            user = user,
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.3f)
+                .shadow(
+                    elevation = 16.dp,
+                    shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp),
+                )
+                .padding(bottom = 4.dp) //доп layout снизу (баг?)
+                .background(
+                    color = MaterialTheme.colorScheme.secondary,
+                    shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                )
+        )
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(0.7f)
+                .padding(start = 12.dp, bottom = 12.dp, end = 12.dp)
+                .background((Color.Yellow), RoundedCornerShape(16.dp))
+        ) {
+
+        }
+    }
+}
+
+@Composable
+private fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(0.9f)
-//            modifier = modifier
-//                .fillMaxSize()
-//                .weight(0.9f)
         ) {
-            Image(
+            AsyncImage(
                 modifier = Modifier
                     .aspectRatio(1f)
                     .fillMaxSize()
                     .padding(16.dp)
-//                            .weight(0.4f)
                     .align(Alignment.CenterVertically)
                     .clip(CircleShape),
-//                        contentScale = ContentScale.Crop,
-                bitmap = user.avatar.asImageBitmap(),
+                model = "https://image.tmdb.org/t/p/original/" + user.avatarPath,
                 contentDescription = "Profile photo",
             )
             Column(
                 modifier = Modifier
-//                            .weight(0.6f)
                     .align(Alignment.CenterVertically),
             ) {
                 Text(
@@ -190,7 +206,7 @@ fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
                 .fillMaxSize()
                 .padding(start = 16.dp, end = 16.dp)
                 .weight(0.25f),
-            watched = "6", planned = "12", rated = "4", favorite = "2", total = "18"
+            stats = user.stats
         )
 //        Spacer(modifier = Modifier.height(4.dp))
 //                ShowProgress(75)
@@ -200,27 +216,23 @@ fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
 @Composable
 private fun MiniUserStat(
     modifier: Modifier,
-    watched: String,
-    planned: String,
-    rated: String,
-    favorite: String,
-    total: String
+    stats: UserStats,
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        SingleUserStat(textId = R.string.watched, amount = watched)
+        SingleUserStat(textId = R.string.watched, amount = stats.watched)
         VerticalDivider(modifier = Modifier.fillMaxHeight())
 
-        SingleUserStat(textId = R.string.planned, amount = planned)
+        SingleUserStat(textId = R.string.planned, amount = stats.planned)
         VerticalDivider(modifier = Modifier.fillMaxHeight())
 
-        SingleUserStat(textId = R.string.rated, amount = rated)
+        SingleUserStat(textId = R.string.rated, amount = stats.rated)
         VerticalDivider(modifier = Modifier.fillMaxHeight())
 
-        SingleUserStat(textId = R.string.favorite, amount = favorite)
+        SingleUserStat(textId = R.string.favorite, amount = stats.favorite)
 //        Text(stringResource(id = R.string.total))
     }
 }
@@ -245,27 +257,70 @@ private fun SingleUserStat(@StringRes textId: Int, amount: String) {
 }
 
 @Composable
-fun ShowProgress(score : Int){
-    val gradient = Brush.linearGradient(listOf(Color(0xFFF95075),
-        Color(0xFFBE6BE5)))
+private fun GuestProfile(onLoginClick: () -> Unit, onRegisterClick: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(id = R.string.not_logged_in),
+                style = MaterialTheme.typography.headlineLarge,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = stringResource(id = R.string.please_login),
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Button(onClick = onLoginClick) {
+                    Text(text = stringResource(id = R.string.login))
+                }
+                Button(onClick = onRegisterClick) {
+                    Text(text = stringResource(id = R.string.registration))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ShowProgress(score: Int) {
+    val gradient = Brush.linearGradient(
+        listOf(
+            Color(0xFFF95075),
+            Color(0xFFBE6BE5)
+        )
+    )
 
     val progressFactor by remember(score) {
-        mutableStateOf(score*0.005f)
+        mutableStateOf(score * 0.005f)
     }
 
-    Row(modifier = Modifier
-        .padding(8.dp)
-        .fillMaxWidth()
-        .height(35.dp)
-        .clip(
-            RoundedCornerShape(
-                topStartPercent = 50,
-                topEndPercent = 50,
-                bottomEndPercent = 50,
-                bottomStartPercent = 50
+    Row(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth()
+            .height(35.dp)
+            .clip(
+                RoundedCornerShape(
+                    topStartPercent = 50,
+                    topEndPercent = 50,
+                    bottomEndPercent = 50,
+                    bottomStartPercent = 50
+                )
             )
-        )
-        .background(Color.Transparent),
+            .background(Color.Transparent),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -279,113 +334,21 @@ fun ShowProgress(score : Int){
             colors = buttonColors(
                 containerColor = Color.Transparent,
                 disabledContainerColor = Color.Transparent
-            )) {
+            )
+        ) {
 
-            Text(text = score.toString(),
+            Text(
+                text = score.toString(),
 //                modifier = Modifier
 //                    .clip(shape = RoundedCornerShape(23.dp))
 //                    .fillMaxHeight(0.87f)
 //                    .fillMaxWidth()
 //                    .padding(7.dp),
-                color= Color.White,
+                color = Color.White,
                 textAlign = TextAlign.Center
             )
         }
     }
-}
-
-@Composable
-private fun Profile(profile: ProfileDisplay, onEvent: (Event) -> Unit, padding: PaddingValues) =
-    MyMovieLibraryTheme {
-//    val defaultVibrantColor = MaterialTheme.colorScheme.onSurface
-//    val vibrantColor = remember { Animatable(defaultVibrantColor) }
-        var screenHeight by remember { mutableIntStateOf(0) }
-        var imageHeight by remember { mutableIntStateOf(0) }
-        Surface(Modifier
-            .fillMaxSize()
-            .onSizeChanged { screenHeight = it.height }
-            .padding(padding)) {
-
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.White.copy(alpha = 0.5f), RoundedCornerShape(16.dp)),
-            ) {
-            }
-            Image(
-                bitmap = profile.avatar.asImageBitmap(),
-                contentDescription = null,
-                alignment = Alignment.TopCenter,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .onSizeChanged { imageHeight = it.height },
-            )
-            GetVibrantColorFromPoster(profile.avatar, Animatable(Purple40))
-            val imageHeightToScreenHeightRatio = try {
-                (imageHeight / screenHeight).toFloat()
-                    .coerceIn(minimumValue = 0.4f, maximumValue = 0.7f)
-            } catch (e: Exception) {
-                0.4f
-            }
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            0f to Purple40.copy(alpha = 0f),
-                            imageHeightToScreenHeightRatio - 0.05f to Purple40,
-                        ),
-                    ),
-            )
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
-            ) {
-                Spacer(Modifier.fillMaxHeight(imageHeightToScreenHeightRatio - 0.2f))
-                Text(
-                    text = profile.name,
-                    style = Typography.bodyLarge.copy(
-                        fontSize = 40.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        letterSpacing = 1.5.sp,
-                        fontFamily = FontFamily.Cursive,
-                        color = Color.White.copy(alpha = 0.8f),
-                    ),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(Modifier.height(16.dp))
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .background(Color.White.copy(alpha = 0.5f), RoundedCornerShape(16.dp)),
-                ) {
-                    Column(
-                        Modifier
-                            .verticalScroll(rememberScrollState())
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        Button(onClick = { onEvent(AuthEvent.LoginSession) }) {
-                            Text(stringResource(id = R.string.login))
-                        }
-                        ProfileField(R.string.user_welcome, profile.username)
-                        AlsoKnownAs(listOf("some", "stupid", "info"), Purple40)
-                        ImdbProfileButton(profile.avatar, Purple40)
-                        Text(profile.languageIso, Modifier.padding(top = 12.dp))
-                    }
-                }
-            }
-        }
-    }
-
-@Composable
-private fun ProfileField(@StringRes resId: Int, field: String) {
-    if (field.isEmpty()) return
-
-    Text(stringResource(resId, field), style = Typography.bodyLarge)
 }
 
 @Composable
@@ -442,7 +405,7 @@ private fun ImdbProfileButton(imdbProfileUrl: Bitmap, currentVibrantColor: Color
 //    }
 
 @Composable
-fun DropdownLanguageMenu(languagesList: List<LanguageDetails>, onEvent: (ProfileEvent) -> Unit) {
+private fun LanguageMenu(languagesList: List<LanguageDetails>, onEvent: (ProfileEvent) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
 
     Box {
@@ -476,6 +439,24 @@ fun DropdownLanguageMenu(languagesList: List<LanguageDetails>, onEvent: (Profile
                         expanded = false
                     })
             }
+        }
+    }
+}
+
+@Composable
+fun ObserveToken(
+    lifecycle: LifecycleOwner,
+    token: LiveData<String>,
+    redirectToApprove: (String) -> Unit
+) {
+    DisposableEffect(token) {
+        val url = "https://www.themoviedb.org/auth/access?request_token="
+        val observer = Observer<String> { requestToken ->
+            redirectToApprove(url + requestToken)
+        }
+        token.observe(lifecycle, observer)
+        onDispose {
+            token.removeObserver(observer)
         }
     }
 }

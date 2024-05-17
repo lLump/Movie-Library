@@ -25,12 +25,6 @@ class ApiModule {
     }
 
     @Provides
-    @AccountId //Different settings of retrofit to get user ID
-    fun accountIdApi(@AccountId retrofit: Retrofit): AccountApi {
-        return retrofit.create(AccountApi::class.java)
-    }
-
-    @Provides
     fun imageApi(@RetrofitImage retrofit: Retrofit): ImageApi {
         return retrofit.create(ImageApi::class.java)
     }

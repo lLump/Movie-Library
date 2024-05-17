@@ -4,15 +4,6 @@
 
     <string name="user_welcome">Здравствуй, </string>
 
-    <!--Authenticate-->
-    <string name="auth">Аутентификация</string>
-    <string name="login">Логин</string>
-    <string name="password">Пароль</string>
-    <string name="registration">Регистрация</string>
-    <string name="login_guest">Войти как гость</string>
-    <string name="remember_password">Запомнить пароль?</string>
-    <!--Authenticate-->
-
     <!-- BottomBar -->
     <string name="home">Главная</string>
     <string name="lists">Списки</string>
@@ -21,6 +12,12 @@
     <!-- BottomBar -->
 
     <!--Profile-->
+        <!--Guest-->
+    <string name="login">Логин</string>
+    <string name="registration">Регистрация</string>
+    <string name="not_logged_in">Вы не вошли в систему</string>
+    <string name="please_login">Пожалуйста, войдите или зарегистрируйтесь, чтобы использовать все функции.</string>
+        <!--Guest-->
     <string name="choose_language">Выберите язык</string>
     <string name="watched">Просмотрено</string>
     <string name="planned">В планах</string>

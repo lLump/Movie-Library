@@ -1,8 +1,6 @@
 package com.example.mymovielibrary.domain.model
 
-typealias RootError = Error
-
-sealed interface Result<out D, out E : RootError> {
-    data class Success<out D, out E : RootError>(val data: D) : Result<D, E>
-    data class Error<out D, out E : RootError>(val error: E) : Result<D, E>
+sealed interface Result<out D, out E : DataError> {
+    data class Success<out D, out E : DataError>(val data: D) : Result<D, E>
+    data class Error<out D, out E : DataError>(val error: E) : Result<D, E>
 }

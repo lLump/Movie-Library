@@ -5,7 +5,6 @@ sealed interface NavigationRoute {
 }
 
 enum class Screen(private val route: String) : NavigationRoute {
-    AUTH("auth"),
     HOME("home"),
     PROFILE("profile"),
     LISTS("favorite");

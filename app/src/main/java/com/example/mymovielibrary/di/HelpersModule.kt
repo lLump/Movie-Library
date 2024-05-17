@@ -1,7 +1,6 @@
 package com.example.mymovielibrary.di
 
 import com.example.mymovielibrary.domain.account.repository.AccountRepository
-import com.example.mymovielibrary.domain.account.repository.GetAccountId
 import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.auth.repository.AuthRepository
@@ -24,12 +23,10 @@ class HelpersModule {
 
     @Provides
     fun authHelper(
-        scope: CoroutineScope,
         authRepo: AuthRepository,
         userCreds: LocalUserInfo,
-        accountId: GetAccountId
     ): AuthHelper {
-        return AuthHelperImpl(scope, authRepo, userCreds, accountId)
+        return AuthHelperImpl(authRepo, userCreds)
     }
 
     @Provides

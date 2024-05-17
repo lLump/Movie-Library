@@ -1,75 +1,63 @@
 package com.example.mymovielibrary.data.account.helper
 
 import android.graphics.Bitmap
-import androidx.compose.ui.graphics.ImageBitmap
 import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.account.repository.AccountRepository
 import com.example.mymovielibrary.domain.account.helper.AccountHelper
+import com.example.mymovielibrary.data.base.helper.BaseHelper
 import com.example.mymovielibrary.domain.images.model.ImageSize
 import com.example.mymovielibrary.domain.images.repository.ImageRepository
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
-import com.example.mymovielibrary.presentation.model.UiEvent
-import com.example.mymovielibrary.presentation.model.UiEventListener
-import com.example.mymovielibrary.presentation.model.uiText.asErrorUiText
 import com.example.mymovielibrary.presentation.viewmodel.states.ProfileDisplay
+import com.example.mymovielibrary.presentation.viewmodel.states.UserStats
 
 class AccountHelperImpl(
     private val accConfig: AccountRepository,
     private val imageRepo: ImageRepository
-) : AccountHelper, UiEventListener {
-    private lateinit var sendUiEvent: suspend (UiEvent) -> Unit
-    override fun setCollector(collectUiEvent: suspend (UiEvent) -> Unit) {
-        sendUiEvent = collectUiEvent
-    }
+) : AccountHelper, BaseHelper() {
+    private var isLanguagesLoaded = false
+    private var isUserDetailsLoaded = false
 
-    override var isLanguagesLoaded = false
-    override var isProfileLoaded = false
-
-    override suspend fun loadLanguages(callback: (List<LanguageDetails>) -> Unit) {
+    override suspend fun loadLanguages(): List<LanguageDetails> {
         if (!isLanguagesLoaded) {
-            val list = executeApiCall { accConfig.getLanguages() }
+            val list = request { accConfig.getLanguages() }
             if (!list.isNullOrEmpty()) {
                 isLanguagesLoaded = true
-                callback(list)
+                return list
             }
         }
+        return emptyList()
     }
 
-    override suspend fun loadProfileDisplay(callback: (ProfileDisplay) -> Unit) {
-        if (!isProfileLoaded && TmdbData.accountIdV4 != "noId") {
-            val profileDetails = executeApiCall { accConfig.getProfileDetails(TmdbData.sessionId) }
-            if (profileDetails != null) {
-                isProfileLoaded = true
+    override suspend fun loadProfileData(): ProfileDisplay? {
+//        if (!isUserDetailsLoaded && TmdbData.accountIdV4 != "noId") {
+            val profileDetails = request { accConfig.getProfileDetails(TmdbData.sessionId) }
+            if (profileDetails == null) {
+                return null //request error
+            } else {
+                isUserDetailsLoaded = true
                 val displayProfile = ProfileDisplay(
-                    avatar = loadAvatar(profileDetails.avatarPath),
+                    avatarPath = profileDetails.avatarPath ?: "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg", //default photo path
                     username = profileDetails.username,
-                    name = profileDetails.name,
-                    languageIso = profileDetails.languageIso
+//                    name = profileDetails.name,
+                    stats = UserStats(), //TODO USER STATS
+                    languageIso = profileDetails.languageIso,
                 )
                 TmdbData.accountIdV3 = profileDetails.id
-                callback(displayProfile)
+                return displayProfile
             }
-        }
+//        } else { //no access (already loaded or not logged in)
+//            sendUiEvent(UiEvent.Error(UiText.DynamicString("No access"))) //FIXME
+//            return null
+//        }
     }
 
     private suspend fun loadAvatar(path: String?): Bitmap {
         val size = ImageSize.ORIGINAL
         suspend fun defaultPhoto(): Bitmap = //Default photo from TMDB
-            executeApiCall { imageRepo.getIcon(size, "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg") }
+            request { imageRepo.getIcon(size, "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg") }
                 ?: Bitmap.createBitmap(15, 15, Bitmap.Config.ARGB_8888)
         return if (path == null) defaultPhoto()
-        else executeApiCall { imageRepo.getIcon(size, path) } ?: defaultPhoto()
-    }
-
-    private suspend fun <D> executeApiCall(request: suspend () -> Result<D, DataError>): D? {
-        return when (val result = request.invoke()) {
-            is Result.Success -> result.data
-            is Result.Error -> {
-                sendUiEvent(UiEvent.Error(result.asErrorUiText()))
-                null
-            }
-        }
+        else request { imageRepo.getIcon(size, path) } ?: defaultPhoto()
     }
 }

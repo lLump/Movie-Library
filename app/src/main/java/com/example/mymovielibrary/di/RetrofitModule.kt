@@ -33,22 +33,6 @@ class RetrofitModule {
         .build()
 
     @Provides
-    @AccountId
-    fun retrofitAccountId(): Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.themoviedb.org/")
-        .client(
-            OkHttpClient.Builder()
-                .addInterceptor {
-                    val request = it.request().newBuilder()
-                        .addHeader("accept", "application/json")
-                        .build()
-                    it.proceed(request)
-                }.build()
-        )
-        .addConverterFactory(MoshiConverterFactory.create())
-        .build()
-
-    @Provides
     @RetrofitImage
     fun retrofitImage(): Retrofit =
         Retrofit.Builder()
