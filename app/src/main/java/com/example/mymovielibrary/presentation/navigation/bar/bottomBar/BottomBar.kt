@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.presentation.navigation.bottomBar
+package com.example.mymovielibrary.presentation.navigation.bar.bottomBar
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Icon
@@ -6,9 +6,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination

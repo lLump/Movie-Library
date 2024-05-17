@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.core
+package com.example.mymovielibrary.di
 
 import com.example.mymovielibrary.data.account.api.AccountApi
 import com.example.mymovielibrary.data.auth.api.AuthApi
@@ -21,12 +21,6 @@ class ApiModule {
 
     @Provides
     fun accountApi(retrofit: Retrofit): AccountApi {
-        return retrofit.create(AccountApi::class.java)
-    }
-
-    @Provides
-    @AccountId //Different settings of retrofit to get user ID
-    fun accountIdApi(@AccountId retrofit: Retrofit): AccountApi {
         return retrofit.create(AccountApi::class.java)
     }
 

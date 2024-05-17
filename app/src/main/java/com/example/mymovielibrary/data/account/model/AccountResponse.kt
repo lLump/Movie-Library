@@ -27,11 +27,12 @@ data class Gravatar(
 
 @JsonClass(generateAdapter = true)
 data class Tmdb(
-    val avatar_path: String
+    val avatar_path: String?
 )
 
 fun AccountDetails.toProfileDetails(): ProfileDetails {
     return ProfileDetails(
+        id = this.id,
         name = this.name,
         username = this.username,
         avatarPath = avatar.tmdb.avatar_path,

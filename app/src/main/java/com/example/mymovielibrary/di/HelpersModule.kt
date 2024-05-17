@@ -1,14 +1,13 @@
-package com.example.mymovielibrary.core
+package com.example.mymovielibrary.di
 
-import com.example.mymovielibrary.domain.account.repository.ProfileRepository
-import com.example.mymovielibrary.domain.account.repository.GetAccountId
-import com.example.mymovielibrary.domain.account.helper.ProfileHelper
+import com.example.mymovielibrary.domain.account.repository.AccountRepository
+import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.auth.repository.AuthRepository
-import com.example.mymovielibrary.domain.auth.repository.UserCredentials
+import com.example.mymovielibrary.domain.auth.repository.LocalUserInfo
 import com.example.mymovielibrary.domain.images.repository.ImageRepository
 import com.example.mymovielibrary.data.auth.helper.AuthHelperImpl
-import com.example.mymovielibrary.data.account.helper.ProfileHelperImpl
+import com.example.mymovielibrary.data.account.helper.AccountHelperImpl
 import com.example.mymovielibrary.data.lists.helper.ListHelperImpl
 import com.example.mymovielibrary.domain.lists.helper.ListHelper
 import com.example.mymovielibrary.domain.lists.repository.ListRepository
@@ -24,20 +23,18 @@ class HelpersModule {
 
     @Provides
     fun authHelper(
-        scope: CoroutineScope,
         authRepo: AuthRepository,
-        userCreds: UserCredentials,
-        accountId: GetAccountId
+        userCreds: LocalUserInfo,
     ): AuthHelper {
-        return AuthHelperImpl(scope, authRepo, userCreds, accountId)
+        return AuthHelperImpl(authRepo, userCreds)
     }
 
     @Provides
     fun profileHelper(
-        profileRepo: ProfileRepository,
+        profileRepo: AccountRepository,
         imageRepo: ImageRepository
-    ): ProfileHelper {
-        return ProfileHelperImpl(profileRepo, imageRepo)
+    ): AccountHelper {
+        return AccountHelperImpl(profileRepo, imageRepo)
     }
 
     @Provides

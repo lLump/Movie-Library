@@ -5,7 +5,7 @@ import com.example.mymovielibrary.domain.account.model.ProfileDetails
 import com.example.mymovielibrary.domain.model.DataError
 import com.example.mymovielibrary.domain.model.Result
 
-interface ProfileRepository {
+interface AccountRepository {
     suspend fun getLanguages(): Result<List<LanguageDetails>, DataError.Network>
-    suspend fun getProfileDetails(): Result<ProfileDetails, DataError.Network>
+    suspend fun getProfileDetails(sessionId: String): Result<ProfileDetails, DataError.Network>
 }

@@ -18,15 +18,3 @@ import com.example.mymovielibrary.domain.model.Result
 //        DataError.Local.DISK_FULL -> UiText.StringResource(R.string.bad_request)
 //    }
 //}
-
-fun Result.Error<*, DataError>.asErrorUiText(): UiText {
-    return error.asUiText()
-}
-
-fun DataError.asUiText(): UiText {
-    return when (this) {
-//        DataError.Local.DISK_FULL -> TODO()
-        is DataError.Network -> UiText.DynamicString(this.error)
-    }
-}
-

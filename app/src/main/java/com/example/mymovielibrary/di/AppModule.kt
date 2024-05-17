@@ -1,8 +1,8 @@
-package com.example.mymovielibrary.core
+package com.example.mymovielibrary.di
 
 import android.content.Context
-import com.example.mymovielibrary.data.auth.repository.UserCredsImpl
-import com.example.mymovielibrary.domain.auth.repository.UserCredentials
+import com.example.mymovielibrary.data.auth.repository.UserTmdbInfoImpl
+import com.example.mymovielibrary.domain.auth.repository.LocalUserInfo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,8 +24,8 @@ class AppModule {
     }
 
     @Provides
-    fun userCredentials(@ApplicationContext context: Context): UserCredentials {
-        return UserCredsImpl(context)
+    fun userCredentials(@ApplicationContext context: Context): LocalUserInfo {
+        return UserTmdbInfoImpl(context)
     }
 
 }

@@ -14,3 +14,4 @@
 .cxx
 local.properties
 app/src/main/java/com/example/mymovielibrary/data/storage/ApiData.kt
+.idea/deploymentTargetSelector.xml

@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.core
+package com.example.mymovielibrary.di
 
 import com.example.mymovielibrary.data.storage.ApiData
 import dagger.Module
@@ -25,22 +25,6 @@ class RetrofitModule {
                     val request = it.request().newBuilder()
                         .addHeader("accept", "application/json")
                         .addHeader("Authorization", "Bearer ${ApiData.BEARER}")
-                        .build()
-                    it.proceed(request)
-                }.build()
-        )
-        .addConverterFactory(MoshiConverterFactory.create())
-        .build()
-
-    @Provides
-    @AccountId
-    fun retrofitAccountId(): Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.themoviedb.org/")
-        .client(
-            OkHttpClient.Builder()
-                .addInterceptor {
-                    val request = it.request().newBuilder()
-                        .addHeader("accept", "application/json")
                         .build()
                     it.proceed(request)
                 }.build()

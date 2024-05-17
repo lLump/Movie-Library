@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.presentation.navigation.bottomBar
+package com.example.mymovielibrary.presentation.navigation.bar.bottomBar
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List

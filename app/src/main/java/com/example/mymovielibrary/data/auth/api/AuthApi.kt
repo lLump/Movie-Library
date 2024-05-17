@@ -1,10 +1,10 @@
 package com.example.mymovielibrary.data.auth.api
 
+import com.example.mymovielibrary.data.auth.model.AccessTokenV4
+import com.example.mymovielibrary.data.auth.model.RequestTokenV4
 import com.example.mymovielibrary.data.auth.model.SessionGuestResponse
 import com.example.mymovielibrary.data.auth.model.SessionResponse
 import com.example.mymovielibrary.data.auth.model.TokenV3
-import com.example.mymovielibrary.data.auth.model.AccessTokenV4
-import com.example.mymovielibrary.data.auth.model.RequestTokenV4
 import com.example.mymovielibrary.data.auth.model.ValidateSessionResponse
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -14,35 +14,43 @@ import retrofit2.http.POST
 
 interface AuthApi {
 
-    @GET("3/authentication/token/new")
-    suspend fun getRequestTokenV3(): TokenV3
-
-//    @POST("4/auth/request_token")
-//    suspend fun createRequestTokenV4(
-//        @Body requestBody: RequestBody,
-//        @Header("content_type") type: String = "application/json"
-//    ): RequestTokenV4
-//
-//    @POST("4/auth/access_token")
-//    suspend fun createAccessTokenV4(
-//        @Body requestBody: RequestBody,
-//        @Header("content_type") type: String = "application/json"
-//    ): AccessTokenV4
-
-    @POST("3/authentication/token/validate_with_login")
-    suspend fun validateSession(
+    // V4 Api Below
+    @POST("4/auth/request_token")
+    suspend fun createRequestTokenV4(
         @Body requestBody: RequestBody,
         @Header("content_type") type: String = "application/json"
-    ): ValidateSessionResponse
+    ): RequestTokenV4
 
-    @GET("3/authentication/guest_session/new")
-    suspend fun createGuestSession(): SessionGuestResponse
+    @POST("4/auth/access_token")
+    suspend fun createAccessTokenV4(
+        @Body requestBody: RequestBody,
+        @Header("content_type") type: String = "application/json"
+    ): AccessTokenV4
+    // ----------------------------------------- //
 
-    @POST("3/authentication/session/new")
-    suspend fun createSession(
+    // V3 API Below
+    @POST("/3/authentication/session/convert/4")
+    suspend fun createSessionWithV4Token(
         @Body requestBody: RequestBody,
         @Header("content_type") type: String = "application/json"
     ): SessionResponse
 
+//    @POST("3/authentication/session/new")
+//    suspend fun createSession(
+//        @Body requestBody: RequestBody,
+//        @Header("content_type") type: String = "application/json"
+//    ): SessionResponse
+
+//    @GET("3/authentication/token/new")
+//    suspend fun getRequestTokenV3(): TokenV3
+
+//    @POST("3/authentication/token/validate_with_login")
+//    suspend fun validateSessionWithLogin(
+//        @Body requestBody: RequestBody,
+//        @Header("content_type") type: String = "application/json"
+//    ): ValidateSessionResponse
+
+    @GET("3/authentication/guest_session/new")
+    suspend fun createGuestSession(): SessionGuestResponse
 
 }

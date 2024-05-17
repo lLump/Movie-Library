@@ -2,17 +2,7 @@
 <resources>
     <string name="app_name">Моя фильмотека</string>
 
-    <string name="username">Никнейм</string>
-    <string name="full_name">Имя</string>
-
-    <!--Authenticate-->
-    <string name="auth">Аутентификация</string>
-    <string name="login">Логин</string>
-    <string name="password">Пароль</string>
-    <string name="registration">Регистрация</string>
-    <string name="login_guest">Войти как гость</string>
-    <string name="remember_password">Запомнить пароль?</string>
-    <!--Authenticate-->
+    <string name="user_welcome">Здравствуй, </string>
 
     <!-- BottomBar -->
     <string name="home">Главная</string>
@@ -22,7 +12,18 @@
     <!-- BottomBar -->
 
     <!--Profile-->
+        <!--Guest-->
+    <string name="login">Логин</string>
+    <string name="registration">Регистрация</string>
+    <string name="not_logged_in">Вы не вошли в систему</string>
+    <string name="please_login">Пожалуйста, войдите или зарегистрируйтесь, чтобы использовать все функции.</string>
+        <!--Guest-->
     <string name="choose_language">Выберите язык</string>
+    <string name="watched">Просмотрено</string>
+    <string name="planned">В планах</string>
+    <string name="rated">Оценено</string>
+    <string name="favorite">Любимых</string>
+    <string name="total">Всего</string>
     <!--Profile-->
 
 </resources>
