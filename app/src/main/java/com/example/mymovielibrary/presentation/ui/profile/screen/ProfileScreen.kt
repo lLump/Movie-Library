@@ -70,6 +70,8 @@ import com.example.mymovielibrary.presentation.ui.theme.Typography
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
 import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
 import com.example.mymovielibrary.presentation.ui.profile.state.UserType
+import com.example.mymovielibrary.presentation.ui.util.ShowToast
+import com.example.mymovielibrary.presentation.ui.util.UiEvent
 
 @Composable
 fun ProfileScreen(
@@ -79,17 +81,25 @@ fun ProfileScreen(
 ) {
     val viewModel: ProfileViewModel = hiltViewModel()
     val profile by viewModel.profileState.collectAsState()
+    val uiEvents by viewModel.events.collectAsState(UiEvent.Initial)
 
-    OnScreenStart(
-        lifecycle = LocalLifecycleOwner.current,
-        isGuest = profile.userDetails is UserType.Guest,
-        token = viewModel.token,
-        redirectToUrl = redirectToUrl,
-        isFromApproving = isFromApproving,
-        onEvent = viewModel::onEvent
-    )
-//    val uiEvents by vm.events.collectAsState()
+    if (profile.userDetails is UserType.Guest) { // if guest -> observe token
+        ObserveToken(LocalLifecycleOwner.current, viewModel.token, redirectToUrl)
+    } else {
+        LaunchedEffect(Unit) {
+            if (isFromApproving) {               // check if user from login
+                viewModel.onEvent(AuthEvent.ApproveToken)
+            }                                    // load details if not guest
+            viewModel.onEvent(ProfileEvent.LoadUserDetails)
+        }
+    }
 
+    when (uiEvents) {
+        is UiEvent.Error -> ShowToast(message = (uiEvents as UiEvent.Error).error.asString())
+        UiEvent.Initial -> {}
+    }
+
+    // Screen UI
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -102,7 +112,7 @@ fun ProfileScreen(
                     modifier = Modifier.align(Alignment.TopEnd),
                     onClick = { viewModel.onEvent(AuthEvent.Logout) }
                 ) {
-                    Icon(Icons.Default.Settings, contentDescription = "Settings")
+                    Icon(Icons.Default.Settings, contentDescription = "Settings screen")
                 }
             }
 
@@ -422,28 +432,7 @@ private fun LanguageMenu(languagesList: List<LanguageDetails>, onEvent: (Profile
 }
 
 @Composable
-fun OnScreenStart(
-    lifecycle: LifecycleOwner,
-    isGuest: Boolean,
-    token: LiveData<String>,
-    redirectToUrl: (String) -> Unit,
-    isFromApproving: Boolean,
-    onEvent: (AccountEvent) -> Unit
-) {
-    if (isGuest) { //if guest -> observe token
-        ObserveToken(lifecycle, token, redirectToUrl)
-    } else {
-        LaunchedEffect(Unit) { // возможно нельзя тут запускать, только из основного композабл
-            if (isFromApproving) {
-                onEvent(AuthEvent.ApproveToken)
-            }
-            onEvent(ProfileEvent.LoadUserDetails)
-        }
-    }
-}
-
-@Composable
-fun ObserveToken(
+private fun ObserveToken(
     lifecycle: LifecycleOwner,
     token: LiveData<String>,
     redirectToApprove: (String) -> Unit

@@ -2,7 +2,10 @@
 <resources>
     <string name="app_name">Моя фильмотека</string>
 
-    <string name="user_welcome">Здравствуй, </string>
+    <!-- ERRORS -->
+    <string name="bad_request">bad_request</string>
+
+    <!-- ERRORS -->
 
     <!-- BottomBar -->
     <string name="home">Главная</string>
@@ -18,12 +21,12 @@
     <string name="not_logged_in">Вы не вошли в систему</string>
     <string name="please_login">Пожалуйста, войдите или зарегистрируйтесь, чтобы использовать все функции.</string>
         <!--Guest-->
-    <string name="choose_language">Выберите язык</string>
+    <string name="user_welcome">Здравствуй, </string>
     <string name="watched">Просмотрено</string>
     <string name="planned">В планах</string>
     <string name="rated">Оценено</string>
     <string name="favorite">Любимых</string>
-    <string name="total">Всего</string>
+    <string name="choose_language">Выберите язык</string>
     <!--Profile-->
 
 </resources>

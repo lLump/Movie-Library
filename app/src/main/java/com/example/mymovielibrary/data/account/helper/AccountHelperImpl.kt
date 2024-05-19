@@ -4,7 +4,7 @@ import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.account.repository.AccountRepository
 import com.example.mymovielibrary.domain.account.helper.AccountHelper
-import com.example.mymovielibrary.data.base.helper.BaseHelper
+import com.example.mymovielibrary.domain.base.helper.BaseHelper
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
 import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
 

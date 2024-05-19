@@ -4,7 +4,7 @@ import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.auth.repository.AuthRepository
 import com.example.mymovielibrary.domain.auth.repository.LocalUserInfo
-import com.example.mymovielibrary.data.base.helper.BaseHelper
+import com.example.mymovielibrary.domain.base.helper.BaseHelper
 
 class AuthHelperImpl(
     private val authRepo: AuthRepository,

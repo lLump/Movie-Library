@@ -6,6 +6,6 @@ import com.example.mymovielibrary.domain.model.DataError
 import com.example.mymovielibrary.domain.model.Result
 
 interface AccountRepository {
-    suspend fun getLanguages(): Result<List<LanguageDetails>, DataError.Network>
-    suspend fun getProfileDetails(sessionId: String): Result<ProfileDetails, DataError.Network>
+    suspend fun getLanguages(): Result<List<LanguageDetails>, DataError>
+    suspend fun getProfileDetails(sessionId: String): Result<ProfileDetails, DataError>
 }

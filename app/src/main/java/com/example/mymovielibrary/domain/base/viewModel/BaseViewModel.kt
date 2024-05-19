@@ -1,8 +1,8 @@
-package com.example.mymovielibrary.data.base.viewModel
+package com.example.mymovielibrary.domain.base.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mymovielibrary.presentation.model.UiEvent
+import com.example.mymovielibrary.presentation.ui.util.UiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -14,19 +14,5 @@ abstract class BaseViewModel: ViewModel() {
 
     suspend fun sendUiEvent(event: UiEvent) {
         eventChannel.send(event)
-    }
-
-    init {
-        observeEvents()
-    }
-
-    private fun observeEvents() {
-        viewModelScope.launch(Dispatchers.IO) {
-            events.collect { event ->
-                when(event) {
-                    is UiEvent.Error -> { }
-                }
-            }
-        }
     }
 }

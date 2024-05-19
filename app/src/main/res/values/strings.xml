@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">My Movie Library</string>
 
-    <string name="user_welcome">Welcome,</string>
+    <!-- ERRORS -->
+    <string name="bad_request">bad_request</string>
+
+    <!-- ERRORS -->
 
     <!-- BottomBar -->
     <string name="home">Home</string>
@@ -17,12 +20,12 @@
     <string name="not_logged_in">You\'re not logged in</string>
     <string name="please_login">Please login or register to use all features.</string>
         <!--Guest-->
-    <string name="choose_language">Choose language</string>
+    <string name="user_welcome">Welcome,</string>
     <string name="watched">Watched</string>
     <string name="planned">Planned</string>
     <string name="rated">Rated</string>
     <string name="favorite">Favorite</string>
-    <string name="total">Total</string>
+    <string name="choose_language">Choose language</string>
     <!--Profile-->
 
 </resources>

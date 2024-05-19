@@ -1,9 +1,9 @@
-package com.example.mymovielibrary.data.base.helper
+package com.example.mymovielibrary.domain.base.helper
 
 import com.example.mymovielibrary.domain.model.DataError
 import com.example.mymovielibrary.domain.model.Result
-import com.example.mymovielibrary.presentation.model.UiEvent
-import com.example.mymovielibrary.presentation.model.uiText.asErrorUiText
+import com.example.mymovielibrary.presentation.ui.util.UiEvent
+import com.example.mymovielibrary.presentation.ui.util.uiText.asErrorUiText
 
 abstract class BaseHelper {
     lateinit var sendUiEvent: suspend (UiEvent) -> Unit

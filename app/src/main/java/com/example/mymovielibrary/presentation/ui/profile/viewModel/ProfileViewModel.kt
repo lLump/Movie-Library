@@ -6,13 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
-import com.example.mymovielibrary.data.base.helper.BaseHelper
+import com.example.mymovielibrary.domain.base.helper.BaseHelper
 import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent.*
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
 import com.example.mymovielibrary.domain.model.events.ProfileEvent.*
-import com.example.mymovielibrary.data.base.viewModel.BaseViewModel
+import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.data.storage.TmdbData.clear
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileState
 import com.example.mymovielibrary.presentation.ui.profile.state.UserType
