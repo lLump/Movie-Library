@@ -5,7 +5,6 @@ import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.auth.repository.AuthRepository
 import com.example.mymovielibrary.domain.auth.repository.LocalUserInfo
-import com.example.mymovielibrary.domain.images.repository.ImageRepository
 import com.example.mymovielibrary.data.auth.helper.AuthHelperImpl
 import com.example.mymovielibrary.data.account.helper.AccountHelperImpl
 import com.example.mymovielibrary.data.lists.helper.ListHelperImpl
@@ -32,17 +31,15 @@ class HelpersModule {
     @Provides
     fun profileHelper(
         profileRepo: AccountRepository,
-        imageRepo: ImageRepository
     ): AccountHelper {
-        return AccountHelperImpl(profileRepo, imageRepo)
+        return AccountHelperImpl(profileRepo)
     }
 
     @Provides
     fun listHelper(
-        scope: CoroutineScope,
         listRepo: ListRepository
     ): ListHelper {
-        return ListHelperImpl(scope, listRepo)
+        return ListHelperImpl(listRepo)
     }
 
 }

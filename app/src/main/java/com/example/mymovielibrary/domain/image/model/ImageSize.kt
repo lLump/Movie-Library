@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.domain.images.model
+package com.example.mymovielibrary.domain.image.model
 
 enum class ImageSize(val size: String) {
     W200("w200"),

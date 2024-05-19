@@ -2,8 +2,6 @@ package com.example.mymovielibrary.data.base.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mymovielibrary.domain.model.events.AccountEvent
-import com.example.mymovielibrary.domain.model.events.Event
 import com.example.mymovielibrary.presentation.model.UiEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel

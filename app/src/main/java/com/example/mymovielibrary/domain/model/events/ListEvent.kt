@@ -1,5 +1,5 @@
 package com.example.mymovielibrary.domain.model.events
 
-sealed interface ListEvent: Event {
+sealed interface ListEvent {
     data object LoadCollections: ListEvent
 }

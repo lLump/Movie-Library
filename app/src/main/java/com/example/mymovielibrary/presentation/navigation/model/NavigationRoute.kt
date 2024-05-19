@@ -11,10 +11,3 @@ enum class Screen(private val route: String) : NavigationRoute {
 
      override operator fun invoke() = route
 }
-
-//enum class Navigation(private val route: String) : NavigationRoute {
-//    MAIN("mainScreen");
-//
-//    override operator fun invoke() = route
-//}
-

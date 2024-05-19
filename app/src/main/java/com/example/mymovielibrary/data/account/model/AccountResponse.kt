@@ -4,7 +4,7 @@ import com.example.mymovielibrary.domain.account.model.ProfileDetails
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class AccountDetails(
+data class AccountDetailsResponse(
     val avatar: Avatar,
     val id: Int,
     val include_adult: Boolean,
@@ -30,7 +30,7 @@ data class Tmdb(
     val avatar_path: String?
 )
 
-fun AccountDetails.toProfileDetails(): ProfileDetails {
+fun AccountDetailsResponse.toProfileDetails(): ProfileDetails {
     return ProfileDetails(
         id = this.id,
         name = this.name,

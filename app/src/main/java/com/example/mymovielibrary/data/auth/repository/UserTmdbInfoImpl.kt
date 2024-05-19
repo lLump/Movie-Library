@@ -6,16 +6,6 @@ import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.auth.repository.LocalUserInfo
 
 class UserTmdbInfoImpl(context: Context): LocalUserInfo {
-//    private val key = MasterKey.Builder(context)
-//        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-//        .build()
-//    private val sharedPrefs: SharedPreferences = EncryptedSharedPreferences.create(
-//        context,
-//        "encrypted_prefs",
-//        key,
-//        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-//        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-//    )
     private val sharedPrefs: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
     private val editor = sharedPrefs.edit()
 

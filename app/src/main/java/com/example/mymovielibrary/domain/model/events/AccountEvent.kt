@@ -2,7 +2,7 @@ package com.example.mymovielibrary.domain.model.events
 
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 
-sealed interface AccountEvent: Event
+sealed interface AccountEvent
 
 sealed interface ProfileEvent: AccountEvent {
     data object LoadUserDetails : ProfileEvent

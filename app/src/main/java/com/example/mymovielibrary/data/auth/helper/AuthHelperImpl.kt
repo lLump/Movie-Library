@@ -10,20 +10,6 @@ class AuthHelperImpl(
     private val authRepo: AuthRepository,
     private val userInfo: LocalUserInfo,
 ) : AuthHelper, BaseHelper() {
-//    private fun isUserInfoExist(): Boolean {
-//        var result = false
-//        userInfo.getInfoIfExist { isSaved, accountId, sessionId ->
-//            if (isSaved) {
-//                TmdbData.run {
-//                    this.accountIdV4 = accountId
-//                    this.sessionId = sessionId
-//                    //TODO language ISO
-//                }
-//                result = true
-//            }
-//        }
-//        return result
-//    }
 
 //    private fun guestLogin() {
 //        scope.launch(Dispatchers.IO) {

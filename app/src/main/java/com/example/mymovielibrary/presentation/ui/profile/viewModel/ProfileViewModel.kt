@@ -14,8 +14,8 @@ import com.example.mymovielibrary.domain.model.events.ProfileEvent
 import com.example.mymovielibrary.domain.model.events.ProfileEvent.*
 import com.example.mymovielibrary.data.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.data.storage.TmdbData.clear
-import com.example.mymovielibrary.presentation.viewmodel.states.ProfileState
-import com.example.mymovielibrary.presentation.viewmodel.states.UserType
+import com.example.mymovielibrary.presentation.ui.profile.state.ProfileState
+import com.example.mymovielibrary.presentation.ui.profile.state.UserType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,6 +93,4 @@ class ProfileViewModel @Inject constructor(
             _profileState.value.userDetails = UserType.Guest
         }
     }
-
-//    private fun getProfileIfSaved() = savedState.get<ProfileDisplay>("profile")
 }

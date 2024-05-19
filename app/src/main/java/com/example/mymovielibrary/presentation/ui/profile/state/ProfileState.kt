@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.presentation.viewmodel.states
+package com.example.mymovielibrary.presentation.ui.profile.state
 
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 
@@ -26,6 +26,5 @@ data class UserStats(
     val planned: String = "",
     val rated: String = "",
     val favorite: String = "",
-    val total: String = "",
 )
 

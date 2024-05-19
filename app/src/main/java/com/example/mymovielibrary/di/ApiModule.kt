@@ -2,7 +2,6 @@ package com.example.mymovielibrary.di
 
 import com.example.mymovielibrary.data.account.api.AccountApi
 import com.example.mymovielibrary.data.auth.api.AuthApi
-import com.example.mymovielibrary.data.images.api.ImageApi
 import com.example.mymovielibrary.data.lists.api.ListApi
 import dagger.Module
 import dagger.Provides
@@ -22,11 +21,6 @@ class ApiModule {
     @Provides
     fun accountApi(retrofit: Retrofit): AccountApi {
         return retrofit.create(AccountApi::class.java)
-    }
-
-    @Provides
-    fun imageApi(@RetrofitImage retrofit: Retrofit): ImageApi {
-        return retrofit.create(ImageApi::class.java)
     }
 
     @Provides

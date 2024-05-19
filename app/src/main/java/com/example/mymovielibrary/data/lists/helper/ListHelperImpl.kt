@@ -1,5 +1,6 @@
 package com.example.mymovielibrary.data.lists.helper
 
+import com.example.mymovielibrary.data.base.helper.BaseHelper
 import com.example.mymovielibrary.domain.lists.helper.ListHelper
 import com.example.mymovielibrary.domain.lists.model.UserCollection
 import com.example.mymovielibrary.domain.lists.repository.ListRepository
@@ -11,13 +12,8 @@ import com.example.mymovielibrary.presentation.model.uiText.asErrorUiText
 import kotlinx.coroutines.CoroutineScope
 
 class ListHelperImpl(
-    private val scope: CoroutineScope,
     private val listRepo: ListRepository
-): ListHelper, UiEventListener {
-    private lateinit var sendUiEvent: suspend (UiEvent) -> Unit
-    override fun setCollector(collectUiEvent: suspend (UiEvent) -> Unit) {
-        sendUiEvent = collectUiEvent
-    }
+): ListHelper, BaseHelper() {
 
     override suspend fun getUserCollections(): List<UserCollection> {
         return executeApiCall { listRepo.getUserCollections() } ?: return emptyList()

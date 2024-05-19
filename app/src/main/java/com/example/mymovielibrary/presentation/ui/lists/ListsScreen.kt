@@ -5,34 +5,30 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.mymovielibrary.domain.lists.model.UserCollection
-import com.example.mymovielibrary.domain.model.events.ListEvent
 import com.example.mymovielibrary.presentation.ui.theme.Typography
-import com.example.mymovielibrary.presentation.viewmodel.states.ListState
 
 @Composable
 fun ListsScreen(
-    onEvent: (ListEvent) -> Unit,
-    state: ListState
+//    onEvent: (ListEvent) -> Unit,
+//    state: ListState
 ) {
-    LaunchedEffect(Unit) {
-        onEvent(ListEvent.LoadCollections)
-    }
+//    LaunchedEffect(Unit) {
+//        onEvent(ListEvent.LoadCollections)
+//    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize()
     ) {
-        items(state.collections) { collection ->
-            CollectionItem(item = collection)
-        }
+//        items(state.collections) { collection ->
+//            CollectionItem(item = collection)
+//        }
     }
 }
 

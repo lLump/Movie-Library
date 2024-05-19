@@ -32,12 +32,4 @@ class RetrofitModule {
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
 
-    @Provides
-    @RetrofitImage
-    fun retrofitImage(): Retrofit =
-        Retrofit.Builder()
-            .baseUrl("https://image.tmdb.org/t/p/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
 }

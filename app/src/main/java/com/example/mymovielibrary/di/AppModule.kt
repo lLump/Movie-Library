@@ -17,14 +17,14 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class AppModule {
 
-    @Provides
-    @Singleton
-    fun applicationScope(): CoroutineScope {
-        return CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    }
+//    @Provides
+//    @Singleton
+//    fun applicationScope(): CoroutineScope {
+//        return CoroutineScope(SupervisorJob() + Dispatchers.IO)
+//    }
 
     @Provides
-    fun userCredentials(@ApplicationContext context: Context): LocalUserInfo {
+    fun userTmdbInfo(@ApplicationContext context: Context): LocalUserInfo {
         return UserTmdbInfoImpl(context)
     }
 

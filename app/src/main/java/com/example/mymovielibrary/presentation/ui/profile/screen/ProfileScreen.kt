@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.presentation.ui.profile
+package com.example.mymovielibrary.presentation.ui.profile.screen
 
 import android.graphics.Bitmap
 import androidx.annotation.StringRes
@@ -59,43 +59,35 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
+import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
 import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
 import com.example.mymovielibrary.presentation.ui.theme.Typography
-import com.example.mymovielibrary.presentation.viewmodel.states.ProfileDisplay
-import com.example.mymovielibrary.presentation.viewmodel.states.UserStats
-import com.example.mymovielibrary.presentation.viewmodel.states.UserType
+import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
+import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
+import com.example.mymovielibrary.presentation.ui.profile.state.UserType
 
 @Composable
 fun ProfileScreen(
-    navController: NavController,
     padding: PaddingValues,
     redirectToUrl: (String) -> Unit,
     isFromApproving: Boolean
 ) {
-//    LaunchedEffect(Unit) {
-//        onEvent(ProfileEvent.LoadUserDetails)
-//    }
-
     val viewModel: ProfileViewModel = hiltViewModel()
     val profile by viewModel.profileState.collectAsState()
 
-    if (profile.userDetails is UserType.Guest) { //if guest -> observe token
-        val lifecycle = LocalLifecycleOwner.current
-        ObserveToken(lifecycle, viewModel.token, redirectToUrl)
-    }
-
-    LaunchedEffect(Unit) {
-        if (isFromApproving) {
-            viewModel.onEvent(AuthEvent.ApproveToken)
-        }
-        viewModel.onEvent(ProfileEvent.LoadUserDetails)
-    }
+    OnScreenStart(
+        lifecycle = LocalLifecycleOwner.current,
+        isGuest = profile.userDetails is UserType.Guest,
+        token = viewModel.token,
+        redirectToUrl = redirectToUrl,
+        isFromApproving = isFromApproving,
+        onEvent = viewModel::onEvent
+    )
 //    val uiEvents by vm.events.collectAsState()
 
     Box(
@@ -208,8 +200,6 @@ private fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
                 .weight(0.25f),
             stats = user.stats
         )
-//        Spacer(modifier = Modifier.height(4.dp))
-//                ShowProgress(75)
     }
 }
 
@@ -233,7 +223,6 @@ private fun MiniUserStat(
         VerticalDivider(modifier = Modifier.fillMaxHeight())
 
         SingleUserStat(textId = R.string.favorite, amount = stats.favorite)
-//        Text(stringResource(id = R.string.total))
     }
 }
 
@@ -392,17 +381,6 @@ private fun ImdbProfileButton(imdbProfileUrl: Bitmap, currentVibrantColor: Color
         )
     }
 }
-//    when (uiEvent) {
-//        is UiEvent.Error -> { ShowToast(uiEvent.error.asString()) }
-//        is UiEvent.Loading -> {
-//            when (uiEvent.loading) {
-//                LoadingState.SUCCESS -> approveToken()
-//                LoadingState.EMPTY -> {}
-//                LoadingState.LOADING -> CircularProgressIndicator()
-//                LoadingState.FAILURE -> {}
-//            }
-//        }
-//    }
 
 @Composable
 private fun LanguageMenu(languagesList: List<LanguageDetails>, onEvent: (ProfileEvent) -> Unit) {
@@ -439,6 +417,27 @@ private fun LanguageMenu(languagesList: List<LanguageDetails>, onEvent: (Profile
                         expanded = false
                     })
             }
+        }
+    }
+}
+
+@Composable
+fun OnScreenStart(
+    lifecycle: LifecycleOwner,
+    isGuest: Boolean,
+    token: LiveData<String>,
+    redirectToUrl: (String) -> Unit,
+    isFromApproving: Boolean,
+    onEvent: (AccountEvent) -> Unit
+) {
+    if (isGuest) { //if guest -> observe token
+        ObserveToken(lifecycle, token, redirectToUrl)
+    } else {
+        LaunchedEffect(Unit) { // возможно нельзя тут запускать, только из основного композабл
+            if (isFromApproving) {
+                onEvent(AuthEvent.ApproveToken)
+            }
+            onEvent(ProfileEvent.LoadUserDetails)
         }
     }
 }

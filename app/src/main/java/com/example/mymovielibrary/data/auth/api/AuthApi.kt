@@ -35,21 +35,6 @@ interface AuthApi {
         @Header("content_type") type: String = "application/json"
     ): SessionResponse
 
-//    @POST("3/authentication/session/new")
-//    suspend fun createSession(
-//        @Body requestBody: RequestBody,
-//        @Header("content_type") type: String = "application/json"
-//    ): SessionResponse
-
-//    @GET("3/authentication/token/new")
-//    suspend fun getRequestTokenV3(): TokenV3
-
-//    @POST("3/authentication/token/validate_with_login")
-//    suspend fun validateSessionWithLogin(
-//        @Body requestBody: RequestBody,
-//        @Header("content_type") type: String = "application/json"
-//    ): ValidateSessionResponse
-
     @GET("3/authentication/guest_session/new")
     suspend fun createGuestSession(): SessionGuestResponse
 
