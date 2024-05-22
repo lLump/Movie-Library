@@ -10,12 +10,10 @@ abstract class BaseRepository {
         return try {
             Result.Success(request.invoke())
         } catch (e: HttpException) {
-            e.printStackTrace()
-
+            Log.e("SAFE_API_CALL", e.stackTraceToString())
             Result.Error(getErrorOnCode(e.code()))
         } catch (e: Exception) {
-            e.printStackTrace()
-            Log.e("API_CALL", e.stackTraceToString())
+            Log.e("SAFE_API_CALL", e.stackTraceToString())
             Result.Error(DataError.Message(e.message ?: errorMessage))
         }
     }

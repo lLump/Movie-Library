@@ -7,6 +7,7 @@ import retrofit2.http.Query
 
 interface AccountApi {
 
+    @Deprecated("There is new version of this request with API v4")
     @GET("3/account")
     suspend fun getAccountDetails(
         @Query("api_key") apiKey: String,

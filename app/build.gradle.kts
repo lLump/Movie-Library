@@ -68,17 +68,16 @@ dependencies {
 
     implementation("androidx.palette:palette-ktx:1.0.0")
 
-//    implementation("androidx.security:security-crypto:1.1.0-alpha06") //encrypted prefs
 
     implementation("androidx.compose.material3:material3-android:1.2.1")
 //    implementation("androidx.compose.material3:material3")
 
     implementation("com.squareup.retrofit2:retrofit:$retrofit")
-    implementation("com.squareup.retrofit2:converter-gson:$retrofit")
     implementation("com.squareup.retrofit2:converter-moshi:$retrofit")
 
     implementation("com.squareup.moshi:moshi:$moshi")
     implementation("com.squareup.moshi:moshi-kotlin:$moshi")
+    implementation("com.squareup.moshi:moshi-adapters:$moshi")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshi")
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")

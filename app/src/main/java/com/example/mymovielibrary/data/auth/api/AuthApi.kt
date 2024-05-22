@@ -4,8 +4,6 @@ import com.example.mymovielibrary.data.auth.model.AccessTokenV4
 import com.example.mymovielibrary.data.auth.model.RequestTokenV4
 import com.example.mymovielibrary.data.auth.model.SessionGuestResponse
 import com.example.mymovielibrary.data.auth.model.SessionResponse
-import com.example.mymovielibrary.data.auth.model.TokenV3
-import com.example.mymovielibrary.data.auth.model.ValidateSessionResponse
 import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -37,5 +35,6 @@ interface AuthApi {
 
     @GET("3/authentication/guest_session/new")
     suspend fun createGuestSession(): SessionGuestResponse
+    // ----------------------------------------- //
 
 }

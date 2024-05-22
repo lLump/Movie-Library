@@ -14,6 +14,7 @@ import com.example.mymovielibrary.domain.model.events.ProfileEvent
 import com.example.mymovielibrary.domain.model.events.ProfileEvent.*
 import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.data.storage.TmdbData.clear
+import com.example.mymovielibrary.domain.lists.helper.ListHelper
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileState
 import com.example.mymovielibrary.presentation.ui.profile.state.UserType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val authHelper: AuthHelper,
     private val profileHelper: AccountHelper,
+    private val listHelper: ListHelper,
 ): BaseViewModel() {
 
     private val _token = MutableLiveData<String>()
@@ -38,6 +40,7 @@ class ProfileViewModel @Inject constructor(
     init {
         (authHelper as BaseHelper).setCollector(this::sendUiEvent)
         (profileHelper as BaseHelper).setCollector(this::sendUiEvent)
+        (listHelper as BaseHelper).setCollector(this::sendUiEvent)
     }
 
     fun onEvent(event: AccountEvent) {

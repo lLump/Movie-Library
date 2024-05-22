@@ -1,13 +1,18 @@
 package com.example.mymovielibrary.di
 
+import com.example.mymovielibrary.data.lists.adapter.ResultsAdapterFactory
+import com.example.mymovielibrary.data.lists.model.MediaItemResponse
+import com.example.mymovielibrary.data.lists.model.MovieResponse
+import com.example.mymovielibrary.data.lists.model.TVShowResponse
 import com.example.mymovielibrary.data.storage.ApiData
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
@@ -29,7 +34,20 @@ class RetrofitModule {
                     it.proceed(request)
                 }.build()
         )
-        .addConverterFactory(MoshiConverterFactory.create())
+        .addConverterFactory(
+            MoshiConverterFactory.create(
+                Moshi.Builder()
+                    .add(ResultsAdapterFactory())
+                    .add(
+                        PolymorphicJsonAdapterFactory.of(
+                            MediaItemResponse::class.java, "media_type"
+                        )
+                            .withSubtype(MovieResponse::class.java, "movie")
+                            .withSubtype(TVShowResponse::class.java, "tv")
+                    )
+                    .build()
+            )
+        )
         .build()
 
 }

@@ -85,12 +85,13 @@ fun ProfileScreen(
 
     if (profile.userDetails is UserType.Guest) { // if guest -> observe token
         ObserveToken(LocalLifecycleOwner.current, viewModel.token, redirectToUrl)
-    } else {
+    } else { // при LoadUserDetails происходит 401 из-за чего в тоаст идет ошибка, и только потом userType.LoggedIn
+             // и только после approveToken загружаются детали. В else после approve немного медленее работает (loadUserDetails)
         LaunchedEffect(Unit) {
-            if (isFromApproving) {               // check if user from login
-                viewModel.onEvent(AuthEvent.ApproveToken)
-            }                                    // load details if not guest
-            viewModel.onEvent(ProfileEvent.LoadUserDetails)
+            viewModel.onEvent(ProfileEvent.LoadUserDetails) // load details if not guest
+            if (isFromApproving) {                          // check if user from login
+                viewModel.onEvent(AuthEvent.ApproveToken)   // approving also load details
+            }
         }
     }
 
