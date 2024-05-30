@@ -131,7 +131,7 @@ fun ProfileScreen(
     ) {
         when (profile.userDetails) {
             is UserType.LoggedIn -> {
-                UserProfile((profile.userDetails as UserType.LoggedIn).profile, toScreen)
+                UserProfile((profile.userDetails as UserType.LoggedIn).profile, profile.userStats, toScreen)
                 IconButton(
                     modifier = Modifier.align(Alignment.TopEnd),
                     onClick = { viewModel.onEvent(AuthEvent.Logout) }
@@ -168,10 +168,11 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun UserProfile(user: ProfileDisplay, toScreen: (Screen) -> Unit) {
+private fun UserProfile(user: ProfileDisplay, stats: UserStats, toScreen: (Screen) -> Unit) {
     Column {
         ProfileCard(
             user = user,
+            stats = stats,
             modifier = Modifier
                 .fillMaxSize()
                 .weight(0.3f)
@@ -256,7 +257,7 @@ private fun ListButton(modifier: Modifier, @StringRes textId: Int, icon: ImageVe
 }
 
 @Composable
-private fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
+private fun ProfileCard(modifier: Modifier, user: ProfileDisplay, stats: UserStats) {
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
@@ -293,7 +294,7 @@ private fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
                 .fillMaxSize()
                 .padding(start = 16.dp, end = 16.dp)
                 .weight(0.25f),
-            stats = user.stats
+            stats = stats
         )
     }
 }

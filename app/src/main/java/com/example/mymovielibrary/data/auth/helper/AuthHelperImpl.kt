@@ -31,7 +31,6 @@ class AuthHelperImpl(
             this.accessToken = token
             this.sessionId = sessionId
         }
-        //TODO accountIdV3
         userInfo.saveUserInfo(accountId, sessionId) //local save into prefs
     }
 }

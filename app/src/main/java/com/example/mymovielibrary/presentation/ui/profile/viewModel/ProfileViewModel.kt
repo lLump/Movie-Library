@@ -18,6 +18,7 @@ import com.example.mymovielibrary.presentation.ui.profile.state.ProfileState
 import com.example.mymovielibrary.presentation.ui.profile.state.UserType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -73,11 +74,23 @@ class ProfileViewModel @Inject constructor(
 
             is ProfileEvent -> when (event) {
                 LoadUserDetails -> viewModelScope.launch(Dispatchers.IO) {
-                    loadProfile()
+                    val loadProfileTask = async { loadProfile() }
+                    val loadStatsTask = async { loadUserStats() }
+                    loadProfileTask.await()
+                    loadStatsTask.await()
                 }
                 is SaveLanguage -> TmdbData.languageIso = event.language.iso
             }
         }
+    }
+
+    private suspend fun loadUserStats() {
+        val stats = profileHelper.loadUserStats()
+        _profileState.emit(
+            _profileState.value.copy(
+                userStats = stats
+            )
+        )
     }
 
     private suspend fun loadProfile() {
@@ -90,7 +103,11 @@ class ProfileViewModel @Inject constructor(
                 )
             )
         } else {
-            _profileState.value.userDetails = UserType.Guest
+            _profileState.emit(
+                _profileState.value.copy(
+                    userDetails = UserType.Guest
+                )
+            )
         }
     }
 }

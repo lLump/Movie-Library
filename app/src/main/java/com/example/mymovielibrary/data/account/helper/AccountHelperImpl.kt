@@ -31,7 +31,7 @@ class AccountHelperImpl(
             val displayProfile = ProfileDisplay(
                 avatarPath = profileDetails.avatarPath ?: "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg", //default photo path
                 username = profileDetails.username,
-                stats = getUserStats(),
+//                stats = getUserStats(),
 //                    name = profileDetails.name,
                 languageIso = profileDetails.languageIso,
             )
@@ -40,7 +40,7 @@ class AccountHelperImpl(
         }
     }
 
-    private suspend fun getUserStats(): UserStats {
+    override suspend fun loadUserStats(): UserStats {
         val watched = 0
         val planned = getWatchlistSize()
         val rated = getRatedSize()
