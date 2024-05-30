@@ -14,7 +14,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -31,8 +30,9 @@ class HelpersModule {
     @Provides
     fun profileHelper(
         profileRepo: AccountRepository,
+        listRepo: ListRepository
     ): AccountHelper {
-        return AccountHelperImpl(profileRepo)
+        return AccountHelperImpl(profileRepo, listRepo)
     }
 
     @Provides

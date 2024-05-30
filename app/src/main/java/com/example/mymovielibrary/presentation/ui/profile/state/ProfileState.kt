@@ -16,15 +16,15 @@ sealed interface UserType {
 
 data class ProfileDisplay(
     val username: String,
-    val avatarPath: String,
     val stats: UserStats,
+    val avatarPath: String,
     val languageIso: String,
 )
 
 data class UserStats(
-    val watched: String = "",
-    val planned: String = "",
-    val rated: String = "",
-    val favorite: String = "",
+    val watched: String,
+    val planned: String,
+    val rated: String,
+    val favorite: String,
 )
 

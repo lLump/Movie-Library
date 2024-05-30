@@ -4,10 +4,8 @@ import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.Movie
 import com.example.mymovielibrary.domain.lists.model.TVShow
 import com.example.mymovielibrary.domain.lists.model.UserCollection
-import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
 
 interface ListHelper {
-
     suspend fun getUserCollections(): List<UserCollection>
     suspend fun getItemsInCollection(listId: Int): List<MediaItem>
 
@@ -23,7 +21,5 @@ interface ListHelper {
     suspend fun getFavorites(): List<MediaItem>
     suspend fun getRated(): List<MediaItem>
     suspend fun getWatchlist(): List<MediaItem>
-
-    suspend fun getUserStats(): UserStats
 
 }

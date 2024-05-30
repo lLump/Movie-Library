@@ -8,12 +8,11 @@ import com.example.mymovielibrary.domain.lists.model.TVShow
 import com.example.mymovielibrary.domain.lists.model.UserCollection
 import com.example.mymovielibrary.domain.lists.model.sortedByTitle
 import com.example.mymovielibrary.domain.lists.repository.ListRepository
-import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
+import javax.inject.Inject
 
-class ListHelperImpl(
+class ListHelperImpl @Inject constructor(
     private val listRepo: ListRepository
 ): ListHelper, BaseHelper() {
-
     override suspend fun getUserCollections(): List<UserCollection> {
         return request { listRepo.getUserCollections() } ?: return emptyList()
     }
@@ -60,20 +59,4 @@ class ListHelperImpl(
         val watchlist = getWatchlistMovies() + getWatchlistTVs()
         return watchlist.sortedByTitle()
     }
-
-    override suspend fun getUserStats(): UserStats {
-        //TODO как вариант создать переменную в которую сейвить стату и сделать из ListHelper singleton
-        val watched = 0
-        val planned = getWatchlistMovies().size + getWatchlistTVs().size
-        val rated = getRatedMovies().size + getRatedTVs().size
-        val favorites = getFavoriteMovies().size + getFavoriteTVs().size
-
-        return UserStats(
-            watched = watched.toString(),
-            planned = planned.toString(),
-            rated = rated.toString(),
-            favorite = favorites.toString()
-        )
-    }
-
 }

@@ -20,11 +20,13 @@
     <string name="not_logged_in">You\'re not logged in</string>
     <string name="please_login">Please login or register to use all features.</string>
         <!--Guest-->
+
     <string name="user_welcome">Welcome,</string>
     <string name="watched">Watched</string>
-    <string name="planned">Planned</string>
+    <string name="watchlist">Watchlist</string>
     <string name="rated">Rated</string>
     <string name="favorite">Favorite</string>
+    <string name="collections">My collections</string>
     <string name="choose_language">Choose language</string>
     <!--Profile-->
 

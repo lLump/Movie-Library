@@ -50,6 +50,9 @@ fun AppNavigation(isTokenApproved: Boolean) {
                         redirectToUrl = { url ->
                             redirectToUrl(url, navController.context)
                         },
+                        toScreen = { screen ->
+                                   navController.navigate(screen())
+                        },
                         isFromApproving = isTokenApproved
                     )
                 }

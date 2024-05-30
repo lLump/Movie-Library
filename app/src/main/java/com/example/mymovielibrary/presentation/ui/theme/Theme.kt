@@ -17,10 +17,16 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = Purple80, // цвет "шторки"
     secondary = PurpleGrey80,
     tertiary = Pink80,
-
+//    background = Color(0xFFFFFBFE),
+//    surface = Color(0xFFFFFBFE),
+//    onPrimary = Color.Green, // цвет иконок (возможно еще чего-то)
+//    onSecondary = Color.White,
+//    onTertiary = Color.Yellow,
+//    onBackground = Color(0xFF1C1B1F),
+//    onSurface = Color.Yellow,
 )
 
 private val LightColorScheme = lightColorScheme(

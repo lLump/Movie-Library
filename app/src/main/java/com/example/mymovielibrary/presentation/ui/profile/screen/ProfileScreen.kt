@@ -2,6 +2,7 @@ package com.example.mymovielibrary.presentation.ui.profile.screen
 
 import android.graphics.Bitmap
 import androidx.annotation.StringRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,22 +18,39 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.filled.Bookmark
+import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -45,14 +63,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,9 +84,9 @@ import androidx.lifecycle.Observer
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
-import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
+import com.example.mymovielibrary.presentation.navigation.model.Screen
 import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
 import com.example.mymovielibrary.presentation.ui.theme.Typography
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
@@ -77,6 +99,7 @@ import com.example.mymovielibrary.presentation.ui.util.UiEvent
 fun ProfileScreen(
     padding: PaddingValues,
     redirectToUrl: (String) -> Unit,
+    toScreen: (Screen) -> Unit,
     isFromApproving: Boolean
 ) {
     val viewModel: ProfileViewModel = hiltViewModel()
@@ -108,12 +131,15 @@ fun ProfileScreen(
     ) {
         when (profile.userDetails) {
             is UserType.LoggedIn -> {
-                UserProfile((profile.userDetails as UserType.LoggedIn).profile)
+                UserProfile((profile.userDetails as UserType.LoggedIn).profile, toScreen)
                 IconButton(
                     modifier = Modifier.align(Alignment.TopEnd),
                     onClick = { viewModel.onEvent(AuthEvent.Logout) }
                 ) {
-                    Icon(Icons.Default.Settings, contentDescription = "Settings screen")
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings screen"
+                    )
                 }
             }
 
@@ -142,7 +168,7 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun UserProfile(user: ProfileDisplay) {
+private fun UserProfile(user: ProfileDisplay, toScreen: (Screen) -> Unit) {
     Column {
         ProfileCard(
             user = user,
@@ -153,20 +179,78 @@ private fun UserProfile(user: ProfileDisplay) {
                     elevation = 16.dp,
                     shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp),
                 )
-                .padding(bottom = 4.dp) //доп layout снизу (баг?)
+                .padding(bottom = 5.dp) //доп layout снизу (баг?)
                 .background(
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
                 )
         )
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(0.7f)
-                .padding(start = 12.dp, bottom = 12.dp, end = 12.dp)
-                .background((Color.Yellow), RoundedCornerShape(16.dp))
+                .shadow(
+                    elevation = 16.dp,
+                    shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+                )
+                .padding(top = 5.dp)
+                .background(
+//                    color = Color.Green,
+                    color = (MaterialTheme.colorScheme.onSecondary),
+                    shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+                )
         ) {
+            val btnModifier = Modifier
+                .weight(0.25f)
+                .padding(top = 16.dp, start = 8.dp, end = 8.dp)
+                .alpha(0.5f)
+            ListButton(modifier = btnModifier, textId = R.string.collections, icon = Icons.AutoMirrored.Filled.List) {
+                toScreen(Screen.COLLECTIONS)
+            }
+            ListButton(modifier = btnModifier, textId = R.string.watchlist, icon = Icons.Default.Bookmarks) {
+                toScreen(Screen.WATCHLIST)
+            }
+            ListButton(modifier = btnModifier, textId = R.string.rated, icon = Icons.Default.Star) {
+                toScreen(Screen.RATED)
+            }
+            ListButton(modifier = btnModifier,textId = R.string.favorite, icon = Icons.Default.Favorite) {
+                toScreen(Screen.FAVORITES)
+            }
+            Spacer(modifier = Modifier.weight(0.8f))
+        }
+    }
+}
 
+@Composable
+private fun ListButton(modifier: Modifier, @StringRes textId: Int, icon: ImageVector, onClick: () -> Unit) {
+    OutlinedButton(
+        onClick = { }, //TODO
+        shape = RoundedCornerShape(12.dp),
+        modifier = modifier,
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 0.dp),
+        colors = ButtonDefaults.filledTonalButtonColors(),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = "Some icon list",
+//                tint = Color.White,
+                modifier = Modifier
+                    .padding(top = 11.dp, bottom = 11.dp)
+                    .aspectRatio(1f)
+                    .fillMaxHeight()
+            )
+            Spacer(modifier = Modifier.width(16.dp)) //отступ между текстом и иконкой
+            Text(text = stringResource(id = textId), style = Typography.bodyLarge)
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = "Right arrow to some List",
+            )
         }
     }
 }
@@ -203,7 +287,7 @@ private fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
                 )
             }
         }
-
+        HorizontalDivider(modifier = Modifier.fillMaxWidth())
         MiniUserStat(
             modifier = Modifier
                 .fillMaxSize()
@@ -227,7 +311,7 @@ private fun MiniUserStat(
         SingleUserStat(textId = R.string.watched, amount = stats.watched)
         VerticalDivider(modifier = Modifier.fillMaxHeight())
 
-        SingleUserStat(textId = R.string.planned, amount = stats.planned)
+        SingleUserStat(textId = R.string.watchlist, amount = stats.planned)
         VerticalDivider(modifier = Modifier.fillMaxHeight())
 
         SingleUserStat(textId = R.string.rated, amount = stats.rated)
@@ -245,13 +329,15 @@ private fun SingleUserStat(@StringRes textId: Int, amount: String) {
     ) {
         Text(
             text = stringResource(id = textId),
-            style = Typography.bodyMedium
+            style = Typography.bodyMedium,
+            modifier = Modifier.weight(0.3f)
         )
         Text(
             text = amount,
-            style = Typography.bodyLarge,
+            style = Typography.headlineSmall,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
+                .weight(0.6f),
         )
     }
 }

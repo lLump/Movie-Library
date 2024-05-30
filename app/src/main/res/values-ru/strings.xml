@@ -23,9 +23,10 @@
         <!--Guest-->
     <string name="user_welcome">Здравствуй, </string>
     <string name="watched">Просмотрено</string>
-    <string name="planned">В планах</string>
+    <string name="watchlist">В планах</string>
     <string name="rated">Оценено</string>
     <string name="favorite">Любимых</string>
+    <string name="collections">Мои списки</string>
     <string name="choose_language">Выберите язык</string>
     <!--Profile-->
 

@@ -7,7 +7,12 @@ sealed interface NavigationRoute {
 enum class Screen(private val route: String) : NavigationRoute {
     HOME("home"),
     PROFILE("profile"),
-    LISTS("favorite");
+    LISTS("lists"),
+
+    COLLECTIONS("collections"),
+    FAVORITES("favorites"),
+    RATED("rated"),
+    WATCHLIST("watchlist");
 
      override operator fun invoke() = route
 }
