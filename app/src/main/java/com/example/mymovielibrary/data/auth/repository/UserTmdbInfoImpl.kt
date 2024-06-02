@@ -19,7 +19,7 @@ class UserTmdbInfoImpl(context: Context): LocalUserInfo {
         }
     }
 
-    override fun localSaveUserInfoIfExist() {
+    override fun getLocalSaveUserInfoIfExist() {
         getInfoIfExist { isSaved, accountId, sessionId ->
             if (isSaved) {
                 TmdbData.run {

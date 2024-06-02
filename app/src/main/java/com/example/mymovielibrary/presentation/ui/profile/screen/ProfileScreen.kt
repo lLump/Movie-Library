@@ -2,7 +2,6 @@ package com.example.mymovielibrary.presentation.ui.profile.screen
 
 import android.graphics.Bitmap
 import androidx.annotation.StringRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,28 +17,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.automirrored.filled.ListAlt
+import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
 import androidx.compose.material.icons.automirrored.rounded.Send
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.CircularProgressIndicator
@@ -50,7 +41,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -69,12 +59,10 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -86,7 +74,8 @@ import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
-import com.example.mymovielibrary.presentation.navigation.model.Screen
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.*
 import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
 import com.example.mymovielibrary.presentation.ui.theme.Typography
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
@@ -97,21 +86,21 @@ import com.example.mymovielibrary.presentation.ui.util.UiEvent
 
 @Composable
 fun ProfileScreen(
+    viewModel: ProfileViewModel = hiltViewModel(),
     padding: PaddingValues,
     redirectToUrl: (String) -> Unit,
-    toScreen: (Screen) -> Unit,
+    toScreen: (NavigationRoute) -> Unit,
     isFromApproving: Boolean
 ) {
-    val viewModel: ProfileViewModel = hiltViewModel()
     val profile by viewModel.profileState.collectAsState()
     val uiEvents by viewModel.events.collectAsState(UiEvent.Initial)
 
     if (profile.userDetails is UserType.Guest) { // if guest -> observe token
         ObserveToken(LocalLifecycleOwner.current, viewModel.token, redirectToUrl)
     } else { // при LoadUserDetails происходит 401 из-за чего в тоаст идет ошибка, и только потом userType.LoggedIn
-             // и только после approveToken загружаются детали. В else после approve немного медленее работает (loadUserDetails)
+             // и только после approveToken загружаются детали. В else после approve немного медленее работает (loadUserScreen)
         LaunchedEffect(Unit) {
-            viewModel.onEvent(ProfileEvent.LoadUserDetails) // load details if not guest
+            viewModel.onEvent(ProfileEvent.LoadUserScreen) // load details if not guest
             if (isFromApproving) {                          // check if user from login
                 viewModel.onEvent(AuthEvent.ApproveToken)   // approving also load details
             }
@@ -168,7 +157,7 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun UserProfile(user: ProfileDisplay, stats: UserStats, toScreen: (Screen) -> Unit) {
+private fun UserProfile(user: ProfileDisplay, stats: UserStats, toScreen: (NavigationRoute) -> Unit) {
     Column {
         ProfileCard(
             user = user,
@@ -205,17 +194,17 @@ private fun UserProfile(user: ProfileDisplay, stats: UserStats, toScreen: (Scree
                 .weight(0.25f)
                 .padding(top = 16.dp, start = 8.dp, end = 8.dp)
                 .alpha(0.5f)
-            ListButton(modifier = btnModifier, textId = R.string.collections, icon = Icons.AutoMirrored.Filled.List) {
-                toScreen(Screen.COLLECTIONS)
+            ListButton(modifier = btnModifier, textId = R.string.collections, icon = Icons.AutoMirrored.Filled.FormatListBulleted) {
+                toScreen(Collections)
             }
             ListButton(modifier = btnModifier, textId = R.string.watchlist, icon = Icons.Default.Bookmarks) {
-                toScreen(Screen.WATCHLIST)
+                toScreen(Watchlist)
             }
             ListButton(modifier = btnModifier, textId = R.string.rated, icon = Icons.Default.Star) {
-                toScreen(Screen.RATED)
+                toScreen(Rated)
             }
             ListButton(modifier = btnModifier,textId = R.string.favorite, icon = Icons.Default.Favorite) {
-                toScreen(Screen.FAVORITES)
+                toScreen(Favorites)
             }
             Spacer(modifier = Modifier.weight(0.8f))
         }
@@ -225,7 +214,7 @@ private fun UserProfile(user: ProfileDisplay, stats: UserStats, toScreen: (Scree
 @Composable
 private fun ListButton(modifier: Modifier, @StringRes textId: Int, icon: ImageVector, onClick: () -> Unit) {
     OutlinedButton(
-        onClick = { }, //TODO
+        onClick = onClick, //TODO
         shape = RoundedCornerShape(12.dp),
         modifier = modifier,
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 0.dp),

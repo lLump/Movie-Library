@@ -15,6 +15,7 @@ import com.example.mymovielibrary.domain.model.events.ProfileEvent.*
 import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.data.storage.TmdbData.clear
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileState
+import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
 import com.example.mymovielibrary.presentation.ui.profile.state.UserType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -73,24 +74,36 @@ class ProfileViewModel @Inject constructor(
             }
 
             is ProfileEvent -> when (event) {
-                LoadUserDetails -> viewModelScope.launch(Dispatchers.IO) {
-                    val loadProfileTask = async { loadProfile() }
-                    val loadStatsTask = async { loadUserStats() }
-                    loadProfileTask.await()
-                    loadStatsTask.await()
-                }
-                is SaveLanguage -> TmdbData.languageIso = event.language.iso
+                LoadUserScreen -> loadUserScreen()
+                is SaveLanguage -> TmdbData.languageIso = event.language.iso //FIXME
             }
         }
     }
 
-    private suspend fun loadUserStats() {
-        val stats = profileHelper.loadUserStats()
-        _profileState.emit(
-            _profileState.value.copy(
-                userStats = stats
+    private fun loadUserScreen() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val profileTask = async { loadProfile() } // Profile
+            // User stats below
+            val plannedTask = async { profileHelper.getWatchlistSize() }
+            val ratedTask = async { profileHelper.getRatedSize() }
+            val favoritesTask = async { profileHelper.getFavoriteSize() }
+
+            profileTask.await()
+            val planned = plannedTask.await()
+            val rated = ratedTask.await()
+            val favorites = favoritesTask.await()
+
+            _profileState.emit(
+                _profileState.value.copy(
+                    userStats = UserStats(
+                        watched = "",
+                        planned = planned,
+                        rated = rated,
+                        favorite = favorites
+                    )
+                )
             )
-        )
+        }
     }
 
     private suspend fun loadProfile() {

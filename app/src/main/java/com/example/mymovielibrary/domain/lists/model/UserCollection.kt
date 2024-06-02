@@ -6,9 +6,10 @@ data class UserCollection(
     val description: String,
     val public: Boolean,
     val updatedAt: String,
-    val revenue: Long, // доход
-    val averageRating: Double,
-    val itemCount: Int,
+    val runtime: Pair<String, String>, // hours & minutes
+    val revenue: String, // доход
+    val averageRating: String,
+    val itemsCount: String,
     val backdropPath: String?,
-    val posterPath: String?
+//    val posterPath: String?
 )

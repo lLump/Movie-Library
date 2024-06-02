@@ -28,6 +28,11 @@
     <string name="favorite">Favorite</string>
     <string name="collections">My collections</string>
     <string name="choose_language">Choose language</string>
+    <string name="updated">"Updated: "</string>
     <!--Profile-->
+
+    <!--Lists-->
+
+    <!--Lists-->
 
 </resources>

@@ -42,16 +42,16 @@ private fun RowScope.AddItem(
 ) {
     NavigationBarItem(
         selected = currentDestination?.hierarchy?.any {
-            it.route == screen.route
+            it.route?.contains(screen.route.toString()) ?: false
         } == true,
         icon = {
             Icon(
                 imageVector = if (currentDestination?.hierarchy?.any {
-                        it.route == screen.route
+                        it.route?.contains(screen.route.toString()) == true
                     } == true) {
                     screen.selectedIcon
                 } else screen.unselectedIcon,
-                contentDescription = screen.route
+                contentDescription = screen.toString()
             )
         },
         onClick = {

@@ -2,6 +2,7 @@ package com.example.mymovielibrary.data.lists.model
 
 import com.example.mymovielibrary.domain.lists.model.UserCollection
 import com.squareup.moshi.JsonClass
+import java.util.Locale
 
 @JsonClass(generateAdapter = true)
 data class UserCollectionsResponse(
@@ -34,17 +35,29 @@ data class CollectionResponse(
 )
 
 fun CollectionResponse.toUserCollection(): UserCollection {
-    fun isPublic() = public == 1
+    fun formatTime(min: Int): Pair<String, String> {
+        val hours = (min / 60).toString()
+        val remainingMin = (min % 60).toString()
+        return Pair(hours, remainingMin)
+    }
+    fun formatNumber(number: Long) = when {
+        number >= 1_000_000_000 -> String.format(Locale.US, "%.1fB", number / 1_000_000_000.0)
+        number >= 1_000_000 -> String.format(Locale.US, "%.1fM", number / 1_000_000.0)
+        number >= 1_000 -> String.format(Locale.US, "%.1fK", number / 1_000.0)
+        else -> number.toString()
+    }
+
     return UserCollection(
         id = id,
         name = name,
         description = description,
-        public = isPublic(),
+        public = public == 1,
         updatedAt = updated_at,
-        revenue = revenue,
-        averageRating = average_rating,
-        itemCount = number_of_items,
+        revenue = formatNumber(revenue),
+        runtime = formatTime(runtime.toInt()),
+        averageRating = average_rating.toString(),
+        itemsCount = number_of_items.toString(),
         backdropPath = backdrop_path,
-        posterPath = poster_path
+//        posterPath = poster_path
     )
 }

@@ -28,6 +28,10 @@
     <string name="favorite">Любимых</string>
     <string name="collections">Мои списки</string>
     <string name="choose_language">Выберите язык</string>
+    <string name="updated">"Изменено: "</string>
     <!--Profile-->
 
+    <!--Lists-->
+
+    <!--Lists-->
 </resources>

@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         installSplashScreen()
-        UserTmdbInfoImpl(this).localSaveUserInfoIfExist()
+        UserTmdbInfoImpl(this).getLocalSaveUserInfoIfExist()
 
         val isFromApproving = intent.scheme == "http" || intent.scheme == "https"
 
@@ -34,5 +34,4 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
 }

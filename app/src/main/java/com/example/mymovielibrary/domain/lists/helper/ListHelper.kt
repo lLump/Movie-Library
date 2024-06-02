@@ -21,5 +21,4 @@ interface ListHelper {
     suspend fun getFavorites(): List<MediaItem>
     suspend fun getRated(): List<MediaItem>
     suspend fun getWatchlist(): List<MediaItem>
-
 }

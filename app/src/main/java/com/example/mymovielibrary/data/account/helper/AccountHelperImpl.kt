@@ -40,35 +40,21 @@ class AccountHelperImpl(
         }
     }
 
-    override suspend fun loadUserStats(): UserStats {
-        val watched = 0
-        val planned = getWatchlistSize()
-        val rated = getRatedSize()
-        val favorites = getFavoriteSize()
-
-        return UserStats(
-            watched = watched.toString(),
-            planned = planned,
-            rated = rated,
-            favorite = favorites
-        )
-    }
-
-    private suspend fun getWatchlistSize(): String {
+    override suspend fun getWatchlistSize(): String {
         val movies = request { listRepo.getWatchlistMovies() } ?: emptyList()
         val tvs = request { listRepo.getWatchlistTvShows() } ?: emptyList()
 
         return (movies + tvs).size.toString()
     }
 
-    private suspend fun getRatedSize(): String {
+    override suspend fun getRatedSize(): String {
         val movies = request { listRepo.getRatedMovies() } ?: emptyList()
         val tvs = request { listRepo.getRatedTvShows() } ?: emptyList()
 
         return (movies + tvs).size.toString()
     }
 
-    private suspend fun getFavoriteSize(): String {
+    override suspend fun getFavoriteSize(): String {
         val movies = request { listRepo.getFavoriteMovies() } ?: emptyList()
         val tvs = request { listRepo.getFavoriteTvShows() } ?: emptyList()
 
