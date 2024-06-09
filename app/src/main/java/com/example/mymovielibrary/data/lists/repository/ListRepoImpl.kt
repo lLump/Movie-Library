@@ -2,16 +2,15 @@ package com.example.mymovielibrary.data.lists.repository
 
 import com.example.mymovielibrary.domain.base.repository.BaseRepository
 import com.example.mymovielibrary.data.lists.api.ListApi
-import com.example.mymovielibrary.data.lists.model.MovieResponse
-import com.example.mymovielibrary.data.lists.model.TVShowResponse
 import com.example.mymovielibrary.data.lists.model.toMovie
 import com.example.mymovielibrary.data.lists.model.toTvShow
-import com.example.mymovielibrary.data.lists.model.toUserCollection
 import com.example.mymovielibrary.data.storage.TmdbData
-import com.example.mymovielibrary.domain.lists.model.MediaItem
+import com.example.mymovielibrary.domain.lists.model.CollectionDetails
 import com.example.mymovielibrary.domain.lists.model.Movie
 import com.example.mymovielibrary.domain.lists.model.TVShow
 import com.example.mymovielibrary.domain.lists.model.UserCollection
+import com.example.mymovielibrary.domain.lists.model.toCollectionDetails
+import com.example.mymovielibrary.domain.lists.model.toUserCollection
 import com.example.mymovielibrary.domain.lists.repository.ListRepository
 import com.example.mymovielibrary.domain.model.DataError
 import com.example.mymovielibrary.domain.model.Result
@@ -26,17 +25,11 @@ class ListRepoImpl(private val api: ListApi) : ListRepository, BaseRepository() 
         }
     }
 
-    override suspend fun getCollectionDetails(listId: Int): Result<List<MediaItem>, DataError> {
+    override suspend fun getCollectionDetails(listId: Int): Result<CollectionDetails, DataError> {
         return safeApiCall(errorMessage = "API Collection details ERROR") {
             val response = api.getCollectionDetails(listId)
 
-            response.results.map {
-                when (it) {
-                    is MovieResponse -> it.toMovie()
-                    is TVShowResponse -> it.toTvShow()
-                    else -> TODO()
-                }
-            }
+            response.toCollectionDetails()
         }
     }
 

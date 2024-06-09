@@ -1,11 +1,11 @@
 package com.example.mymovielibrary.domain.lists.model
 
-interface MediaItem {
+sealed interface MediaItem {
     val isMovie: Boolean
     val id: Int
     val title: String
     val genreIds: List<Int>
-    val overview: String
+    val description: String
     val popularity: Double
     val rating: Double
     val rateCount: Int
@@ -13,6 +13,7 @@ interface MediaItem {
     val backdropPath: String
     val posterPath: String
     val adult: Boolean
+    val date: String
 }
 
 fun List<MediaItem>.sortedByTitle() = this.sortedBy { it.title }
@@ -25,7 +26,7 @@ data class TVShow(
     override val id: Int,
     override val title: String,
     override val genreIds: List<Int>,
-    override val overview: String,
+    override val description: String,
     override val popularity: Double,
     override val rating: Double,
     override val rateCount: Int,
@@ -33,7 +34,7 @@ data class TVShow(
     override val backdropPath: String,
     override val posterPath: String,
     override val adult: Boolean,
-    val firstShowDate: String,
+    override val date: String,
     val originalCountries: List<String>,
 ) : MediaItem
 
@@ -42,7 +43,7 @@ data class Movie(
     override val id: Int,
     override val title: String,
     override val genreIds: List<Int>,
-    override val overview: String,
+    override val description: String,
     override val popularity: Double,
     override val rating: Double,
     override val rateCount: Int,
@@ -50,5 +51,5 @@ data class Movie(
     override val backdropPath: String,
     override val posterPath: String,
     override val adult: Boolean,
-    val releaseDate: String,
+    override val date: String,
 ) : MediaItem

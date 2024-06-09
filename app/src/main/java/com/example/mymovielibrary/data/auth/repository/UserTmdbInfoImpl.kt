@@ -38,7 +38,6 @@ class UserTmdbInfoImpl(context: Context): LocalUserInfo {
         } else info(false, accountId, sessionId)
     }
 
-    //TODO проверить запрос к несуществующим полям и убрать в случае as String
     private fun getUserInfo(): Pair<String, String> {
         val accountId = sharedPrefs.getString("account_id_v4", "noId") as String
         val sessionId = sharedPrefs.getString("session_id", "noSessionId") as String

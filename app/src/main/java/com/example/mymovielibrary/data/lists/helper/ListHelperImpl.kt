@@ -2,6 +2,7 @@ package com.example.mymovielibrary.data.lists.helper
 
 import com.example.mymovielibrary.domain.base.helper.BaseHelper
 import com.example.mymovielibrary.domain.lists.helper.ListHelper
+import com.example.mymovielibrary.domain.lists.model.CollectionDetails
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.Movie
 import com.example.mymovielibrary.domain.lists.model.TVShow
@@ -17,8 +18,8 @@ class ListHelperImpl @Inject constructor(
         return request { listRepo.getUserCollections() } ?: return emptyList()
     }
 
-    override suspend fun getItemsInCollection(listId: Int): List<MediaItem> {
-        return request { listRepo.getCollectionDetails(listId) } ?: return emptyList()
+    override suspend fun getCollectionDetails(collectionId: Int): CollectionDetails? {
+        return request { listRepo.getCollectionDetails(collectionId) }
     }
 
     override suspend fun getFavoriteMovies(): List<Movie> {

@@ -1,104 +1,306 @@
 package com.example.mymovielibrary.presentation.ui.lists.screen
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
+import com.example.mymovielibrary.R
+import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.UserCollection
 import com.example.mymovielibrary.domain.model.events.ListEvent
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
 import com.example.mymovielibrary.presentation.ui.lists.state.ListState
-import com.example.mymovielibrary.presentation.ui.lists.viewModel.ListViewModel
+import com.example.mymovielibrary.presentation.ui.lists.util.CollectionMark
+import com.example.mymovielibrary.presentation.ui.lists.util.MediaListItem
+import com.example.mymovielibrary.presentation.ui.theme.Typography
 
 @Composable
 fun ListsScreen(
-    viewModel: ListViewModel = hiltViewModel(),
-    padding: PaddingValues,
-    toScreen: (NavigationRoute) -> Unit,
+    onEvent: (ListEvent) -> Unit,
+    state: ListState,
+    navigateTo: (NavigationRoute) -> Unit,
+    paddingValues: PaddingValues,
 ) {
-    val state by viewModel.screenState.collectAsState()
-
     LaunchedEffect(Unit) {
-        viewModel.onEvent(ListEvent.LoadScreen)
+        onEvent(ListEvent.LoadScreen)
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(padding)
+            .padding(paddingValues)
     ) {
         if (state.isLoading) {
             CircularProgressIndicator(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = 16.dp)
+                modifier = Modifier.align(Alignment.Center)
             )
         } else {
-            ScreenContent(state, viewModel::onEvent, toScreen)
+            ListsScreenContent(state, navigateTo)
         }
     }
 }
 
 @Composable
-private fun ScreenContent(
+private fun ListsScreenContent(
     state: ListState,
-    onEvent: (ListEvent) -> Unit,
-    toScreen: (NavigationRoute) -> Unit
+    navigateTo: (NavigationRoute) -> Unit,
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         CollectionsRowList(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .height(250.dp)
 //                .align(Alignment.CenterHorizontally)
-                .weight(0.3f)
-                .padding(16.dp)
-                .background(Color.Green, RoundedCornerShape(12.dp)),
+//                .weight(0.3f)
+                .padding(bottom = 16.dp)
+                .background(
+                    MaterialTheme.colorScheme.onBackground.copy(0.5f),
+                    RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                ),
             collections = state.userCollections,
-            toScreen = toScreen,
-            onEvent = onEvent
+            navigateTo = navigateTo
         )
-        Row(modifier = Modifier.weight(0.7f)) {
+        MediaRowList(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                .height(150.dp)
+                .background(Color.Blue, RoundedCornerShape(12.dp)),
+            list = state.watchlist,
+            navigateTo = navigateTo,
+        )
+        MediaRowList(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                .height(150.dp)
+                .background(Color.Green, RoundedCornerShape(12.dp)),
+            list = state.rated,
+            navigateTo = navigateTo,
+        )
+        MediaRowList(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                .height(150.dp)
+                .background(Color.Blue, RoundedCornerShape(12.dp)),
+            list = state.favorite,
+            navigateTo = navigateTo,
+        )
+    }
+}
 
+@Composable
+private fun MediaRowList(
+    modifier: Modifier = Modifier,
+    list: List<MediaItem>,
+    navigateTo: (NavigationRoute) -> Unit
+) {
+    LazyRow(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 8.dp, 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(list) { mediaItem ->
+            MediaListItem(
+                mediaItem = mediaItem,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .clickable { navigateTo(NavigationRoute.MediaDetails(mediaItem.id)) }
+            )
         }
     }
+}
+
+@Composable
+private fun ListTitle(
+    modifier: Modifier = Modifier,
+    @StringRes textId: Int,
+//    icon: ImageVector,
+) {
+
 }
 
 @Composable
 private fun CollectionsRowList(
     modifier: Modifier,
     collections: List<UserCollection>,
-    onEvent: (ListEvent) -> Unit,
-    toScreen: (NavigationRoute) -> Unit
+    navigateTo: (NavigationRoute) -> Unit
 ) {
-    LazyRow(
-        modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    Column(
+        modifier = modifier
     ) {
-        items(collections) { collection ->
-            CollectionItem(item = collection) {
-                onEvent(ListEvent.LoadChosenCollection(collection.id))
-                toScreen(NavigationRoute.CollectionDetails(collection.id))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(start = 26.dp)
+                    .align(Alignment.CenterStart),
+                text = stringResource(id = R.string.collections),
+                style = Typography.titleLarge,
+            )
+            ElevatedButton(
+                onClick = { TODO("создать коллекцию") },
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 20.dp, bottom = 4.dp, top = 4.dp),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("Create")
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Create user collection"
+                    )
+                }
+            }
+        }
+        LazyRow(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(collections) { collection ->
+                CollectionItemList(item = collection) {
+                    navigateTo(NavigationRoute.CollectionDetails(collection.id))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CollectionItemList(item: UserCollection, chosenCollection: () -> Unit) {
+    Card(
+        onClick = chosenCollection,
+        modifier = Modifier
+            .aspectRatio(2f / 1.1f)
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.onPrimary)
+            .fillMaxHeight(),
+        shape = CardDefaults.elevatedShape
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            AsyncImage(
+                model = "https://image.tmdb.org/t/p/original/" + item.backdropPath,
+                modifier = Modifier.fillMaxSize(),
+//            clipToBounds = true,
+                contentScale = ContentScale.Crop,
+                contentDescription = "Background collection photo",
+            )
+            Column(
+                modifier = Modifier
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, start = 12.dp, end = 12.dp, bottom = 6.dp)
+            ) {
+                Text(
+                    text = item.name,
+                    fontWeight = FontWeight.Bold,
+                    style = Typography.titleLarge
+                )
+                Text(
+                    text = item.description,
+                    fontWeight = FontWeight.SemiBold,
+                    style = Typography.bodyMedium
+                )
+                Text(
+                    text = stringResource(id = R.string.updated) + item.updatedAt,
+                    style = Typography.bodySmall
+                )
+            }
+            CollectionMark(
+                modifier = Modifier
+                    .align(Alignment.TopEnd),
+//                    .align(Alignment.CenterEnd)
+//                    .padding(top = 18.dp),
+                borderSettings = RoundedCornerShape(topEnd = 11.dp, bottomStart = 12.dp),
+//                borderSettings = RoundedCornerShape(topStart = 12.dp, bottomStart = 12.dp),
+                text = item.revenue,
+                icon = Icons.Default.AttachMoney
+            )
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 6.dp)
+//                    .background(Color.Black.copy(alpha = 0.5f))
+                    .fillMaxWidth()
+            ) {
+                CollectionMark(
+//                    text = "Items: ${item.itemsCount}",
+                    text = item.itemsCount,
+                    icon = Icons.Default.Movie,
+                    borderSettings = RoundedCornerShape(50, 0, 50, 0),
+                )
+                CollectionMark(
+//                    text = "Rating: ${item.averageRating}",
+                    text = item.averageRating,
+                    icon = Icons.Default.Star,
+                    borderSettings = RoundedCornerShape(50, 0, 50, 0),
+                )
+                CollectionMark(
+//                    text = "Time: ${item.runtime.first}h ${item.runtime.second}m",
+                    text = "${item.runtime.first}h ${item.runtime.second}m",
+                    icon = Icons.Default.AccessTime,
+                    borderSettings = RoundedCornerShape(50, 0, 50, 0),
+                )
             }
         }
     }

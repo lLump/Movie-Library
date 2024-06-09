@@ -1,5 +1,6 @@
 package com.example.mymovielibrary.presentation.navigation.model
 
+import com.example.mymovielibrary.domain.lists.model.UserCollection
 import kotlinx.serialization.Serializable
 
 sealed interface NavigationRoute {
@@ -25,4 +26,5 @@ sealed interface NavigationRoute {
     data class CollectionDetails(val collectionId: Int): NavigationRoute
     @Serializable
     data class MediaDetails(val mediaId: Int): NavigationRoute
+
 }

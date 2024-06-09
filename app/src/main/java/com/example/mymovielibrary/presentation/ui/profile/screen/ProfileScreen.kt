@@ -61,7 +61,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -69,6 +68,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
@@ -87,9 +87,8 @@ import com.example.mymovielibrary.presentation.ui.util.UiEvent
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-    padding: PaddingValues,
     redirectToUrl: (String) -> Unit,
-    toScreen: (NavigationRoute) -> Unit,
+    navigateTo: (NavigationRoute) -> Unit,
     isFromApproving: Boolean
 ) {
     val profile by viewModel.profileState.collectAsState()
@@ -100,7 +99,7 @@ fun ProfileScreen(
     } else { // при LoadUserDetails происходит 401 из-за чего в тоаст идет ошибка, и только потом userType.LoggedIn
              // и только после approveToken загружаются детали. В else после approve немного медленее работает (loadUserScreen)
         LaunchedEffect(Unit) {
-            viewModel.onEvent(ProfileEvent.LoadUserScreen) // load details if not guest
+            viewModel.onEvent(ProfileEvent.LoadUserScreen)  // load details if not guest
             if (isFromApproving) {                          // check if user from login
                 viewModel.onEvent(AuthEvent.ApproveToken)   // approving also load details
             }
@@ -116,11 +115,10 @@ fun ProfileScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(padding)
     ) {
         when (profile.userDetails) {
             is UserType.LoggedIn -> {
-                UserProfile((profile.userDetails as UserType.LoggedIn).profile, profile.userStats, toScreen)
+                UserProfile((profile.userDetails as UserType.LoggedIn).profile, profile.userStats, navigateTo)
                 IconButton(
                     modifier = Modifier.align(Alignment.TopEnd),
                     onClick = { viewModel.onEvent(AuthEvent.Logout) }
@@ -185,7 +183,6 @@ private fun UserProfile(user: ProfileDisplay, stats: UserStats, toScreen: (Navig
                 )
                 .padding(top = 5.dp)
                 .background(
-//                    color = Color.Green,
                     color = (MaterialTheme.colorScheme.onSecondary),
                     shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
                 )
@@ -208,13 +205,19 @@ private fun UserProfile(user: ProfileDisplay, stats: UserStats, toScreen: (Navig
             }
             Spacer(modifier = Modifier.weight(0.8f))
         }
+        //TODO сделать цвет такой же как и фон коламна
+        Spacer(modifier = Modifier //instead of bottomBar padding
+            .weight(0.107f)
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.onSecondary)
+        )
     }
 }
 
 @Composable
 private fun ListButton(modifier: Modifier, @StringRes textId: Int, icon: ImageVector, onClick: () -> Unit) {
     OutlinedButton(
-        onClick = onClick, //TODO
+        onClick = onClick,
         shape = RoundedCornerShape(12.dp),
         modifier = modifier,
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 0.dp),

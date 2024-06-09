@@ -43,11 +43,13 @@ private fun RowScope.AddItem(
     NavigationBarItem(
         selected = currentDestination?.hierarchy?.any {
             it.route?.contains(screen.route.toString()) ?: false
+//            it.route == screen.route
         } == true,
         icon = {
             Icon(
                 imageVector = if (currentDestination?.hierarchy?.any {
                         it.route?.contains(screen.route.toString()) == true
+//                    it.route == screen.route
                     } == true) {
                     screen.selectedIcon
                 } else screen.unselectedIcon,
