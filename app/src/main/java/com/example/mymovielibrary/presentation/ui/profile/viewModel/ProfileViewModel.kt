@@ -7,13 +7,15 @@ import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.base.helper.BaseHelper
+import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent
-import com.example.mymovielibrary.domain.model.events.AuthEvent.*
+import com.example.mymovielibrary.domain.model.events.AuthEvent.ApproveToken
+import com.example.mymovielibrary.domain.model.events.AuthEvent.Login
+import com.example.mymovielibrary.domain.model.events.AuthEvent.Logout
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
-import com.example.mymovielibrary.domain.model.events.ProfileEvent.*
-import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
-import com.example.mymovielibrary.data.storage.TmdbData.clear
+import com.example.mymovielibrary.domain.model.events.ProfileEvent.LoadUserScreen
+import com.example.mymovielibrary.domain.model.events.ProfileEvent.SaveLanguage
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileState
 import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
 import com.example.mymovielibrary.presentation.ui.profile.state.UserType
@@ -67,8 +69,7 @@ class ProfileViewModel @Inject constructor(
                                 userDetails = UserType.Guest
                             )
                         )
-                        TmdbData.clear()
-                        authHelper.logout()
+                        authHelper.logout() //FIXME incorrect logout request
                     }
                 }
             }
@@ -96,7 +97,7 @@ class ProfileViewModel @Inject constructor(
             _profileState.emit(
                 _profileState.value.copy(
                     userStats = UserStats(
-                        watched = "",
+                        watched = "", //TODO watched
                         planned = planned,
                         rated = rated,
                         favorite = favorites

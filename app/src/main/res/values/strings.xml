@@ -27,12 +27,35 @@
     <string name="rated">Rated</string>
     <string name="favorite">Favorite</string>
     <string name="collections">My collections</string>
+    <string name="my_lists">My lists</string>
     <string name="choose_language">Choose language</string>
     <string name="updated">"Updated: "</string>
     <!--Profile-->
 
     <!--Lists-->
-
+    <string name="create">Create</string>
+    <string name="select_all">Select all</string>
     <!--Lists-->
+
+    <string name="change_collection_background">Change the collection poster</string>
+    <string name="clear_collection">Clear collection</string>
+    <string name="delete_collection">Delete collection</string>
+    <string name="edit_collection">Edit collection</string>
+    <string name="sort_by">Sort by</string>
+
+    <!--Sort types-->
+    <string name="sort_original_order">Original order</string>
+    <string name="sort_release_date">Release date</string>
+    <string name="sort_primary_release_date">Primary release date</string>
+    <string name="sort_title">Title</string>
+    <string name="sort_rating">Rating</string>
+
+    <string name="sort_asc">Asc</string>
+    <string name="sort_desc">Desc</string>
+    <string name="choose_movie">Choose a movie</string>
+    <string name="choose_movies">Choose movies</string>
+    <string name="apply">Apply</string>
+    <string name="cancel">Cancel</string>
+    <!--Sort types-->
 
 </resources>

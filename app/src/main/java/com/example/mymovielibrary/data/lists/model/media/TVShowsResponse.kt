@@ -1,6 +1,5 @@
-package com.example.mymovielibrary.data.lists.model
+package com.example.mymovielibrary.data.lists.model.media
 
-import com.example.mymovielibrary.domain.lists.model.TVShow
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
@@ -29,21 +28,3 @@ data class TVShowResponse(
     val vote_average: Double,
     val vote_count: Int
 ): MediaItemResponse
-
-fun TVShowResponse.toTvShow(): TVShow {
-    return TVShow(
-        id = id,
-        title = name,
-        genreIds = genre_ids, //TODO получать жанры в виде строк
-        description = overview,
-        popularity = popularity,
-        rating = vote_average,
-        rateCount = vote_count,
-        originalLanguage = original_language,
-        originalCountries = origin_country,
-        date = first_air_date,
-        backdropPath = backdrop_path,
-        posterPath = poster_path,
-        adult = adult,
-    )
-}

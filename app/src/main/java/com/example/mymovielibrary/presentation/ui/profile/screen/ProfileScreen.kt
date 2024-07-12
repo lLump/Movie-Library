@@ -24,7 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.automirrored.filled.FormatListBulleted
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.filled.Bookmarks
 import androidx.compose.material.icons.filled.Favorite
@@ -72,15 +72,17 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
+import com.example.mymovielibrary.domain.lists.model.ListType
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.*
-import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
-import com.example.mymovielibrary.presentation.ui.theme.Typography
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Lists
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalList
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
 import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
 import com.example.mymovielibrary.presentation.ui.profile.state.UserType
+import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
+import com.example.mymovielibrary.presentation.ui.theme.Typography
 import com.example.mymovielibrary.presentation.ui.util.ShowToast
 import com.example.mymovielibrary.presentation.ui.util.UiEvent
 
@@ -191,17 +193,17 @@ private fun UserProfile(user: ProfileDisplay, stats: UserStats, toScreen: (Navig
                 .weight(0.25f)
                 .padding(top = 16.dp, start = 8.dp, end = 8.dp)
                 .alpha(0.5f)
-            ListButton(modifier = btnModifier, textId = R.string.collections, icon = Icons.AutoMirrored.Filled.FormatListBulleted) {
-                toScreen(Collections)
+            ListButton(modifier = btnModifier, textId = R.string.my_lists, icon = Icons.AutoMirrored.Filled.List) {
+                toScreen(Lists)
             }
             ListButton(modifier = btnModifier, textId = R.string.watchlist, icon = Icons.Default.Bookmarks) {
-                toScreen(Watchlist)
+                toScreen(UniversalList(ListType.WATCHLIST.route))
             }
             ListButton(modifier = btnModifier, textId = R.string.rated, icon = Icons.Default.Star) {
-                toScreen(Rated)
+                toScreen(UniversalList(ListType.RATED.route))
             }
             ListButton(modifier = btnModifier,textId = R.string.favorite, icon = Icons.Default.Favorite) {
-                toScreen(Favorites)
+                toScreen(UniversalList(ListType.FAVORITE.route))
             }
             Spacer(modifier = Modifier.weight(0.8f))
         }

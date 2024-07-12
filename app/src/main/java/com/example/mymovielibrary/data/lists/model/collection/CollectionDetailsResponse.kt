@@ -1,11 +1,9 @@
-package com.example.mymovielibrary.data.lists.model
+package com.example.mymovielibrary.data.lists.model.collection
 
 import com.example.mymovielibrary.data.lists.adapter.MediaItemAdapter
-import com.example.mymovielibrary.domain.lists.model.CollectionDetails
-import com.example.mymovielibrary.domain.lists.model.UserCollection
+import com.example.mymovielibrary.data.lists.model.media.MediaItemResponse
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import java.util.Locale
 
 @JsonClass(generateAdapter = true)
 data class CollectionDetailsResponse(

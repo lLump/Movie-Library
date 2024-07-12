@@ -1,11 +1,11 @@
-package com.example.mymovielibrary.domain.lists.model
+package com.example.mymovielibrary.data.lists.model.collection
 
-import com.example.mymovielibrary.data.lists.model.CollectionDetailsResponse
-import com.example.mymovielibrary.data.lists.model.CollectionResponse
-import com.example.mymovielibrary.data.lists.model.MovieResponse
-import com.example.mymovielibrary.data.lists.model.TVShowResponse
-import com.example.mymovielibrary.data.lists.model.toMovie
-import com.example.mymovielibrary.data.lists.model.toTvShow
+import com.example.mymovielibrary.data.lists.model.media.MovieResponse
+import com.example.mymovielibrary.data.lists.model.media.TVShowResponse
+import com.example.mymovielibrary.data.lists.model.media.toMovie
+import com.example.mymovielibrary.data.lists.model.media.toTvShow
+import com.example.mymovielibrary.domain.lists.model.CollectionDetails
+import com.example.mymovielibrary.domain.lists.model.UserCollection
 import java.util.Locale
 
 fun CollectionResponse.toUserCollection() = UserCollection(
@@ -25,11 +25,14 @@ fun CollectionResponse.toUserCollection() = UserCollection(
 
 fun CollectionDetailsResponse.toCollectionDetails(): CollectionDetails {
     val movies = results.map {
-        when (it) {
+        val movie = when (it) {
             is MovieResponse -> it.toMovie()
 //            is TVShowResponse -> it.toTvShow()
-            else -> { (it as TVShowResponse).toTvShow()}
+            else -> {
+                (it as TVShowResponse).toTvShow()
+            }
         }
+        movie
     }
     return CollectionDetails(
         id = id,

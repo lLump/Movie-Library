@@ -1,35 +1,25 @@
 package com.example.mymovielibrary.data.lists.repository
 
-import com.example.mymovielibrary.domain.base.repository.BaseRepository
 import com.example.mymovielibrary.data.lists.api.ListApi
-import com.example.mymovielibrary.data.lists.model.toMovie
-import com.example.mymovielibrary.data.lists.model.toTvShow
+import com.example.mymovielibrary.data.lists.model.collection.toUserCollection
+import com.example.mymovielibrary.data.lists.model.media.toMovie
+import com.example.mymovielibrary.data.lists.model.media.toTvShow
 import com.example.mymovielibrary.data.storage.TmdbData
-import com.example.mymovielibrary.domain.lists.model.CollectionDetails
+import com.example.mymovielibrary.domain.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.lists.model.Movie
 import com.example.mymovielibrary.domain.lists.model.TVShow
 import com.example.mymovielibrary.domain.lists.model.UserCollection
-import com.example.mymovielibrary.domain.lists.model.toCollectionDetails
-import com.example.mymovielibrary.domain.lists.model.toUserCollection
-import com.example.mymovielibrary.domain.lists.repository.ListRepository
+import com.example.mymovielibrary.domain.lists.repository.ListRepo
 import com.example.mymovielibrary.domain.model.DataError
 import com.example.mymovielibrary.domain.model.Result
 
-class ListRepoImpl(private val api: ListApi) : ListRepository, BaseRepository() {
+class ListRepoImpl(private val api: ListApi) : ListRepo, BaseRepository() {
 
     override suspend fun getUserCollections(): Result<List<UserCollection>, DataError> {
         return safeApiCall(errorMessage = "API User collections ERROR") {
             val response = api.getUserCollections(TmdbData.accountIdV4)
 
             response.results.map { it.toUserCollection() }
-        }
-    }
-
-    override suspend fun getCollectionDetails(listId: Int): Result<CollectionDetails, DataError> {
-        return safeApiCall(errorMessage = "API Collection details ERROR") {
-            val response = api.getCollectionDetails(listId)
-
-            response.toCollectionDetails()
         }
     }
 

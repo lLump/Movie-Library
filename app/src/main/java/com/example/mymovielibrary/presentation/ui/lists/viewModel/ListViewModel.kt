@@ -2,10 +2,15 @@ package com.example.mymovielibrary.presentation.ui.lists.viewModel
 
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
-import com.example.mymovielibrary.domain.lists.helper.ListHelper
-import com.example.mymovielibrary.domain.model.events.ListEvent
-import com.example.mymovielibrary.domain.model.events.ListEvent.*
-import com.example.mymovielibrary.presentation.ui.lists.state.CollectionState
+import com.example.mymovielibrary.domain.lists.model.ListType
+import com.example.mymovielibrary.domain.lists.model.MediaItem
+import com.example.mymovielibrary.domain.lists.model.sortedByTitle
+import com.example.mymovielibrary.domain.lists.repository.ListRepo
+import com.example.mymovielibrary.domain.lists.repository.MediaManager
+import com.example.mymovielibrary.domain.model.events.MediaEvent
+import com.example.mymovielibrary.domain.model.events.MediaEvent.DeleteItems
+import com.example.mymovielibrary.domain.model.events.MediaEvent.EditItems
+import com.example.mymovielibrary.domain.model.events.MediaEvent.LoadChosenList
 import com.example.mymovielibrary.presentation.ui.lists.state.ListState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -17,105 +22,112 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListViewModel @Inject constructor(
-    private val listHelper: ListHelper
+    private val listRepo: ListRepo,
+    private val mediaManager: MediaManager,
 ): BaseViewModel() {
+    private val _listState = MutableStateFlow(ListState())
+    val listState = _listState.asStateFlow()
 
-    private val _listsState = MutableStateFlow(ListState())
-    val listsState = _listsState.asStateFlow()
+//        (detailListHelper as BaseHelper).setCollector(this::sendUiEvent)
 
-    private val _chosenCollectionState = MutableStateFlow(CollectionState())
-    val collectionState = _chosenCollectionState.asStateFlow()
-
-    fun onEvent(event: ListEvent) {
+    fun onEvent(event: MediaEvent) {
         when (event) {
-            LoadScreen -> loadAllListOnScreen()
-            is LoadChosenCollection -> loadChosenCollection(event.id)
-            LoadCollections -> loadUserCollections()
-            LoadFavorites -> loadFavorites()
-            LoadRated -> loadRated()
-            LoadWatchlist -> loadWatchlist()
+            is LoadChosenList -> loadChosenList(event.listType)
+            is DeleteItems -> deleteCheckedItems(event.ids, event.type)
+            is EditItems -> editCheckedItems(event.ids, event.type)
         }
     }
 
-    private fun loadUserCollections() {
+    private fun loadChosenList(listType: ListType) {
         viewModelScope.launch(Dispatchers.IO) {
-            _listsState.emit(
-                _listsState.value.copy(
+            val currentList = when (listType) {
+                ListType.WATCHLIST -> getWatchlist()
+                ListType.RATED -> getRated()
+                ListType.FAVORITE -> getFavorites()
+            }
+            _listState.emit(
+                _listState.value.copy(
                     isLoading = false,
-                    userCollections = listHelper.getUserCollections()
+                    chosenList = currentList,
+                    currentItems = currentList.size
                 )
             )
         }
     }
 
-    private fun loadFavorites() {
+    private suspend fun getWatchlist(): List<MediaItem> {
+        val watchMovies = request { listRepo.getWatchlistMovies() } ?: return emptyList()
+        val watchTvs = request { listRepo.getWatchlistTvShows() } ?: return emptyList()
+        return (watchMovies + watchTvs).sortedByTitle()
+    }
+
+    private suspend fun getRated(): List<MediaItem> {
+        val ratedMovies = request { listRepo.getRatedMovies() } ?: return emptyList()
+        val ratedTvs = request { listRepo.getRatedTvShows() } ?: return emptyList()
+        return (ratedMovies + ratedTvs).sortedByTitle()
+    }
+
+    private suspend fun getFavorites(): List<MediaItem> {
+        val favMovies = request { listRepo.getFavoriteMovies() } ?: return emptyList()
+        val favTvs = request { listRepo.getFavoriteTvShows() } ?: return emptyList()
+        return (favMovies + favTvs).sortedByTitle()
+    }
+
+    private fun editCheckedItems(ids: List<Int>, listType: ListType) {
         viewModelScope.launch(Dispatchers.IO) {
-            _listsState.emit(
-                _listsState.value.copy(
-                    isLoading = false,
-                    favorite = listHelper.getFavorites()
-                )
-            )
+//            val itemsToEdit = getCheckedItems(ids)
+//            clearChosenItemsInState(ids, listType)
+
         }
     }
 
-    private fun loadRated() {
+    private fun deleteCheckedItems(ids: List<Int>, listType: ListType) {
         viewModelScope.launch(Dispatchers.IO) {
-            _listsState.emit(
-                _listsState.value.copy(
-                    isLoading = false,
-                    rated = listHelper.getRated()
-                )
-            )
+            async { deleteCheckedItemsInApi(ids, listType) }.await()
+            async { clearChosenItemsInState(ids) }.await()
         }
     }
 
-    private fun loadWatchlist() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _listsState.emit(
-                _listsState.value.copy(
-                    isLoading = false,
-                    watchlist = listHelper.getWatchlist()
-                )
-            )
-        }
-    }
-
-    private fun loadChosenCollection(collectionId: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val collectionDetails = listHelper.getCollectionDetails(collectionId)
-            if (collectionDetails != null) {
-                _chosenCollectionState.emit(
-                    _chosenCollectionState.value.copy(
-                        isLoading = false,
-                        collection = collectionDetails
+    private suspend fun deleteCheckedItemsInApi(ids: List<Int>, listType: ListType) {
+        val itemsToDelete = getCheckedItems(ids)
+        when (listType) {
+            ListType.WATCHLIST -> {
+                itemsToDelete.forEach { media ->
+                    mediaManager.addOrDeleteInWatchlist(
+                        mediaId = media.id,
+                        isMovie = media.isMovie,
+                        isAdding = false
                     )
-                )
+                }
+            }
+            ListType.RATED -> {
+                itemsToDelete.forEach { media ->
+                    //TODO rated delete
+                }
+            }
+            ListType.FAVORITE -> {
+                itemsToDelete.forEach { media ->
+                    mediaManager.addOrDeleteInFavorite(
+                        mediaId = media.id,
+                        isMovie = media.isMovie,
+                        isAdding = false
+                    )
+                }
             }
         }
     }
 
-    private fun loadAllListOnScreen() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val taskCollections = async { listHelper.getUserCollections() }
-            val taskFavorites = async { listHelper.getFavorites() }
-            val taskRated = async { listHelper.getRated() }
-            val taskWatchlist = async { listHelper.getWatchlist() }
-
-            val collections = taskCollections.await()
-            val favorites = taskFavorites.await()
-            val rated = taskRated.await()
-            val watchlist = taskWatchlist.await()
-
-            _listsState.emit(
-                _listsState.value.copy(
-                    isLoading = false,
-                    userCollections = collections,
-                    watchlist = watchlist,
-                    rated = rated,
-                    favorite = favorites
-                )
+    private suspend fun clearChosenItemsInState(ids: List<Int>) {
+        val newList = _listState.value.chosenList.filter { it.id !in ids }
+        _listState.emit(
+            _listState.value.copy(
+                chosenList = newList,
+                currentItems = newList.count()
             )
-        }
+        )
+    }
+
+    private fun getCheckedItems(ids: List<Int>): List<MediaItem> {
+       return _listState.value.chosenList.filter { it.id in ids }
     }
 }

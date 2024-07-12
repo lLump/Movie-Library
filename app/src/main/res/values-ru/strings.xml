@@ -29,6 +29,25 @@
     <string name="collections">Мои коллекции</string>
     <string name="choose_language">Выберите язык</string>
     <string name="updated">"Изменено: "</string>
+    <string name="my_lists">Мои списки</string>
+    <string name="delete_collection">Удалить коллекцию</string>
+    <string name="create">Создать</string>
+    <string name="select_all">Выбрать все</string>
+    <string name="edit_collection">Изменить коллекцию</string>
+    <string name="sort_by">Сортировать по</string>
+    <string name="sort_original_order">Оригинальному порядку</string>
+    <string name="sort_release_date">Дате выхода</string>
+    <string name="sort_title">Названию</string>
+    <string name="sort_rating">Рейтингу</string>
+    <string name="sort_asc">Возр</string>
+    <string name="sort_desc">Уб</string>
+    <string name="clear_collection">Очистить коллекцию</string>
+    <string name="sort_primary_release_date">Изначальная дата выхода</string>
+    <string name="change_collection_background">Изменить постер коллекции</string>
+    <string name="choose_movie">Выберите фильм</string>
+    <string name="choose_movies">Выберите фильмы</string>
+    <string name="apply">Применить</string>
+    <string name="cancel">Отменить</string>
     <!--Profile-->
 
     <!--Lists-->

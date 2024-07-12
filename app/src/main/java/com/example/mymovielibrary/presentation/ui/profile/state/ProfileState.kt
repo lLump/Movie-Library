@@ -1,12 +1,10 @@
 package com.example.mymovielibrary.presentation.ui.profile.state
 
-import com.example.mymovielibrary.domain.account.model.LanguageDetails
-
 data class ProfileState(
     val userDetails: UserType = UserType.Loading,
     val userStats: UserStats = UserStats("", "", "", ""),
-    val tmdbLanguage: LanguageDetails = LanguageDetails("English", "en"),
-    val appLanguage: String = "",
+//    val tmdbLanguage: LanguageDetails = LanguageDetails("English", "en"),
+//    val appLanguage: String = "",
 )
 
 sealed interface UserType {

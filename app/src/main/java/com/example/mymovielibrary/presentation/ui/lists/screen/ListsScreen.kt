@@ -14,16 +14,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
@@ -33,29 +32,28 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
+import com.example.mymovielibrary.domain.lists.model.ListType
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.UserCollection
 import com.example.mymovielibrary.domain.model.events.ListEvent
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
-import com.example.mymovielibrary.presentation.ui.lists.state.ListState
+import com.example.mymovielibrary.presentation.ui.lists.state.DefaultListsState
 import com.example.mymovielibrary.presentation.ui.lists.util.CollectionMark
 import com.example.mymovielibrary.presentation.ui.lists.util.MediaListItem
 import com.example.mymovielibrary.presentation.ui.theme.Typography
@@ -63,14 +61,13 @@ import com.example.mymovielibrary.presentation.ui.theme.Typography
 @Composable
 fun ListsScreen(
     onEvent: (ListEvent) -> Unit,
-    state: ListState,
+    state: DefaultListsState,
     navigateTo: (NavigationRoute) -> Unit,
     paddingValues: PaddingValues,
 ) {
     LaunchedEffect(Unit) {
         onEvent(ListEvent.LoadScreen)
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -81,14 +78,15 @@ fun ListsScreen(
                 modifier = Modifier.align(Alignment.Center)
             )
         } else {
-            ListsScreenContent(state, navigateTo)
+            ListsScreenContent(state, onEvent, navigateTo)
         }
     }
 }
 
 @Composable
 private fun ListsScreenContent(
-    state: ListState,
+    state: DefaultListsState,
+    onEvent: (ListEvent) -> Unit,
     navigateTo: (NavigationRoute) -> Unit,
 ) {
     Column(
@@ -108,74 +106,102 @@ private fun ListsScreenContent(
                     RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
                 ),
             collections = state.userCollections,
+            onEvent = onEvent,
             navigateTo = navigateTo
         )
         MediaRowList(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                .height(150.dp)
-                .background(Color.Blue, RoundedCornerShape(12.dp)),
+            listTitleId = R.string.watchlist,
             list = state.watchlist,
             navigateTo = navigateTo,
+            route = NavigationRoute.UniversalList(ListType.WATCHLIST.route)
         )
         MediaRowList(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                .height(150.dp)
-                .background(Color.Green, RoundedCornerShape(12.dp)),
+            listTitleId = R.string.rated,
             list = state.rated,
             navigateTo = navigateTo,
+            route = NavigationRoute.UniversalList(ListType.RATED.route)
         )
         MediaRowList(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                .height(150.dp)
-                .background(Color.Blue, RoundedCornerShape(12.dp)),
+            listTitleId = R.string.favorite,
             list = state.favorite,
             navigateTo = navigateTo,
+            route = NavigationRoute.UniversalList(ListType.FAVORITE.route)
         )
     }
 }
 
 @Composable
 private fun MediaRowList(
-    modifier: Modifier = Modifier,
+    @StringRes listTitleId: Int,
     list: List<MediaItem>,
-    navigateTo: (NavigationRoute) -> Unit
+    navigateTo: (NavigationRoute) -> Unit,
+    route: NavigationRoute,
 ) {
-    LazyRow(
-        modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 8.dp, 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .height(350.dp)
+            .background(MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(12.dp)),
     ) {
-        items(list) { mediaItem ->
-            MediaListItem(
-                mediaItem = mediaItem,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .clickable { navigateTo(NavigationRoute.MediaDetails(mediaItem.id)) }
+        TitleOfList(
+            modifier = Modifier
+                .weight(0.15f)
+                .padding(start = 16.dp, top = 8.dp),
+            textId = listTitleId
+        ) {
+            navigateTo(route)
+        }
+        LazyRow(
+            modifier = Modifier.weight(0.85f),
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(list) { mediaItem ->
+                MediaListItem(
+                    mediaItem = mediaItem,
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(135.dp)
+                        .shadow(4.dp, RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp)) // без этого, эффект нажатия квадратный
+                        .clickable { navigateTo(NavigationRoute.MediaDetails(mediaItem.id)) },
+                    imageHeight = 200.dp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TitleOfList(
+    modifier: Modifier,
+    @StringRes textId: Int,
+    onClick: () -> Unit,
+) {
+    ElevatedButton(
+        onClick = onClick,
+        modifier = modifier
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(stringResource(id = textId))
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = "Redirect to chosen list"
             )
         }
     }
 }
 
 @Composable
-private fun ListTitle(
-    modifier: Modifier = Modifier,
-    @StringRes textId: Int,
-//    icon: ImageVector,
-) {
-
-}
-
-@Composable
 private fun CollectionsRowList(
     modifier: Modifier,
     collections: List<UserCollection>,
-    navigateTo: (NavigationRoute) -> Unit
+    navigateTo: (NavigationRoute) -> Unit,
+    onEvent: (ListEvent) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -193,7 +219,7 @@ private fun CollectionsRowList(
                 style = Typography.titleLarge,
             )
             ElevatedButton(
-                onClick = { TODO("создать коллекцию") },
+                onClick = { onEvent(ListEvent.CreateCollection) },
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 20.dp, bottom = 4.dp, top = 4.dp),
@@ -202,7 +228,7 @@ private fun CollectionsRowList(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Create")
+                    Text(stringResource(id = R.string.create))
                     Icon(
                         imageVector = Icons.Default.Add,
                         contentDescription = "Create user collection"

@@ -1,6 +1,6 @@
 package com.example.mymovielibrary.domain.lists.model
 
-data class CollectionDetails(
+data class CollectionDetails( //from collection details
     val id: Int,
     val name: String,
     val description: String,

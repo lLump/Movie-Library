@@ -14,7 +14,7 @@ abstract class BaseRepository {
             Result.Error(getErrorOnCode(e.code()))
         } catch (e: Exception) {
             Log.e("SAFE_API_CALL", e.stackTraceToString())
-            Result.Error(DataError.Message(e.message ?: errorMessage))
+            Result.Error(DataError.Message(e.message ?: e.localizedMessage ?: errorMessage))
         }
     }
 

@@ -4,7 +4,6 @@ import com.example.mymovielibrary.domain.lists.model.CollectionDetails
 
 data class CollectionState(
     val isLoading: Boolean = true,
-//    val collection: CollectionDetails? = null,
     val collection: CollectionDetails = CollectionDetails(
         id = 0,
         name = "",

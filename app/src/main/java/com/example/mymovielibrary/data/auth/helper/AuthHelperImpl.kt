@@ -1,14 +1,14 @@
 package com.example.mymovielibrary.data.auth.helper
 
+import com.example.mymovielibrary.data.auth.repository.AuthRepoImpl
+import com.example.mymovielibrary.data.auth.repository.UserTmdbInfoImpl
 import com.example.mymovielibrary.data.storage.TmdbData
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
-import com.example.mymovielibrary.domain.auth.repository.AuthRepository
-import com.example.mymovielibrary.domain.auth.repository.LocalUserInfo
 import com.example.mymovielibrary.domain.base.helper.BaseHelper
 
 class AuthHelperImpl(
-    private val authRepo: AuthRepository,
-    private val userInfo: LocalUserInfo,
+    private val authRepo: AuthRepoImpl,
+    private val userInfo: UserTmdbInfoImpl,
 ) : AuthHelper, BaseHelper() {
 
 //    private fun guestLogin() {
@@ -18,7 +18,10 @@ class AuthHelperImpl(
 //        }
 //    }
 
-    override suspend fun logout() { userInfo.clearInfo() }
+    override suspend fun logout() {
+        authRepo.logout()
+        userInfo.clearInfo()
+    }
 
     override suspend fun getRequestToken() = request { authRepo.createRequestTokenV4() } ?: "noToken"
 
@@ -31,6 +34,6 @@ class AuthHelperImpl(
             this.accessToken = token
             this.sessionId = sessionId
         }
-        userInfo.saveUserInfo(accountId, sessionId) //local save into prefs
+        userInfo.saveUserInfo(accountId, sessionId, token) //local save into prefs
     }
 }

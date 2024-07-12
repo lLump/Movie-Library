@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.data.lists.model
+package com.example.mymovielibrary.data.lists.model.collection
 
 import com.squareup.moshi.JsonClass
 

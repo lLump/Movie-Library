@@ -1,12 +1,12 @@
 package com.example.mymovielibrary.domain.base.viewModel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.mymovielibrary.domain.model.DataError
+import com.example.mymovielibrary.domain.model.Result
 import com.example.mymovielibrary.presentation.ui.util.UiEvent
-import kotlinx.coroutines.Dispatchers
+import com.example.mymovielibrary.presentation.ui.util.uiText.asErrorUiText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 
 abstract class BaseViewModel: ViewModel() {
     private val eventChannel = Channel<UiEvent>()
@@ -14,5 +14,15 @@ abstract class BaseViewModel: ViewModel() {
 
     suspend fun sendUiEvent(event: UiEvent) {
         eventChannel.send(event)
+    }
+
+    suspend fun <D> request(request: suspend () -> Result<D, DataError>): D? {
+        return when (val result = request.invoke()) {
+            is Result.Success -> result.data
+            is Result.Error -> {
+                eventChannel.send(UiEvent.Error(result.asErrorUiText()))
+                null
+            }
+        }
     }
 }
