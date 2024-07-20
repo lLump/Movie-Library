@@ -1,6 +1,6 @@
 package com.example.mymovielibrary.data.lists.adapter
 
-import com.example.mymovielibrary.data.lists.model.MediaItemResponse
+import com.example.mymovielibrary.data.lists.model.media.MediaItemResponse
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonQualifier

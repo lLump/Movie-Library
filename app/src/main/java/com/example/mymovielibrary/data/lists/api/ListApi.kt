@@ -1,9 +1,8 @@
 package com.example.mymovielibrary.data.lists.api
 
-import com.example.mymovielibrary.data.lists.model.CollectionDetailsResponse
-import com.example.mymovielibrary.data.lists.model.MoviesResponse
-import com.example.mymovielibrary.data.lists.model.TVShowsResponse
-import com.example.mymovielibrary.data.lists.model.UserCollectionsResponse
+import com.example.mymovielibrary.data.lists.model.collection.UserCollectionsResponse
+import com.example.mymovielibrary.data.lists.model.media.MoviesResponse
+import com.example.mymovielibrary.data.lists.model.media.TVShowsResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -11,9 +10,6 @@ interface ListApi {
     // Collections
     @GET("4/account/{account_object_id}/lists")
     suspend fun getUserCollections(@Path("account_object_id") accountId: String): UserCollectionsResponse
-
-    @GET("4/list/{list_id}")
-    suspend fun getCollectionDetails(@Path("list_id") listId: Int): CollectionDetailsResponse
     // Collections
 
     // Favorites

@@ -17,22 +17,30 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.filled.Bookmarks
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -45,13 +53,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -59,36 +68,41 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
-import com.example.mymovielibrary.domain.model.events.AccountEvent
+import com.example.mymovielibrary.domain.image.ProfileSize
+import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
-import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
-import com.example.mymovielibrary.presentation.ui.theme.Typography
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Lists
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalList
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
 import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
 import com.example.mymovielibrary.presentation.ui.profile.state.UserType
+import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
+import com.example.mymovielibrary.presentation.ui.theme.Typography
 import com.example.mymovielibrary.presentation.ui.util.ShowToast
 import com.example.mymovielibrary.presentation.ui.util.UiEvent
 
 @Composable
 fun ProfileScreen(
-    padding: PaddingValues,
+    viewModel: ProfileViewModel = hiltViewModel(),
     redirectToUrl: (String) -> Unit,
+    navigateTo: (NavigationRoute) -> Unit,
     isFromApproving: Boolean
 ) {
-    val viewModel: ProfileViewModel = hiltViewModel()
     val profile by viewModel.profileState.collectAsState()
     val uiEvents by viewModel.events.collectAsState(UiEvent.Initial)
 
     if (profile.userDetails is UserType.Guest) { // if guest -> observe token
         ObserveToken(LocalLifecycleOwner.current, viewModel.token, redirectToUrl)
     } else { // при LoadUserDetails происходит 401 из-за чего в тоаст идет ошибка, и только потом userType.LoggedIn
-             // и только после approveToken загружаются детали. В else после approve немного медленее работает (loadUserDetails)
+             // и только после approveToken загружаются детали. В else после approve немного медленее работает (loadUserScreen)
         LaunchedEffect(Unit) {
-            viewModel.onEvent(ProfileEvent.LoadUserDetails) // load details if not guest
+            viewModel.onEvent(ProfileEvent.LoadUserScreen)  // load details if not guest
             if (isFromApproving) {                          // check if user from login
                 viewModel.onEvent(AuthEvent.ApproveToken)   // approving also load details
             }
@@ -104,16 +118,18 @@ fun ProfileScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(padding)
     ) {
         when (profile.userDetails) {
             is UserType.LoggedIn -> {
-                UserProfile((profile.userDetails as UserType.LoggedIn).profile)
+                UserProfile((profile.userDetails as UserType.LoggedIn).profile, profile.userStats, navigateTo)
                 IconButton(
                     modifier = Modifier.align(Alignment.TopEnd),
                     onClick = { viewModel.onEvent(AuthEvent.Logout) }
                 ) {
-                    Icon(Icons.Default.Settings, contentDescription = "Settings screen")
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings screen"
+                    )
                 }
             }
 
@@ -142,10 +158,11 @@ fun ProfileScreen(
 }
 
 @Composable
-private fun UserProfile(user: ProfileDisplay) {
+private fun UserProfile(user: ProfileDisplay, stats: UserStats, toScreen: (NavigationRoute) -> Unit) {
     Column {
         ProfileCard(
             user = user,
+            stats = stats,
             modifier = Modifier
                 .fillMaxSize()
                 .weight(0.3f)
@@ -153,26 +170,89 @@ private fun UserProfile(user: ProfileDisplay) {
                     elevation = 16.dp,
                     shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp),
                 )
-                .padding(bottom = 4.dp) //доп layout снизу (баг?)
+                .padding(bottom = 5.dp) //доп layout снизу (баг?)
                 .background(
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
                 )
         )
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .weight(0.7f)
-                .padding(start = 12.dp, bottom = 12.dp, end = 12.dp)
-                .background((Color.Yellow), RoundedCornerShape(16.dp))
+                .shadow(
+                    elevation = 16.dp,
+                    shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+                )
+                .padding(top = 5.dp)
+                .background(
+                    color = (MaterialTheme.colorScheme.onSecondary),
+                    shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+                )
         ) {
+            val btnModifier = Modifier
+                .weight(0.25f)
+                .padding(top = 16.dp, start = 8.dp, end = 8.dp)
+                .alpha(0.5f)
+            ListButton(modifier = btnModifier, textId = R.string.my_lists, icon = Icons.AutoMirrored.Filled.List) {
+                toScreen(Lists)
+            }
+            ListButton(modifier = btnModifier, textId = R.string.watchlist, icon = Icons.Default.Bookmarks) {
+                toScreen(UniversalList(ListType.WATCHLIST.route))
+            }
+            ListButton(modifier = btnModifier, textId = R.string.rated, icon = Icons.Default.Star) {
+                toScreen(UniversalList(ListType.RATED.route))
+            }
+            ListButton(modifier = btnModifier,textId = R.string.favorite, icon = Icons.Default.Favorite) {
+                toScreen(UniversalList(ListType.FAVORITE.route))
+            }
+            Spacer(modifier = Modifier.weight(0.8f))
+        }
+        //TODO сделать цвет такой же как и фон коламна
+        Spacer(modifier = Modifier //instead of bottomBar padding
+            .weight(0.107f)
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.onSecondary)
+        )
+    }
+}
 
+@Composable
+private fun ListButton(modifier: Modifier, @StringRes textId: Int, icon: ImageVector, onClick: () -> Unit) {
+    OutlinedButton(
+        onClick = onClick,
+        shape = RoundedCornerShape(12.dp),
+        modifier = modifier,
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 0.dp, bottom = 0.dp),
+        colors = ButtonDefaults.filledTonalButtonColors(),
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = "Some icon list",
+//                tint = Color.White,
+                modifier = Modifier
+                    .padding(top = 11.dp, bottom = 11.dp)
+                    .aspectRatio(1f)
+                    .fillMaxHeight()
+            )
+            Spacer(modifier = Modifier.width(16.dp)) //отступ между текстом и иконкой
+            Text(text = stringResource(id = textId), style = Typography.bodyLarge)
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                contentDescription = "Right arrow to some List",
+            )
         }
     }
 }
 
 @Composable
-private fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
+private fun ProfileCard(modifier: Modifier, user: ProfileDisplay, stats: UserStats) {
     Column(modifier = modifier) {
         Row(
             modifier = Modifier
@@ -186,7 +266,7 @@ private fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
                     .padding(16.dp)
                     .align(Alignment.CenterVertically)
                     .clip(CircleShape),
-                model = "https://image.tmdb.org/t/p/original/" + user.avatarPath,
+                model = ProfileSize.ORIGINAL.url + user.avatarPath,
                 contentDescription = "Profile photo",
             )
             Column(
@@ -203,13 +283,13 @@ private fun ProfileCard(modifier: Modifier, user: ProfileDisplay) {
                 )
             }
         }
-
+        HorizontalDivider(modifier = Modifier.fillMaxWidth())
         MiniUserStat(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(start = 16.dp, end = 16.dp)
                 .weight(0.25f),
-            stats = user.stats
+            stats = stats
         )
     }
 }
@@ -227,7 +307,7 @@ private fun MiniUserStat(
         SingleUserStat(textId = R.string.watched, amount = stats.watched)
         VerticalDivider(modifier = Modifier.fillMaxHeight())
 
-        SingleUserStat(textId = R.string.planned, amount = stats.planned)
+        SingleUserStat(textId = R.string.watchlist, amount = stats.planned)
         VerticalDivider(modifier = Modifier.fillMaxHeight())
 
         SingleUserStat(textId = R.string.rated, amount = stats.rated)
@@ -245,13 +325,15 @@ private fun SingleUserStat(@StringRes textId: Int, amount: String) {
     ) {
         Text(
             text = stringResource(id = textId),
-            style = Typography.bodyMedium
+            style = Typography.bodyMedium,
+            modifier = Modifier.weight(0.3f)
         )
         Text(
             text = amount,
-            style = Typography.bodyLarge,
+            style = Typography.headlineSmall,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
+                .weight(0.6f),
         )
     }
 }

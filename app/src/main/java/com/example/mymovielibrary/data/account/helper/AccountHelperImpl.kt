@@ -1,40 +1,63 @@
 package com.example.mymovielibrary.data.account.helper
 
-import com.example.mymovielibrary.data.storage.TmdbData
-import com.example.mymovielibrary.domain.account.model.LanguageDetails
-import com.example.mymovielibrary.domain.account.repository.AccountRepository
+import com.example.mymovielibrary.data.account.repository.AccountRepoImpl
+import com.example.mymovielibrary.data.storage.Store
 import com.example.mymovielibrary.domain.account.helper.AccountHelper
+import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.base.helper.BaseHelper
+import com.example.mymovielibrary.domain.lists.repository.ListsRepo
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
-import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
 
 class AccountHelperImpl(
-    private val accConfig: AccountRepository,
+    private val accConfig: AccountRepoImpl,
+    private val listsRepo: ListsRepo,
 ) : AccountHelper, BaseHelper() {
 
     override suspend fun loadLanguages(): List<LanguageDetails> {
         val list = request { accConfig.getLanguages() }
         return if (!list.isNullOrEmpty()) {
             list
-        } else  {
+        } else {
             emptyList()
         }
     }
 
     override suspend fun loadProfileData(): ProfileDisplay? {
-            val profileDetails = request { accConfig.getProfileDetails(TmdbData.sessionId) }
-            if (profileDetails == null) {
-                return null //request error
-            } else {
-                val displayProfile = ProfileDisplay(
-                    avatarPath = profileDetails.avatarPath ?: "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg", //default photo path
-                    username = profileDetails.username,
+        val profileDetails = request { accConfig.getProfileDetails(Store.tmdbData.sessionId) }
+        if (profileDetails == null) {
+            return null //request error
+        } else {
+            val displayProfile = ProfileDisplay(
+                avatarPath = profileDetails.avatarPath ?: "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg", //default photo path
+                username = profileDetails.username,
+//                stats = getUserStats(),
 //                    name = profileDetails.name,
-                    stats = UserStats(), //TODO USER STATS
-                    languageIso = profileDetails.languageIso,
-                )
-                TmdbData.accountIdV3 = profileDetails.id
-                return displayProfile
-            }
+                languageIso = profileDetails.languageIso,
+            )
+            Store.tmdbData.accountIdV3 = profileDetails.id
+            return displayProfile
+        }
     }
+
+    override suspend fun getWatchlistSize(): String {
+        val movies = request { listsRepo.getWatchlistMovies() } ?: emptyList()
+        val tvs = request { listsRepo.getWatchlistTvShows() } ?: emptyList()
+
+        return (movies + tvs).size.toString()
+    }
+
+    override suspend fun getRatedSize(): String {
+        val movies = request { listsRepo.getRatedMovies() } ?: emptyList()
+        val tvs = request { listsRepo.getRatedTvShows() } ?: emptyList()
+
+        return (movies + tvs).size.toString()
+    }
+
+    override suspend fun getFavoriteSize(): String {
+        val movies = request { listsRepo.getFavoriteMovies() } ?: emptyList()
+        val tvs = request { listsRepo.getFavoriteTvShows() } ?: emptyList()
+
+        return (movies + tvs).size.toString()
+    }
+
 }

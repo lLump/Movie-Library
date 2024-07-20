@@ -1,9 +1,9 @@
 package com.example.mymovielibrary.di
 
 import com.example.mymovielibrary.data.lists.adapter.ResultsAdapterFactory
-import com.example.mymovielibrary.data.lists.model.MediaItemResponse
-import com.example.mymovielibrary.data.lists.model.MovieResponse
-import com.example.mymovielibrary.data.lists.model.TVShowResponse
+import com.example.mymovielibrary.data.lists.model.media.MediaItemResponse
+import com.example.mymovielibrary.data.lists.model.media.MovieResponse
+import com.example.mymovielibrary.data.lists.model.media.TVShowResponse
 import com.example.mymovielibrary.data.storage.ApiData
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
@@ -22,18 +22,9 @@ class RetrofitModule {
 
     @Provides
     @Singleton
-    fun retrofitDefault(): Retrofit = Retrofit.Builder()
+    fun retrofitDefault(client: OkHttpClient): Retrofit = Retrofit.Builder()
         .baseUrl("https://api.themoviedb.org/")
-        .client(
-            OkHttpClient.Builder()
-                .addInterceptor {
-                    val request = it.request().newBuilder()
-                        .addHeader("accept", "application/json")
-                        .addHeader("Authorization", "Bearer ${ApiData.BEARER}")
-                        .build()
-                    it.proceed(request)
-                }.build()
-        )
+        .client(client)
         .addConverterFactory(
             MoshiConverterFactory.create(
                 Moshi.Builder()
@@ -50,4 +41,13 @@ class RetrofitModule {
         )
         .build()
 
+    @Provides
+    fun httpClient(): OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor {
+            val request = it.request().newBuilder()
+                .addHeader("accept", "application/json")
+                .addHeader("Authorization", "Bearer ${ApiData.BEARER}")
+                .build()
+            it.proceed(request)
+        }.build()
 }

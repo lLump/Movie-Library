@@ -20,12 +20,62 @@
     <string name="not_logged_in">You\'re not logged in</string>
     <string name="please_login">Please login or register to use all features.</string>
         <!--Guest-->
+
     <string name="user_welcome">Welcome,</string>
     <string name="watched">Watched</string>
-    <string name="planned">Planned</string>
+    <string name="watchlist">Watchlist</string>
     <string name="rated">Rated</string>
     <string name="favorite">Favorite</string>
+    <string name="collections">My collections</string>
+    <string name="my_lists">My lists</string>
     <string name="choose_language">Choose language</string>
+    <string name="updated">"Updated: "</string>
     <!--Profile-->
+
+    <!--Lists-->
+    <string name="select_all">Select all</string>
+    <string name="create">Create</string>
+    <!--Lists-->
+
+    <string name="change_collection_background">Change collection poster</string>
+    <string name="clear_collection">Clear collection</string>
+    <string name="delete_collection">Delete collection</string>
+    <string name="edit_collection">Edit collection</string>
+    <string name="add_to">Add to</string>
+    <string name="sort_by">Sort by</string>
+
+    <!--Sort types-->
+    <string name="sort_original_order">Original order</string>
+    <string name="sort_release_date">Release date</string>
+    <string name="sort_primary_release_date">Primary release date</string>
+    <string name="sort_title">Title</string>
+    <string name="sort_rating">Rating</string>
+    <string name="sort_asc">Asc</string>
+    <string name="sort_desc">Desc</string>
+    <!--Sort types-->
+
+    <string name="choose_poster">Choose a poster</string>
+    <string name="choose_movies">Choose movies</string>
+    <string name="apply">Apply</string>
+    <string name="cancel">Cancel</string>
+    <string name="need_to_choose">Pick at least one movie</string>
+    <string name="collection_deleted">Collection deleted</string>
+    <string name="collection_cleared">Collection cleared</string>
+    <string name="collection_create">Create collection</string>
+
+    <string name="name">Name</string>
+    <string name="description">Description</string>
+    <string name="is_public">Public</string>
+
+    <string name="are_you_sure">Are you sure you want to</string>
+    <string name="delete">delete</string>
+    <string name="add">add</string>
+    <string name="clear">clear</string>
+    <string name="media_items">media items</string>
+    <string name="successful_deleted">successfully deleted</string>
+    <string name="successful_added">successfully added</string>
+
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 
 </resources>

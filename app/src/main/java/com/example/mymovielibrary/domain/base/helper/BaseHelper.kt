@@ -1,7 +1,7 @@
 package com.example.mymovielibrary.domain.base.helper
 
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
+import com.example.mymovielibrary.domain.model.handlers.DataError
+import com.example.mymovielibrary.domain.model.handlers.Result
 import com.example.mymovielibrary.presentation.ui.util.UiEvent
 import com.example.mymovielibrary.presentation.ui.util.uiText.asErrorUiText
 

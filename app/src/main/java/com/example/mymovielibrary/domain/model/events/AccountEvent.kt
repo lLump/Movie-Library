@@ -5,7 +5,7 @@ import com.example.mymovielibrary.domain.account.model.LanguageDetails
 sealed interface AccountEvent
 
 sealed interface ProfileEvent: AccountEvent {
-    data object LoadUserDetails : ProfileEvent
+    data object LoadUserScreen : ProfileEvent
     data class SaveLanguage(val language: LanguageDetails) : ProfileEvent
 }
 

@@ -1,13 +1,23 @@
 package com.example.mymovielibrary.presentation.navigation.model
 
+import kotlinx.serialization.Serializable
+
 sealed interface NavigationRoute {
-    operator fun invoke(): String
-}
+    //    NavBar
+    @Serializable
+    data object Home: NavigationRoute
+    @Serializable
+    data object Profile: NavigationRoute
+    @Serializable
+    data object Lists: NavigationRoute
+    //    NavBar
 
-enum class Screen(private val route: String) : NavigationRoute {
-    HOME("home"),
-    PROFILE("profile"),
-    LISTS("favorite");
+    @Serializable
+    data class UniversalList(val listType: String): NavigationRoute
 
-     override operator fun invoke() = route
+    @Serializable
+    data class CollectionDetails(val collectionId: Int): NavigationRoute
+    @Serializable
+    data class MediaDetails(val mediaId: Int): NavigationRoute
+
 }

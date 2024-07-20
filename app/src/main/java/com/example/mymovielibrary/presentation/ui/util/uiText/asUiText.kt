@@ -1,8 +1,8 @@
 package com.example.mymovielibrary.presentation.ui.util.uiText
 
 import com.example.mymovielibrary.R
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
+import com.example.mymovielibrary.domain.model.handlers.DataError
+import com.example.mymovielibrary.domain.model.handlers.Result
 
 fun Result.Error<*, DataError>.asErrorUiText(): UiText {
     return error.asUiText()

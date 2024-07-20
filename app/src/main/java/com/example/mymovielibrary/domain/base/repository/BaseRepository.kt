@@ -1,8 +1,8 @@
 package com.example.mymovielibrary.domain.base.repository
 
 import android.util.Log
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
+import com.example.mymovielibrary.domain.model.handlers.DataError
+import com.example.mymovielibrary.domain.model.handlers.Result
 import retrofit2.HttpException
 
 abstract class BaseRepository {
@@ -14,7 +14,7 @@ abstract class BaseRepository {
             Result.Error(getErrorOnCode(e.code()))
         } catch (e: Exception) {
             Log.e("SAFE_API_CALL", e.stackTraceToString())
-            Result.Error(DataError.Message(e.message ?: errorMessage))
+            Result.Error(DataError.Message(e.message ?: e.localizedMessage ?: errorMessage))
         }
     }
 

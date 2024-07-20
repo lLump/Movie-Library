@@ -1,11 +1,10 @@
 package com.example.mymovielibrary.presentation.ui.profile.state
 
-import com.example.mymovielibrary.domain.account.model.LanguageDetails
-
 data class ProfileState(
-    var userDetails: UserType = UserType.Loading,
-    var tmdbLanguage: LanguageDetails = LanguageDetails("English", "en"),
-    var appLanguage: String = "",
+    val userDetails: UserType = UserType.Loading,
+    val userStats: UserStats = UserStats("", "", "", ""),
+//    val tmdbLanguage: LanguageDetails = LanguageDetails("English", "en"),
+//    val appLanguage: String = "",
 )
 
 sealed interface UserType {
@@ -17,14 +16,13 @@ sealed interface UserType {
 data class ProfileDisplay(
     val username: String,
     val avatarPath: String,
-    val stats: UserStats,
     val languageIso: String,
 )
 
 data class UserStats(
-    val watched: String = "",
-    val planned: String = "",
-    val rated: String = "",
-    val favorite: String = "",
+    val watched: String,
+    val planned: String,
+    val rated: String,
+    val favorite: String,
 )
 

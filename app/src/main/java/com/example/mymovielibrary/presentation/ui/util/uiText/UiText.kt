@@ -4,10 +4,6 @@ import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.example.mymovielibrary.R
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
-import com.example.mymovielibrary.presentation.ui.util.UiEvent
 
 sealed class UiText {
     data class DynamicString(val value: String) : UiText()

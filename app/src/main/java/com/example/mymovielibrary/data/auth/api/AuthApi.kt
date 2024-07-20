@@ -1,12 +1,14 @@
 package com.example.mymovielibrary.data.auth.api
 
 import com.example.mymovielibrary.data.auth.model.AccessTokenV4
+import com.example.mymovielibrary.data.auth.model.DefaultResponse
 import com.example.mymovielibrary.data.auth.model.RequestTokenV4
 import com.example.mymovielibrary.data.auth.model.SessionGuestResponse
 import com.example.mymovielibrary.data.auth.model.SessionResponse
 import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.Header
 import retrofit2.http.POST
 
@@ -24,6 +26,11 @@ interface AuthApi {
         @Body requestBody: RequestBody,
         @Header("content_type") type: String = "application/json"
     ): AccessTokenV4
+
+    @HTTP(method = "DELETE", path = "4/auth/access_token", hasBody = true)
+    suspend fun logout(
+        @Body requestBody: RequestBody,
+    ): DefaultResponse
     // ----------------------------------------- //
 
     // V3 API Below
