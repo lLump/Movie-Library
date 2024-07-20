@@ -1,15 +1,18 @@
 package com.example.mymovielibrary.data.lists.repository
 
-import com.example.mymovielibrary.data.lists.api.ListApi
-import com.example.mymovielibrary.data.storage.TmdbData
+import com.example.mymovielibrary.data.lists.api.MediaManagerApi
+import com.example.mymovielibrary.data.storage.Store
 import com.example.mymovielibrary.domain.base.repository.BaseRepository
-import com.example.mymovielibrary.domain.lists.repository.MediaManager
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
+import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
+import com.example.mymovielibrary.domain.model.handlers.DataError
+import com.example.mymovielibrary.domain.model.handlers.Result
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class MediaManagerRepoImpl(private val api: ListApi): MediaManager, BaseRepository() {
+class MediaManagerRepoRepoImpl(private val api: MediaManagerApi): MediaManagerRepo, BaseRepository() {
+    private val accessToken: String
+        get() = "Bearer ${Store.tmdbData.accessToken}"
+
     override suspend fun addOrDeleteInFavorite(
         mediaId: Int,
         isMovie: Boolean,
@@ -21,7 +24,7 @@ class MediaManagerRepoImpl(private val api: ListApi): MediaManager, BaseReposito
             val body = "{\"media_type\":\"$movieType\",\"media_id\":$mediaId,\"favorite\":$isAdding}".toRequestBody(mediaType)
 
             val response = api.addOrDeleteInFavorite(
-                accountIdV3 = TmdbData.accountIdV3.toString(),
+                accountIdV3 = Store.tmdbData.accountIdV3.toString(),
                 requestBody = body,
             )
 
@@ -40,7 +43,7 @@ class MediaManagerRepoImpl(private val api: ListApi): MediaManager, BaseReposito
             val body = "{\"media_type\":\"$movieType\",\"media_id\":$mediaId,\"watchlist\":$isAdding}".toRequestBody(mediaType)
 
             val response = api.addOrDeleteInWatchlist(
-                accountIdV3 = TmdbData.accountIdV3.toString(),
+                accountIdV3 = Store.tmdbData.accountIdV3.toString(),
                 requestBody = body,
             )
 
@@ -76,7 +79,7 @@ class MediaManagerRepoImpl(private val api: ListApi): MediaManager, BaseReposito
             val mediaType = "application/json".toMediaType()
             val body = jsonBody.toRequestBody(mediaType)
 
-            val response = api.addItemsToCollection(collectionId, body, "Bearer ${TmdbData.accessToken}")
+            val response = api.addItemsToCollection(collectionId, body, accessToken)
 
             response.success
         }

@@ -6,8 +6,8 @@ import com.example.mymovielibrary.data.account.model.toProfileDetails
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.account.model.ProfileDetails
 import com.example.mymovielibrary.domain.base.repository.BaseRepository
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
+import com.example.mymovielibrary.domain.model.handlers.DataError
+import com.example.mymovielibrary.domain.model.handlers.Result
 
 class AccountRepoImpl(private val api: AccountApi) : BaseRepository() {
 

@@ -1,7 +1,7 @@
 package com.example.mymovielibrary.data.auth.api
 
 import com.example.mymovielibrary.data.auth.model.AccessTokenV4
-import com.example.mymovielibrary.data.auth.model.DefaultAnswer
+import com.example.mymovielibrary.data.auth.model.DefaultResponse
 import com.example.mymovielibrary.data.auth.model.RequestTokenV4
 import com.example.mymovielibrary.data.auth.model.SessionGuestResponse
 import com.example.mymovielibrary.data.auth.model.SessionResponse
@@ -30,7 +30,7 @@ interface AuthApi {
     @HTTP(method = "DELETE", path = "4/auth/access_token", hasBody = true)
     suspend fun logout(
         @Body requestBody: RequestBody,
-    ): DefaultAnswer
+    ): DefaultResponse
     // ----------------------------------------- //
 
     // V3 API Below

@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.domain.model
+package com.example.mymovielibrary.domain.model.handlers
 
 sealed interface Result<out D, out E : DataError> {
     data class Success<out D, out E : DataError>(val data: D) : Result<D, E>

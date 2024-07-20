@@ -1,8 +1,8 @@
 package com.example.mymovielibrary.domain.base.viewModel
 
 import androidx.lifecycle.ViewModel
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
+import com.example.mymovielibrary.domain.model.handlers.DataError
+import com.example.mymovielibrary.domain.model.handlers.Result
 import com.example.mymovielibrary.presentation.ui.util.UiEvent
 import com.example.mymovielibrary.presentation.ui.util.uiText.asErrorUiText
 import kotlinx.coroutines.channels.Channel

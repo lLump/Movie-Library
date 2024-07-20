@@ -6,13 +6,15 @@ import com.example.mymovielibrary.data.account.repository.AccountRepoImpl
 import com.example.mymovielibrary.data.auth.api.AuthApi
 import com.example.mymovielibrary.data.auth.repository.AuthRepoImpl
 import com.example.mymovielibrary.data.auth.repository.UserTmdbInfoImpl
+import com.example.mymovielibrary.data.lists.api.CollectionApi
 import com.example.mymovielibrary.data.lists.api.ListApi
+import com.example.mymovielibrary.data.lists.api.MediaManagerApi
 import com.example.mymovielibrary.data.lists.repository.CollectionRepoImpl
-import com.example.mymovielibrary.data.lists.repository.ListRepoImpl
-import com.example.mymovielibrary.data.lists.repository.MediaManagerRepoImpl
+import com.example.mymovielibrary.data.lists.repository.ListsRepoImpl
+import com.example.mymovielibrary.data.lists.repository.MediaManagerRepoRepoImpl
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
-import com.example.mymovielibrary.domain.lists.repository.ListRepo
-import com.example.mymovielibrary.domain.lists.repository.MediaManager
+import com.example.mymovielibrary.domain.lists.repository.ListsRepo
+import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,18 +36,18 @@ class RepositoryModule {
     }
 
     @Provides
-    fun listRepo(api: ListApi): ListRepo {
-        return ListRepoImpl(api)
+    fun listRepo(api: ListApi): ListsRepo {
+        return ListsRepoImpl(api)
     }
 
     @Provides
-    fun collectionRepo(api: ListApi): CollectionRepo {
+    fun collectionRepo(api: CollectionApi): CollectionRepo {
         return CollectionRepoImpl(api)
     }
 
     @Provides
-    fun mediaManager(api: ListApi): MediaManager {
-        return MediaManagerRepoImpl(api)
+    fun mediaManager(api: MediaManagerApi): MediaManagerRepo {
+        return MediaManagerRepoRepoImpl(api)
     }
 
     @Provides

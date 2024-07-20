@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.domain.lists.model
+package com.example.mymovielibrary.domain.lists.model.enums
 
 enum class SortType(val type: String) {
     ORIGINAL_ASCENDING("original_order.asc"),

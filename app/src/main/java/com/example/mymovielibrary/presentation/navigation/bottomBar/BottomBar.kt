@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.presentation.navigation.bar.bottomBar
+package com.example.mymovielibrary.presentation.navigation.bottomBar
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material3.Icon

@@ -1,8 +1,8 @@
 package com.example.mymovielibrary.domain.base.repository
 
 import android.util.Log
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
+import com.example.mymovielibrary.domain.model.handlers.DataError
+import com.example.mymovielibrary.domain.model.handlers.Result
 import retrofit2.HttpException
 
 abstract class BaseRepository {

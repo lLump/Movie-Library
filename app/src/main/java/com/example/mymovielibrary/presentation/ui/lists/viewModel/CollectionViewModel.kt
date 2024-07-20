@@ -2,35 +2,41 @@ package com.example.mymovielibrary.presentation.ui.lists.viewModel
 
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
-import com.example.mymovielibrary.domain.lists.model.ListType
 import com.example.mymovielibrary.domain.lists.model.MediaItem
-import com.example.mymovielibrary.domain.lists.model.SortType
+import com.example.mymovielibrary.domain.lists.model.enums.SortType
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
-import com.example.mymovielibrary.domain.lists.repository.MediaManager
+import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
 import com.example.mymovielibrary.domain.model.events.CollectionEvent
+import com.example.mymovielibrary.domain.model.events.CollectionEvent.ClearCollection
+import com.example.mymovielibrary.domain.model.events.CollectionEvent.DeleteCollection
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.DeleteItems
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.LoadCollection
+import com.example.mymovielibrary.domain.model.events.CollectionEvent.PutItemsInCollection
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.PutItemsInList
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.UpdateCollection
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.UpdateCollectionBackgroundImage
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.UpdateCollectionSortType
 import com.example.mymovielibrary.presentation.ui.lists.state.CollectionState
+import com.example.mymovielibrary.presentation.ui.lists.viewModel.helper.MediaInserter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class CollectionViewModel @Inject constructor(
     private val collectionRepo: CollectionRepo,
-    private val mediaManager: MediaManager,
+    mediaManager: MediaManagerRepo,
 ) : BaseViewModel() {
 
     private val _collectionState = MutableStateFlow(CollectionState())
     val collectionState = _collectionState.asStateFlow()
+
+    private val mediaHelper = MediaInserter(mediaManager)
 
     fun onEvent(event: CollectionEvent) {
         when (event) {
@@ -40,8 +46,35 @@ class CollectionViewModel @Inject constructor(
             is UpdateCollection -> updateCollection(event.name, event.description, event.public)
             is UpdateCollectionSortType -> updateCollectionSortType(event.sortType)
             is UpdateCollectionBackgroundImage -> updateCollectionBackgroundImage(event.backdropPath)
-            is PutItemsInList -> putItemsInSomeList(event.ids, event.listType)
+            is PutItemsInList -> viewModelScope.launch(Dispatchers.IO) {
+                mediaHelper.putOrDeleteItemsInChosenList(
+                    checkedItems = getCheckedItems(event.ids),
+                    listType = event.listType,
+                    isAdding = true
+                )
+            }
+            is PutItemsInCollection -> viewModelScope.launch(Dispatchers.IO) {
+                mediaHelper.addItemsToCollection(
+                    checkedItems = getCheckedItems(event.ids),
+                    collectionId = event.collectionId
+                )
+            }
             is DeleteItems -> deleteCheckedItems(event.ids)
+            is ClearCollection -> clearCollection(event.collectionId)
+            is DeleteCollection -> deleteCollection(event.collectionId)
+        }
+    }
+
+    private fun clearCollection(collectionId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            request { collectionRepo.clearCollection(collectionId) }
+            loadChosenCollection(collectionId) // load list to update the view
+        }
+    }
+
+    private fun deleteCollection(collectionId: Int) {
+        viewModelScope.launch(Dispatchers.IO) {
+            request { collectionRepo.deleteCollection(collectionId) }
         }
     }
 
@@ -57,57 +90,11 @@ class CollectionViewModel @Inject constructor(
         }
     }
 
-    private fun isItemInCollection(collectionId: Int, mediaId: Int, mediaType: String) {
-        viewModelScope.launch {
-            mediaManager.checkIfMediaInCollection(collectionId, mediaId, mediaType)
-        }
-    }
-
-    private fun addItemsToCollection(ids: List<Int>) {
-        viewModelScope.launch {
-            val body = mediasToJson(getCheckedItems(ids))
-            mediaManager.addMediasToCollection(_collectionState.value.collection.id, body)
-        }
-    }
-
-    private fun putItemsInSomeList(ids: List<Int>, listType: ListType) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val itemsToPut = getCheckedItems(ids)
-            when (listType) {
-                ListType.WATCHLIST -> {
-                    itemsToPut.forEach { media ->
-                        mediaManager.addOrDeleteInWatchlist(
-                            mediaId = media.id,
-                            isMovie = media.isMovie,
-                            isAdding = true
-                        )
-                    }
-                }
-                ListType.RATED -> {
-                    itemsToPut.forEach { media ->
-                        mediaManager.addOrDeleteRating( //не реализовано
-                            mediaId = media.id,
-                            isMovie = media.isMovie,
-                            isAdding = true
-                        )
-                    }
-                }
-                ListType.FAVORITE -> {
-                    itemsToPut.forEach { media ->
-                        mediaManager.addOrDeleteInFavorite(
-                            mediaId = media.id,
-                            isMovie = media.isMovie,
-                            isAdding = true
-                        )
-                    }
-                }
-            }
-        }
-    }
-
     private fun deleteCheckedItems(ids: List<Int>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            deleteCheckedItemsInApi(ids)
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                deleteCheckedItemsInApi(ids)
+            }
             deleteCheckedItemsInState(ids)
         }
     }
@@ -135,32 +122,34 @@ class CollectionViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val itemsToDelete = getCheckedItems(ids)
             val body = mediasToJson(itemsToDelete)
-            collectionRepo.deleteItemInCollection(_collectionState.value.collection.id, body)
+            request { collectionRepo.deleteItemInCollection(_collectionState.value.collection.id, body) }
         }
     }
 
     private fun updateCollection(name: String, description: String, public: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            collectionRepo.updateCollectionInfo(
+            val currentId = _collectionState.value.collection.id
+            request { collectionRepo.updateCollectionInfo(
                 name = name,
                 description = description,
                 public = public,
-                collectionId = _collectionState.value.collection.id
-            )
+                collectionId = currentId
+            ) }
+            loadChosenCollection(currentId) // load list to update the view
         }
     }
 
     private fun updateCollectionSortType(sortType: SortType) {
         val currentId = _collectionState.value.collection.id
         viewModelScope.launch(Dispatchers.IO) {
-            collectionRepo.updateCollectionSortType(sortType, currentId)
+            request { collectionRepo.updateCollectionSortType(sortType, currentId) }
             loadChosenCollection(currentId) // load list to update the view
         }
     }
     private fun updateCollectionBackgroundImage(backdropPath: String) {
         val currentId = _collectionState.value.collection.id
         viewModelScope.launch(Dispatchers.IO) {
-            collectionRepo.updateCollectionBackgroundPhoto(backdropPath, currentId)
+            request { collectionRepo.updateCollectionBackgroundPhoto(backdropPath, currentId) }
             loadChosenCollection(currentId) // load list to update the view
         }
     }

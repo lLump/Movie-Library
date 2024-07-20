@@ -1,18 +1,21 @@
 package com.example.mymovielibrary.data.lists.repository
 
-import com.example.mymovielibrary.data.lists.api.ListApi
+import com.example.mymovielibrary.data.lists.api.CollectionApi
 import com.example.mymovielibrary.data.lists.model.collection.toCollectionDetails
-import com.example.mymovielibrary.data.storage.TmdbData
+import com.example.mymovielibrary.data.storage.Store
 import com.example.mymovielibrary.domain.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.lists.model.CollectionDetails
-import com.example.mymovielibrary.domain.lists.model.SortType
+import com.example.mymovielibrary.domain.lists.model.enums.SortType
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
+import com.example.mymovielibrary.domain.model.handlers.DataError
+import com.example.mymovielibrary.domain.model.handlers.Result
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class CollectionRepoImpl(private val api: ListApi) : CollectionRepo, BaseRepository() {
+class CollectionRepoImpl(private val api: CollectionApi) : CollectionRepo, BaseRepository() {
+    private val accessToken: String
+        get() = "Bearer ${Store.tmdbData.accessToken}"
+
     override suspend fun getCollectionDetails(listId: Int): Result<CollectionDetails, DataError> {
         return safeApiCall(errorMessage = "API Collection details ERROR") {
             val response = api.getCollectionDetails(listId)
@@ -29,7 +32,7 @@ class CollectionRepoImpl(private val api: ListApi) : CollectionRepo, BaseReposit
             val response = api.updateCollectionInfo(
                 listId = collectionId,
                 requestBody = body,
-                token = "Bearer ${TmdbData.accessToken}"
+                token = accessToken
             )
             response.success
         }
@@ -43,7 +46,7 @@ class CollectionRepoImpl(private val api: ListApi) : CollectionRepo, BaseReposit
             val response = api.updateCollectionInfo(
                 listId = collectionId,
                 requestBody = body,
-                token = "Bearer ${TmdbData.accessToken}"
+                token = accessToken
             )
 
             response.success
@@ -58,7 +61,7 @@ class CollectionRepoImpl(private val api: ListApi) : CollectionRepo, BaseReposit
             val response = api.updateCollectionInfo(
                 listId = collectionId,
                 requestBody = body,
-                token = "Bearer ${TmdbData.accessToken}"
+                token = accessToken
             )
 
             response.success
@@ -70,8 +73,39 @@ class CollectionRepoImpl(private val api: ListApi) : CollectionRepo, BaseReposit
             val mediaType = "application/json".toMediaType()
             val body = itemsBody.toRequestBody(mediaType)
 
-            val response = api.deleteItemsInCollection(collectionId, body, "Bearer ${TmdbData.accessToken}")
+            val response = api.deleteItemsInCollection(collectionId, body, accessToken)
 
+            response.success
+        }
+    }
+
+    override suspend fun clearCollection(collectionId: Int): Result<Boolean, DataError> {
+        return safeApiCall(errorMessage = "Collection clear Failed") {
+            val response = api.clearCollection(collectionId, accessToken)
+
+            response.success
+        }
+    }
+
+    override suspend fun deleteCollection(collectionId: Int): Result<Boolean, DataError> {
+        return safeApiCall(errorMessage = "Collection deleting unsuccessful") {
+//            val response = api.deleteCollection(collectionId, "Bearer ${Store.tmdbData.accessToken}")
+            val response = api.deleteCollection(
+                collectionId,
+                token = accessToken,
+                sessionId = Store.tmdbData.sessionId
+            )
+
+            response.success
+        }
+    }
+
+    override suspend fun createCollection(name: String, description: String, isPublic: Boolean): Result<Boolean, DataError> {
+        return safeApiCall(errorMessage = "Collection creating Failed") {
+            val mediaType = "application/json".toMediaType()
+            val body = "{\"description\":\"$description\",\"name\":\"$name\",\"iso_3166_1\":\"${Store.tmdbData.iso3166}\",\"iso_639_1\":\"${Store.tmdbData.iso639}\",\"public\":$isPublic}".toRequestBody(mediaType)
+
+            val response = api.createCollection(body, accessToken)
             response.success
         }
     }

@@ -2,15 +2,15 @@ package com.example.mymovielibrary.data.auth.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.mymovielibrary.data.storage.TmdbData
-import com.example.mymovielibrary.data.storage.TmdbData.clear
+import com.example.mymovielibrary.data.storage.Store
+import com.example.mymovielibrary.data.storage.Store.clear
 
 class UserTmdbInfoImpl(context: Context) {
     private val sharedPrefs: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
     private val editor = sharedPrefs.edit()
 
     fun clearInfo() {
-        TmdbData.clear()
+        Store.tmdbData.clear()
         editor.clear().apply()
     }
 
@@ -26,10 +26,10 @@ class UserTmdbInfoImpl(context: Context) {
     fun getLocalSaveUserInfoIfExist() {
         getInfoIfExist { isSaved, accountId, sessionId, token ->
             if (isSaved) {
-                TmdbData.run {
-                    this.accountIdV4 = accountId
-                    this.sessionId = sessionId
-                    this.accessToken = token
+                Store.run {
+                    this.tmdbData.accountIdV4 = accountId
+                    this.tmdbData.sessionId = sessionId
+                    this.tmdbData.accessToken = token
                     //TODO language ISO
                 }
             }
@@ -41,6 +41,7 @@ class UserTmdbInfoImpl(context: Context) {
         val sessionId = sharedPrefs.getString("session_id", "noSessionId") as String
         val accessToken = sharedPrefs.getString("access_token", "noToken") as String
 
+        //fixme (always true)
         if (accountId.isNotEmpty() || sessionId.isNotEmpty() || accessToken.isNotEmpty()) {
             info(true, accountId, sessionId, accessToken)
         } else info(false, accountId, sessionId, accessToken)

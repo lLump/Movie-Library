@@ -50,21 +50,29 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
+import com.example.mymovielibrary.domain.image.BackdropSize
 import com.example.mymovielibrary.domain.lists.model.CollectionDetails
 import com.example.mymovielibrary.domain.model.events.CollectionEvent
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
+import com.example.mymovielibrary.presentation.ui.lists.model.UiDialogType
 import com.example.mymovielibrary.presentation.ui.lists.model.UiModeType
+import com.example.mymovielibrary.presentation.ui.lists.screen.additional.BackdropChooseScreen
+import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.AddMediasDialog
+import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.CollectionDialog
+import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.ConfirmDialog
+import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.ConfirmDialogOptions
+import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.SortDialog
 import com.example.mymovielibrary.presentation.ui.lists.state.CollectionState
-import com.example.mymovielibrary.presentation.ui.lists.util.AddMediasDialog
 import com.example.mymovielibrary.presentation.ui.lists.util.CollectionMark
 import com.example.mymovielibrary.presentation.ui.lists.util.MediaListItem
-import com.example.mymovielibrary.presentation.ui.lists.util.SortDialog
 import com.example.mymovielibrary.presentation.ui.theme.Typography
+import com.example.mymovielibrary.presentation.ui.util.showToast
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,20 +81,21 @@ fun ChosenCollectionScreen(
     state: CollectionState,
     collectionId: Int,
     onBackPress: () -> Unit,
-    navigateTo: (NavigationRoute) -> Unit
+    navigateTo: (NavigationRoute) -> Unit,
 ) {
 
     LaunchedEffect(Unit) {
         onEvent(CollectionEvent.LoadCollection(collectionId))
     }
 
-    var uiMode by remember { mutableStateOf(UiModeType.Default)}
+    var uiMode by remember { mutableStateOf(UiModeType.DEFAULT) }
+    var currentDialog by remember { mutableStateOf(UiDialogType.NO_DIALOG) }
+    var confirmDialogOptions by remember { mutableStateOf(ConfirmDialogOptions.DEFAULT)}
 
-    var isShowAddDialog by remember { mutableStateOf(false) }
-    var isShowSortDialog by remember { mutableStateOf(false) }
     var expandedMenu by remember { mutableStateOf(false) }
-
     var checkedItems by remember { mutableStateOf(listOf<Int>()) }
+
+    val context = LocalContext.current //fixme
 
     Scaffold(
         topBar = {
@@ -94,109 +103,203 @@ fun ChosenCollectionScreen(
                 title = {
                     Text(
                         text = when (uiMode) {
-                            UiModeType.Default -> state.collection.name
-                            UiModeType.EditMode -> stringResource(id = R.string.choose_movie)
-                            UiModeType.PickingBackgroundImage -> stringResource(id = R.string.choose_movies)
+                            UiModeType.DEFAULT -> state.collection.name
+                            UiModeType.EDIT_MODE -> stringResource(id = R.string.choose_movies)
+                            UiModeType.PICKING_BACKDROP -> stringResource(id = R.string.choose_poster)
                         }
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBackPress ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back button")
+                    IconButton(
+                        onClick = if (uiMode == UiModeType.PICKING_BACKDROP) {
+                            { uiMode = UiModeType.DEFAULT }
+                        } else onBackPress
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back button"
+                        )
                     }
                 },
                 actions = {
                     when (uiMode) {
-                        UiModeType.Default -> {
-                            IconButton(onClick = { isShowSortDialog = true }) {
+                        UiModeType.DEFAULT -> {
+                            IconButton(onClick = { currentDialog = UiDialogType.SORT_DIALOG }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.Sort,
                                     contentDescription = "Edit sortType in collection"
                                 )
                             }
-                            IconButton(onClick = { uiMode = UiModeType.EditMode }) {
+                            IconButton(onClick = { uiMode = UiModeType.EDIT_MODE }) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
                                     contentDescription = "Edit Collection"
                                 )
                             }
-                            IconButton(onClick = { expandedMenu = true } ) {
-                                Icon(Icons.Default.MoreVert, contentDescription = "Collection Action")
+                            IconButton(onClick = { expandedMenu = true }) {
+                                Icon(
+                                    Icons.Default.MoreVert,
+                                    contentDescription = "Collection Action"
+                                )
                             }
                             DropdownMenu(
                                 expanded = expandedMenu,
                                 onDismissRequest = { expandedMenu = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text(text = stringResource(id = R.string.change_collection_background))},
+                                    text = { Text(text = stringResource(id = R.string.edit_collection)) },
                                     onClick = {
                                         expandedMenu = false
-                                        uiMode = UiModeType.PickingBackgroundImage
+                                        currentDialog = UiDialogType.EDIT_DIALOG
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text(text = stringResource(id = R.string.clear_collection))},
+                                    text = { Text(text = stringResource(id = R.string.change_collection_background)) },
                                     onClick = {
                                         expandedMenu = false
-
+                                        uiMode = UiModeType.PICKING_BACKDROP
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text(text = stringResource(id = R.string.delete_collection))},
+                                    text = { Text(text = stringResource(id = R.string.clear_collection)) },
                                     onClick = {
                                         expandedMenu = false
-
+                                        confirmDialogOptions = ConfirmDialogOptions.CLEAR_COLLECTION
+                                        currentDialog = UiDialogType.CONFIRM_DIALOG
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(text = stringResource(id = R.string.delete_collection)) },
+                                    onClick = {
+                                        expandedMenu = false
+                                        confirmDialogOptions = ConfirmDialogOptions.DELETE_COLLECTION
+                                        currentDialog = UiDialogType.CONFIRM_DIALOG
                                     }
                                 )
                             }
                         }
-                        UiModeType.EditMode -> {
+
+                        UiModeType.EDIT_MODE -> {
                             IconButton(onClick = {
-                                onEvent(CollectionEvent.DeleteItems(checkedItems))
-                                uiMode = UiModeType.Default
+                                if (checkedItems.isEmpty()) {
+                                    showToast(context, R.string.need_to_choose)
+                                } else {
+                                    confirmDialogOptions = ConfirmDialogOptions.DELETE_MEDIAS
+                                    currentDialog = UiDialogType.CONFIRM_DIALOG
+                                }
                             }) {
-                                Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete from Edit List")
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete from Edit List"
+                                )
                             }
                             IconButton(onClick = {
-                                //сделать по клику вместо PutItems, выбор листа куда добавить выбранные итемы (диалог?)
-//                                onEvent(CollectionEvent.PutItemsInList(checkedItems, ListType.COLLECTION))
-                                isShowAddDialog = true
-                                uiMode = UiModeType.Default
+                                if (checkedItems.isEmpty()) {
+                                    showToast(context, R.string.need_to_choose)
+                                } else {
+                                    currentDialog = UiDialogType.ADD_DIALOG
+                                    uiMode = UiModeType.DEFAULT
+                                }
                             }) {
-                                Icon(imageVector = Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = "Add from Edit List")
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+                                    contentDescription = "Add from Edit List"
+                                )
                             }
                             IconButton(onClick = {
-                                uiMode = UiModeType.Default
+                                uiMode = UiModeType.DEFAULT
                                 checkedItems = listOf() //clear checked when exit
                             }) {
-                                Icon(imageVector = Icons.Default.Close, contentDescription = "Exit from Edit Collection")
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Exit from Edit Collection"
+                                )
                             }
                         }
-                        UiModeType.PickingBackgroundImage -> {
+
+                        UiModeType.PICKING_BACKDROP -> {
                             IconButton(onClick = {
-                                uiMode = UiModeType.Default
+                                uiMode = UiModeType.DEFAULT
                             }) {
-                                Icon(imageVector = Icons.Default.Close, contentDescription = "Exit from Choosing backdrop_path")
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "Exit from Choosing backdrop_path"
+                                )
                             }
                         }
                     }
                 }
             )
-            if (isShowAddDialog) {
-                AddMediasDialog(
-                    onDismiss = { isShowSortDialog = false },
-                    onSuccess = { listType ->
-                        onEvent(CollectionEvent.PutItemsInList(checkedItems, listType))
-                    }
-                )
-            }
-            if (isShowSortDialog) {
-                SortDialog(
-                    onDismiss = { isShowSortDialog = false },
+            when (currentDialog) {
+                UiDialogType.ADD_DIALOG -> {
+                    val toastText = "${checkedItems.count()} " + context.getString(R.string.media_items) + " " + context.getString(R.string.successful_added)
+
+                    AddMediasDialog(
+                        currentCollectionId = collectionId,
+                        onDismiss = {
+                            checkedItems = listOf()
+                            currentDialog = UiDialogType.NO_DIALOG
+                        },
+                        onListChosen = { listType ->
+                            onEvent(CollectionEvent.PutItemsInList(checkedItems, listType))
+                            showToast(context, toastText)
+                        },
+                        onCollectionChosen = { collectionId ->
+                            onEvent(CollectionEvent.PutItemsInCollection(checkedItems,collectionId))
+                            showToast(context, toastText)
+                        }
+                    )
+                }
+
+                UiDialogType.SORT_DIALOG -> SortDialog(
+                    onDismiss = { currentDialog = UiDialogType.NO_DIALOG },
                     onSuccess = { sortType ->
                         onEvent(CollectionEvent.UpdateCollectionSortType(sortType))
                     }
                 )
+
+                UiDialogType.EDIT_DIALOG -> CollectionDialog(
+                    collectionName = state.collection.name,
+                    collectionDescription = state.collection.description,
+                    isPublic = state.collection.public,
+                    onDismiss = { currentDialog = UiDialogType.NO_DIALOG },
+                    onSuccess = { name, description, isPublic ->
+                        onEvent(CollectionEvent.UpdateCollection(name, description, isPublic))
+                    }
+                )
+                UiDialogType.CONFIRM_DIALOG -> {
+                    ConfirmDialog(
+                        onDismiss = { currentDialog = UiDialogType.NO_DIALOG },
+                        onSuccess = {
+                            when (confirmDialogOptions) {
+                                ConfirmDialogOptions.DELETE_COLLECTION -> {
+                                    onEvent(CollectionEvent.DeleteCollection(collectionId))
+                                    showToast(context, R.string.collection_deleted)
+                                    onBackPress()
+                                }
+
+                                ConfirmDialogOptions.CLEAR_COLLECTION -> {
+                                    onEvent(CollectionEvent.ClearCollection(collectionId))
+                                    showToast(context, R.string.collection_cleared)
+                                }
+
+                                ConfirmDialogOptions.DELETE_MEDIAS -> {
+                                    onEvent(CollectionEvent.DeleteItems(checkedItems))
+                                    showToast(
+                                        context = context,
+                                        text = "${checkedItems.count()} " + context.getString(R.string.media_items) + " " + context.getString(R.string.successful_deleted))
+                                    uiMode = UiModeType.DEFAULT
+                                    checkedItems = listOf()
+                                }
+
+                                ConfirmDialogOptions.DEFAULT -> {}
+                            }
+                        },
+                        dialogOptions = confirmDialogOptions,
+                        itemCount = checkedItems.count()
+                    )
+                }
+                UiDialogType.NO_DIALOG -> {}
             }
         }
     ) { innerPadding ->
@@ -212,22 +315,32 @@ fun ChosenCollectionScreen(
                         .padding(top = 16.dp)
                 )
             } else {
-                CollectionScreenContent(
-                    state = state,
-                    navigateTo = navigateTo,
-                    uiMode = uiMode,
-                    itemChecked = { checkedItem ->
-                        if (checkedItem in checkedItems) {
-                            checkedItems = checkedItems.filter { it != checkedItem }
-                        } else {
-                            checkedItems = checkedItems + checkedItem
+                if (uiMode == UiModeType.PICKING_BACKDROP) {
+                    BackdropChooseScreen(
+                        urls = state.collection.movies.map { it.backdropPath },
+                        onChoose = { imageUrl ->
+                            onEvent(CollectionEvent.UpdateCollectionBackgroundImage(imageUrl))
+                            uiMode = UiModeType.DEFAULT
                         }
-                    },
-                    imageSelected = { imagePath ->
-                        onEvent(CollectionEvent.UpdateCollectionBackgroundImage(imagePath))
-                        uiMode = UiModeType.Default
-                    }
-                )
+                    )
+                } else {
+                    CollectionScreenContent(
+                        state = state,
+                        navigateTo = navigateTo,
+                        uiMode = uiMode,
+                        itemChecked = { checkedItem ->
+                            if (checkedItem in checkedItems) {
+                                checkedItems = checkedItems.filter { it != checkedItem }
+                            } else {
+                                checkedItems = checkedItems + checkedItem
+                            }
+                        },
+                        imageSelected = { imagePath ->
+                            onEvent(CollectionEvent.UpdateCollectionBackgroundImage(imagePath))
+                            uiMode = UiModeType.DEFAULT
+                        }
+                    )
+                }
             }
         }
     }
@@ -237,10 +350,10 @@ fun ChosenCollectionScreen(
 private fun CollectionScreenContent(
     state: CollectionState,
     navigateTo: (NavigationRoute) -> Unit,
-    uiMode: UiModeType = UiModeType.Default,
+    uiMode: UiModeType = UiModeType.DEFAULT,
     itemChecked: (Int) -> Unit,
     imageSelected: (String) -> Unit,
-    ) {
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -282,16 +395,16 @@ private fun CollectionScreenContent(
                                 .clip(RoundedCornerShape(12.dp))
                                 .clickable {
                                     when (uiMode) {
-                                        UiModeType.Default -> {
+                                        UiModeType.DEFAULT -> {
                                             navigateTo(NavigationRoute.MediaDetails(media.id))
                                         }
 
-                                        UiModeType.EditMode -> {
+                                        UiModeType.EDIT_MODE -> {
                                             itemSelected = !itemSelected
                                             itemChecked(media.id)
                                         }
 
-                                        UiModeType.PickingBackgroundImage -> {
+                                        UiModeType.PICKING_BACKDROP -> {
                                             imageSelected(media.backdropPath)
                                         }
                                     }
@@ -299,15 +412,16 @@ private fun CollectionScreenContent(
                             imageHeight = 130.dp
                         )
                         when (uiMode) {
-                            UiModeType.Default -> itemSelected = false
-                            UiModeType.EditMode -> {
+                            UiModeType.DEFAULT -> itemSelected = false
+                            UiModeType.EDIT_MODE -> {
                                 Checkbox(
                                     modifier = Modifier.align(Alignment.TopEnd),
                                     checked = itemSelected,
-                                    onCheckedChange = { } //nothing because of logic above. Otherwise bugging often
+                                    onCheckedChange = { } //nothing because of logic above. Otherwise bugging often fixme
                                 )
                             }
-                            UiModeType.PickingBackgroundImage -> { }
+
+                            UiModeType.PICKING_BACKDROP -> {}
                         }
                     }
                 }
@@ -330,7 +444,7 @@ private fun CollectionScreenContent(
 private fun Collection(modifier: Modifier, details: CollectionDetails) {
     Box(modifier = modifier) {
         AsyncImage(
-            model = "https://image.tmdb.org/t/p/original/" + details.backdropPath,
+            model = BackdropSize.ORIGINAL.url + details.backdropPath,
             modifier = Modifier
                 .fillMaxSize()
                 .clip(RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)),

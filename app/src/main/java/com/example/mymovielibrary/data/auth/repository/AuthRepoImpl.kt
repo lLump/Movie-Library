@@ -1,10 +1,10 @@
 package com.example.mymovielibrary.data.auth.repository
 
 import com.example.mymovielibrary.data.auth.api.AuthApi
-import com.example.mymovielibrary.data.storage.TmdbData
+import com.example.mymovielibrary.data.storage.Store
 import com.example.mymovielibrary.domain.base.repository.BaseRepository
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
+import com.example.mymovielibrary.domain.model.handlers.DataError
+import com.example.mymovielibrary.domain.model.handlers.Result
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
@@ -37,7 +37,7 @@ class AuthRepoImpl(private val api: AuthApi) : BaseRepository() {
     suspend fun logout(): Result<Boolean, DataError> {
         return safeApiCall("Logout Error") {
             val mediaType = "application/json".toMediaType()
-            val body = "{\"access_token\":\"${TmdbData.accessToken}\"}".toRequestBody(mediaType)
+            val body = "{\"access_token\":\"${Store.tmdbData.accessToken}\"}".toRequestBody(mediaType)
 
             val response = api.logout(body)
 

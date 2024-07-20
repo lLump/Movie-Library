@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.mymovielibrary.domain.image.PosterSize
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
 import com.example.mymovielibrary.presentation.ui.theme.Typography
@@ -87,7 +88,7 @@ fun MediaListItem(
                 .fillMaxWidth()
                 .height(imageHeight),
             contentScale = ContentScale.Crop,
-            model = "https://image.tmdb.org/t/p/original/" + mediaItem.posterPath, //TODO test different sizes
+            model = PosterSize.W342.url + mediaItem.posterPath,
             contentDescription = "MediaListItem",
         )
         Column(

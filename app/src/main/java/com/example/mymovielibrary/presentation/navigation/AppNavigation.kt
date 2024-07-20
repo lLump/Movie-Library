@@ -23,17 +23,21 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.mymovielibrary.domain.lists.model.ListType
-import com.example.mymovielibrary.presentation.ui.profile.screen.ProfileScreen
-import com.example.mymovielibrary.presentation.navigation.bar.bottomBar.MyBottomBar
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.*
-import com.example.mymovielibrary.presentation.ui.lists.screen.ListsScreen
+import com.example.mymovielibrary.domain.lists.model.enums.ListType
+import com.example.mymovielibrary.presentation.navigation.bottomBar.MyBottomBar
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.CollectionDetails
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Home
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Lists
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.MediaDetails
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Profile
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalList
 import com.example.mymovielibrary.presentation.ui.lists.screen.ChosenCollectionScreen
+import com.example.mymovielibrary.presentation.ui.lists.screen.ListsScreen
 import com.example.mymovielibrary.presentation.ui.lists.screen.UniversalListScreen
-import com.example.mymovielibrary.presentation.ui.lists.util.UniversalListScreenInfo
 import com.example.mymovielibrary.presentation.ui.lists.viewModel.CollectionViewModel
 import com.example.mymovielibrary.presentation.ui.lists.viewModel.DefaultListsViewModel
 import com.example.mymovielibrary.presentation.ui.lists.viewModel.ListViewModel
+import com.example.mymovielibrary.presentation.ui.profile.screen.ProfileScreen
 
 @Composable
 fun AppNavigation(isTokenApproved: Boolean) {
@@ -92,13 +96,11 @@ fun AppNavigation(isTokenApproved: Boolean) {
                     UniversalListScreen(
                         onEvent = viewModel::onEvent,
                         state = state,
-                        screenInfo = UniversalListScreenInfo(
-                            listType = listType,
-                            onBackPress = { navController.navigateUp() },
-                            navigateTo = { screen ->
-                                navController.navigate(screen)
-                            }
-                        )
+                        listType = listType,
+                        onBackPress = { navController.navigateUp() },
+                        navigateTo = { screen ->
+                            navController.navigate(screen)
+                        }
                     )
                 }
 

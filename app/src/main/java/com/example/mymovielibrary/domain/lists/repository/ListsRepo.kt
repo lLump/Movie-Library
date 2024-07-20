@@ -3,10 +3,10 @@ package com.example.mymovielibrary.domain.lists.repository
 import com.example.mymovielibrary.domain.lists.model.Movie
 import com.example.mymovielibrary.domain.lists.model.TVShow
 import com.example.mymovielibrary.domain.lists.model.UserCollection
-import com.example.mymovielibrary.domain.model.DataError
-import com.example.mymovielibrary.domain.model.Result
+import com.example.mymovielibrary.domain.model.handlers.DataError
+import com.example.mymovielibrary.domain.model.handlers.Result
 
-interface ListRepo {
+interface ListsRepo {
     // Collections
     suspend fun getUserCollections(): Result<List<UserCollection>, DataError>
     // Collections

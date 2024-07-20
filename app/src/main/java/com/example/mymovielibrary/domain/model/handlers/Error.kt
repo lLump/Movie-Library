@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.domain.model
+package com.example.mymovielibrary.domain.model.handlers
 
 sealed interface DataError {
     data class Message(val error: String): DataError

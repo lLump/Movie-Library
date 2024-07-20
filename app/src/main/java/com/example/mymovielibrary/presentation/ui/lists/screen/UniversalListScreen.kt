@@ -24,35 +24,48 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mymovielibrary.R
-import com.example.mymovielibrary.domain.lists.model.ListType
+import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.model.events.MediaEvent
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
+import com.example.mymovielibrary.presentation.ui.lists.model.UiDialogType
+import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.AddMediasDialog
+import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.ConfirmDialog
+import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.ConfirmDialogOptions
 import com.example.mymovielibrary.presentation.ui.lists.state.ListState
 import com.example.mymovielibrary.presentation.ui.lists.util.MediaGridList
-import com.example.mymovielibrary.presentation.ui.lists.util.UniversalListScreenInfo
+import com.example.mymovielibrary.presentation.ui.util.showToast
 
 @OptIn(ExperimentalMaterial3Api::class) //TopAppBar
 @Composable
 fun UniversalListScreen(
     onEvent: (MediaEvent) -> Unit,
     state: ListState,
-    screenInfo: UniversalListScreenInfo
+    listType: ListType,
+    onBackPress: () -> Unit,
+    navigateTo: (NavigationRoute) -> Unit,
 ) {
     LaunchedEffect(Unit) {
-        onEvent(MediaEvent.LoadChosenList(screenInfo.listType))
+        onEvent(MediaEvent.LoadChosenList(listType))
     }
 
     var isEditMode by remember { mutableStateOf(false) }
+    var currentDialog by remember { mutableStateOf(UiDialogType.NO_DIALOG) }
+//    var confirmDialogOptions by remember { mutableStateOf(ConfirmDialogOptions.DEFAULT)}
+
     var checkedItems by remember { mutableStateOf(listOf<Int>()) }
+
+    val context = LocalContext.current //fixme
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = when (screenInfo.listType) {
+                        text = when (listType) {
                             ListType.WATCHLIST -> stringResource(id = R.string.watchlist)
                             ListType.RATED -> stringResource(id = R.string.rated)
                             ListType.FAVORITE -> stringResource(id = R.string.favorite)
@@ -61,9 +74,9 @@ fun UniversalListScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = screenInfo.onBackPress) {
+                    IconButton(onClick = onBackPress) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back button"
                         )
                     }
@@ -71,19 +84,39 @@ fun UniversalListScreen(
                 actions = {
                     if (isEditMode) {
                         IconButton(onClick = {
-                            onEvent(MediaEvent.DeleteItems(checkedItems, screenInfo.listType))
-                            isEditMode = false
+                            if (checkedItems.isEmpty()) {
+                                showToast(context, R.string.need_to_choose)
+                            } else {
+//                                confirmDialogOptions = ConfirmDialogOptions.DELETE_MEDIAS
+                                currentDialog = UiDialogType.CONFIRM_DIALOG
+                            }
                         }) {
-                            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete from Edit List")
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete from Edit List"
+                            )
                         }
-                        IconButton(onClick = { onEvent(MediaEvent.EditItems(checkedItems, screenInfo.listType)) }) {
-                            Icon(imageVector = Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = "Add from Edit List")
+                        IconButton(onClick = {
+                            if (checkedItems.isEmpty()) {
+                                showToast(context, R.string.need_to_choose)
+                            } else {
+                                currentDialog = UiDialogType.ADD_DIALOG
+                                isEditMode = false
+                            }
+                        }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.PlaylistAdd,
+                                contentDescription = "Add from Edit List"
+                            )
                         }
                         IconButton(onClick = {
                             isEditMode = false
                             checkedItems = listOf() //clear checked when exit
                         }) {
-                            Icon(imageVector = Icons.Default.Close, contentDescription = "Exit from Edit List")
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Exit from Edit List"
+                            )
                         }
                     } else {
                         IconButton(onClick = { isEditMode = true }) {
@@ -92,6 +125,45 @@ fun UniversalListScreen(
                     }
                 }
             )
+            when(currentDialog) {
+                UiDialogType.ADD_DIALOG -> {
+                    val toastText = "${checkedItems.count()} " + context.getString(R.string.media_items) + " " + context.getString(R.string.successful_added)
+                    AddMediasDialog(
+                        currentList = listType,
+                        onDismiss = { currentDialog = UiDialogType.NO_DIALOG },
+                        onListChosen = { listType ->
+                            onEvent(MediaEvent.PutItemsInList(checkedItems, listType))
+                            showToast(context, toastText)
+                        },
+                        onCollectionChosen = { collectionId ->
+                            onEvent(MediaEvent.PutItemsInCollection(checkedItems, collectionId))
+                            showToast(context, toastText)
+                        }
+                    )
+                }
+                UiDialogType.CONFIRM_DIALOG -> ConfirmDialog(
+                    onDismiss = { currentDialog = UiDialogType.NO_DIALOG },
+                    onSuccess = {
+//                        if (confirmDialogOptions == ConfirmDialogOptions.DELETE_MEDIAS) {
+                            onEvent(MediaEvent.DeleteItems(checkedItems, listType))
+                            showToast(
+                                context = context,
+                                text = "${checkedItems.count()} " + context.getString(R.string.media_items) + " " + context.getString(
+                                    R.string.successful_deleted
+                                )
+                            )
+                            isEditMode = false
+                            checkedItems = listOf()
+//                        }
+                    },
+//                    dialogOptions = confirmDialogOptions,
+                    dialogOptions = ConfirmDialogOptions.DELETE_MEDIAS,
+                    itemCount = checkedItems.count()
+                )
+                UiDialogType.EDIT_DIALOG -> {}
+                UiDialogType.SORT_DIALOG -> {}
+                UiDialogType.NO_DIALOG -> {}
+            }
         }
     ) { innerPadding ->
         Box(
@@ -109,7 +181,7 @@ fun UniversalListScreen(
                 MediaGridList(
                     list = state.chosenList,
                     isEditMode = isEditMode,
-                    navigateTo = screenInfo.navigateTo
+                    navigateTo = navigateTo
                 ) { checkedItem ->
                     if (checkedItem in checkedItems) {
                         checkedItems = checkedItems.filter { it != checkedItem }

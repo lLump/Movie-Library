@@ -2,51 +2,77 @@ package com.example.mymovielibrary.presentation.ui.lists.viewModel
 
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
-import com.example.mymovielibrary.domain.lists.model.ListType
 import com.example.mymovielibrary.domain.lists.model.MediaItem
+import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.lists.model.sortedByTitle
-import com.example.mymovielibrary.domain.lists.repository.ListRepo
-import com.example.mymovielibrary.domain.lists.repository.MediaManager
+import com.example.mymovielibrary.domain.lists.repository.ListsRepo
+import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
 import com.example.mymovielibrary.domain.model.events.MediaEvent
 import com.example.mymovielibrary.domain.model.events.MediaEvent.DeleteItems
-import com.example.mymovielibrary.domain.model.events.MediaEvent.EditItems
 import com.example.mymovielibrary.domain.model.events.MediaEvent.LoadChosenList
+import com.example.mymovielibrary.domain.model.events.MediaEvent.PutItemsInCollection
+import com.example.mymovielibrary.domain.model.events.MediaEvent.PutItemsInList
 import com.example.mymovielibrary.presentation.ui.lists.state.ListState
+import com.example.mymovielibrary.presentation.ui.lists.viewModel.helper.MediaInserter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class ListViewModel @Inject constructor(
-    private val listRepo: ListRepo,
-    private val mediaManager: MediaManager,
+    private val listsRepo: ListsRepo,
+    mediaManager: MediaManagerRepo,
 ): BaseViewModel() {
     private val _listState = MutableStateFlow(ListState())
     val listState = _listState.asStateFlow()
 
-//        (detailListHelper as BaseHelper).setCollector(this::sendUiEvent)
+    private val mediaHelper = MediaInserter(mediaManager)
 
     fun onEvent(event: MediaEvent) {
         when (event) {
             is LoadChosenList -> loadChosenList(event.listType)
-            is DeleteItems -> deleteCheckedItems(event.ids, event.type)
-            is EditItems -> editCheckedItems(event.ids, event.type)
+            is DeleteItems -> viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    mediaHelper.putOrDeleteItemsInChosenList(
+                        checkedItems = getCheckedItems(event.ids),
+                        listType = event.listType,
+                        isAdding = false
+                    )
+                }
+                clearChosenItemsInState(event.ids)
+            }
+            is PutItemsInCollection -> viewModelScope.launch(Dispatchers.IO) {
+                mediaHelper.addItemsToCollection(
+                    checkedItems = getCheckedItems(event.ids),
+                    collectionId = event.collectionId
+                )
+            }
+            is PutItemsInList -> viewModelScope.launch(Dispatchers.IO) {
+                mediaHelper.putOrDeleteItemsInChosenList(
+                    checkedItems = getCheckedItems(event.ids),
+                    listType = event.listType,
+                    isAdding = true
+                )
+            }
         }
     }
 
     private fun loadChosenList(listType: ListType) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val currentList = when (listType) {
-                ListType.WATCHLIST -> getWatchlist()
-                ListType.RATED -> getRated()
-                ListType.FAVORITE -> getFavorites()
+        viewModelScope.launch {
+            val currentList = withContext(Dispatchers.IO) {
+                when (listType) {
+                    ListType.WATCHLIST -> getWatchlist()
+                    ListType.RATED -> getRated()
+                    ListType.FAVORITE -> getFavorites()
+                    ListType.COLLECTION -> TODO()
+                }
             }
             _listState.emit(
-                _listState.value.copy(
+                ListState(
                     isLoading = false,
                     chosenList = currentList,
                     currentItems = currentList.size
@@ -56,71 +82,28 @@ class ListViewModel @Inject constructor(
     }
 
     private suspend fun getWatchlist(): List<MediaItem> {
-        val watchMovies = request { listRepo.getWatchlistMovies() } ?: return emptyList()
-        val watchTvs = request { listRepo.getWatchlistTvShows() } ?: return emptyList()
+        val watchMovies = request { listsRepo.getWatchlistMovies() } ?: return emptyList()
+        val watchTvs = request { listsRepo.getWatchlistTvShows() } ?: return emptyList()
         return (watchMovies + watchTvs).sortedByTitle()
     }
 
     private suspend fun getRated(): List<MediaItem> {
-        val ratedMovies = request { listRepo.getRatedMovies() } ?: return emptyList()
-        val ratedTvs = request { listRepo.getRatedTvShows() } ?: return emptyList()
+        val ratedMovies = request { listsRepo.getRatedMovies() } ?: return emptyList()
+        val ratedTvs = request { listsRepo.getRatedTvShows() } ?: return emptyList()
         return (ratedMovies + ratedTvs).sortedByTitle()
     }
 
     private suspend fun getFavorites(): List<MediaItem> {
-        val favMovies = request { listRepo.getFavoriteMovies() } ?: return emptyList()
-        val favTvs = request { listRepo.getFavoriteTvShows() } ?: return emptyList()
+        val favMovies = request { listsRepo.getFavoriteMovies() } ?: return emptyList()
+        val favTvs = request { listsRepo.getFavoriteTvShows() } ?: return emptyList()
         return (favMovies + favTvs).sortedByTitle()
-    }
-
-    private fun editCheckedItems(ids: List<Int>, listType: ListType) {
-        viewModelScope.launch(Dispatchers.IO) {
-//            val itemsToEdit = getCheckedItems(ids)
-//            clearChosenItemsInState(ids, listType)
-
-        }
-    }
-
-    private fun deleteCheckedItems(ids: List<Int>, listType: ListType) {
-        viewModelScope.launch(Dispatchers.IO) {
-            async { deleteCheckedItemsInApi(ids, listType) }.await()
-            async { clearChosenItemsInState(ids) }.await()
-        }
-    }
-
-    private suspend fun deleteCheckedItemsInApi(ids: List<Int>, listType: ListType) {
-        val itemsToDelete = getCheckedItems(ids)
-        when (listType) {
-            ListType.WATCHLIST -> {
-                itemsToDelete.forEach { media ->
-                    mediaManager.addOrDeleteInWatchlist(
-                        mediaId = media.id,
-                        isMovie = media.isMovie,
-                        isAdding = false
-                    )
-                }
-            }
-            ListType.RATED -> {
-                itemsToDelete.forEach { media ->
-                    //TODO rated delete
-                }
-            }
-            ListType.FAVORITE -> {
-                itemsToDelete.forEach { media ->
-                    mediaManager.addOrDeleteInFavorite(
-                        mediaId = media.id,
-                        isMovie = media.isMovie,
-                        isAdding = false
-                    )
-                }
-            }
-        }
     }
 
     private suspend fun clearChosenItemsInState(ids: List<Int>) {
         val newList = _listState.value.chosenList.filter { it.id !in ids }
         _listState.emit(
-            _listState.value.copy(
+            ListState(
+                isLoading = false,
                 chosenList = newList,
                 currentItems = newList.count()
             )
@@ -128,6 +111,6 @@ class ListViewModel @Inject constructor(
     }
 
     private fun getCheckedItems(ids: List<Int>): List<MediaItem> {
-       return _listState.value.chosenList.filter { it.id in ids }
+        return _listState.value.chosenList.filter { it.id in ids }
     }
 }

@@ -3,7 +3,7 @@ package com.example.mymovielibrary.presentation.ui.profile.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.mymovielibrary.data.storage.TmdbData
+import com.example.mymovielibrary.data.storage.Store
 import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.base.helper.BaseHelper
@@ -51,13 +51,13 @@ class ProfileViewModel @Inject constructor(
                     viewModelScope.launch(Dispatchers.IO) {
                         val token = authHelper.getRequestToken()
                         _token.postValue(token)
-                        TmdbData.requestToken = token
+                        Store.tmdbData.requestToken = token
                     }
                 }
                 //not _token.value because of it deletes after approving (redirecting to url -> restart app)
                 ApproveToken -> {
                     viewModelScope.launch(Dispatchers.IO) {
-                        authHelper.finishAuth(TmdbData.requestToken)
+                        authHelper.finishAuth(Store.tmdbData.requestToken)
                         loadProfile()
                     }
                 }
@@ -69,14 +69,14 @@ class ProfileViewModel @Inject constructor(
                                 userDetails = UserType.Guest
                             )
                         )
-                        authHelper.logout() //FIXME incorrect logout request
+                        authHelper.logout()
                     }
                 }
             }
 
             is ProfileEvent -> when (event) {
                 LoadUserScreen -> loadUserScreen()
-                is SaveLanguage -> TmdbData.languageIso = event.language.iso //FIXME
+                is SaveLanguage -> Store.tmdbData.iso639 = event.language.iso //FIXME
             }
         }
     }

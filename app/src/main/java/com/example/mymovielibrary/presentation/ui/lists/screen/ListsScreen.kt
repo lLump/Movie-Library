@@ -1,6 +1,7 @@
 package com.example.mymovielibrary.presentation.ui.lists.screen
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddBox
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Star
@@ -37,6 +38,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,11 +53,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
-import com.example.mymovielibrary.domain.lists.model.ListType
+import com.example.mymovielibrary.domain.image.BackdropSize
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.UserCollection
+import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.model.events.ListEvent
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
+import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.CollectionDialog
 import com.example.mymovielibrary.presentation.ui.lists.state.DefaultListsState
 import com.example.mymovielibrary.presentation.ui.lists.util.CollectionMark
 import com.example.mymovielibrary.presentation.ui.lists.util.MediaListItem
@@ -107,7 +114,7 @@ private fun ListsScreenContent(
                 ),
             collections = state.userCollections,
             onEvent = onEvent,
-            navigateTo = navigateTo
+            navigateTo = navigateTo,
         )
         MediaRowList(
             listTitleId = R.string.watchlist,
@@ -201,8 +208,9 @@ private fun CollectionsRowList(
     modifier: Modifier,
     collections: List<UserCollection>,
     navigateTo: (NavigationRoute) -> Unit,
-    onEvent: (ListEvent) -> Unit
+    onEvent: (ListEvent) -> Unit,
 ) {
+    var isShowCreateDialog by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
     ) {
@@ -218,23 +226,6 @@ private fun CollectionsRowList(
                 text = stringResource(id = R.string.collections),
                 style = Typography.titleLarge,
             )
-            ElevatedButton(
-                onClick = { onEvent(ListEvent.CreateCollection) },
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 20.dp, bottom = 4.dp, top = 4.dp),
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(stringResource(id = R.string.create))
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Create user collection"
-                    )
-                }
-            }
         }
         LazyRow(
             modifier = Modifier.fillMaxSize(),
@@ -246,7 +237,21 @@ private fun CollectionsRowList(
                     navigateTo(NavigationRoute.CollectionDetails(collection.id))
                 }
             }
+            item {
+                CreateCollectionItemList {
+                    isShowCreateDialog = true
+                }
+            }
         }
+    }
+    if (isShowCreateDialog) {
+        CollectionDialog(
+            isCreating = true,
+            onDismiss = { isShowCreateDialog = false },
+            onSuccess = { name, description, isPublic ->
+                onEvent(ListEvent.CreateCollection(name, description, isPublic))
+            }
+        )
     }
 }
 
@@ -263,7 +268,7 @@ private fun CollectionItemList(item: UserCollection, chosenCollection: () -> Uni
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
-                model = "https://image.tmdb.org/t/p/original/" + item.backdropPath,
+                model = BackdropSize.W780.url + item.backdropPath,
                 modifier = Modifier.fillMaxSize(),
 //            clipToBounds = true,
                 contentScale = ContentScale.Crop,
@@ -328,6 +333,29 @@ private fun CollectionItemList(item: UserCollection, chosenCollection: () -> Uni
                     borderSettings = RoundedCornerShape(50, 0, 50, 0),
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun CreateCollectionItemList(onCreate: () -> Unit) {
+    Card(
+        onClick = onCreate,
+        modifier = Modifier
+            .aspectRatio(2f / 1.1f)
+            .clip(MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colorScheme.onPrimary)
+            .fillMaxHeight(),
+        shape = CardDefaults.elevatedShape
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                modifier = Modifier
+                    .fillMaxSize(0.4f)
+                    .align(Alignment.Center),
+                imageVector = Icons.Default.AddBox,
+                contentDescription = "Collection creating"
+            )
         }
     }
 }

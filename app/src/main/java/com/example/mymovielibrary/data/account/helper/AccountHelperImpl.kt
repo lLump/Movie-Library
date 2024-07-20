@@ -1,16 +1,16 @@
 package com.example.mymovielibrary.data.account.helper
 
 import com.example.mymovielibrary.data.account.repository.AccountRepoImpl
-import com.example.mymovielibrary.data.storage.TmdbData
+import com.example.mymovielibrary.data.storage.Store
 import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.base.helper.BaseHelper
-import com.example.mymovielibrary.domain.lists.repository.ListRepo
+import com.example.mymovielibrary.domain.lists.repository.ListsRepo
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
 
 class AccountHelperImpl(
     private val accConfig: AccountRepoImpl,
-    private val listRepo: ListRepo,
+    private val listsRepo: ListsRepo,
 ) : AccountHelper, BaseHelper() {
 
     override suspend fun loadLanguages(): List<LanguageDetails> {
@@ -23,7 +23,7 @@ class AccountHelperImpl(
     }
 
     override suspend fun loadProfileData(): ProfileDisplay? {
-        val profileDetails = request { accConfig.getProfileDetails(TmdbData.sessionId) }
+        val profileDetails = request { accConfig.getProfileDetails(Store.tmdbData.sessionId) }
         if (profileDetails == null) {
             return null //request error
         } else {
@@ -34,28 +34,28 @@ class AccountHelperImpl(
 //                    name = profileDetails.name,
                 languageIso = profileDetails.languageIso,
             )
-            TmdbData.accountIdV3 = profileDetails.id
+            Store.tmdbData.accountIdV3 = profileDetails.id
             return displayProfile
         }
     }
 
     override suspend fun getWatchlistSize(): String {
-        val movies = request { listRepo.getWatchlistMovies() } ?: emptyList()
-        val tvs = request { listRepo.getWatchlistTvShows() } ?: emptyList()
+        val movies = request { listsRepo.getWatchlistMovies() } ?: emptyList()
+        val tvs = request { listsRepo.getWatchlistTvShows() } ?: emptyList()
 
         return (movies + tvs).size.toString()
     }
 
     override suspend fun getRatedSize(): String {
-        val movies = request { listRepo.getRatedMovies() } ?: emptyList()
-        val tvs = request { listRepo.getRatedTvShows() } ?: emptyList()
+        val movies = request { listsRepo.getRatedMovies() } ?: emptyList()
+        val tvs = request { listsRepo.getRatedTvShows() } ?: emptyList()
 
         return (movies + tvs).size.toString()
     }
 
     override suspend fun getFavoriteSize(): String {
-        val movies = request { listRepo.getFavoriteMovies() } ?: emptyList()
-        val tvs = request { listRepo.getFavoriteTvShows() } ?: emptyList()
+        val movies = request { listsRepo.getFavoriteMovies() } ?: emptyList()
+        val tvs = request { listsRepo.getFavoriteTvShows() } ?: emptyList()
 
         return (movies + tvs).size.toString()
     }

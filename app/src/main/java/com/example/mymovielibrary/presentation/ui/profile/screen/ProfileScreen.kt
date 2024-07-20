@@ -72,7 +72,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
-import com.example.mymovielibrary.domain.lists.model.ListType
+import com.example.mymovielibrary.domain.image.ProfileSize
+import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
@@ -265,7 +266,7 @@ private fun ProfileCard(modifier: Modifier, user: ProfileDisplay, stats: UserSta
                     .padding(16.dp)
                     .align(Alignment.CenterVertically)
                     .clip(CircleShape),
-                model = "https://image.tmdb.org/t/p/original/" + user.avatarPath,
+                model = ProfileSize.ORIGINAL.url + user.avatarPath,
                 contentDescription = "Profile photo",
             )
             Column(

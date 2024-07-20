@@ -2,7 +2,7 @@ package com.example.mymovielibrary.data.auth.helper
 
 import com.example.mymovielibrary.data.auth.repository.AuthRepoImpl
 import com.example.mymovielibrary.data.auth.repository.UserTmdbInfoImpl
-import com.example.mymovielibrary.data.storage.TmdbData
+import com.example.mymovielibrary.data.storage.Store
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.base.helper.BaseHelper
 
@@ -29,10 +29,10 @@ class AuthHelperImpl(
         val (accountId, token) = request { authRepo.createAccessTokenV4(requestToken) }
             ?: Pair("noId", "noToken")
         val sessionId = request { authRepo.getSessionIdV4(token) } ?: "noSessionId"
-        TmdbData.run {
-            this.accountIdV4 = accountId
-            this.accessToken = token
-            this.sessionId = sessionId
+        Store.run {
+            this.tmdbData.accountIdV4 = accountId
+            this.tmdbData.accessToken = token
+            this.tmdbData.sessionId = sessionId
         }
         userInfo.saveUserInfo(accountId, sessionId, token) //local save into prefs
     }
