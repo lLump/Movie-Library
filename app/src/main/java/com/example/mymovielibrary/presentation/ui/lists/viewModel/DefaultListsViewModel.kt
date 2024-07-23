@@ -1,14 +1,14 @@
 package com.example.mymovielibrary.presentation.ui.lists.viewModel
 
 import androidx.lifecycle.viewModelScope
-import com.example.mymovielibrary.data.storage.Store
+import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.model.sortedByTitle
 import com.example.mymovielibrary.domain.lists.repository.ListsRepo
 import com.example.mymovielibrary.domain.model.events.ListEvent
 import com.example.mymovielibrary.domain.model.events.ListEvent.CreateCollection
 import com.example.mymovielibrary.domain.model.events.ListEvent.LoadScreen
-import com.example.mymovielibrary.domain.use_cases.CollectionCreatorInterface
+import com.example.mymovielibrary.domain.use_cases.CollectionCreator
 import com.example.mymovielibrary.presentation.ui.lists.state.DefaultListsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DefaultListsViewModel @Inject constructor(
     private val listsRepo: ListsRepo,
-    private val collectionCreator: CollectionCreatorInterface
+    private val collectionCreator: CollectionCreator
 ): BaseViewModel() {
 
     private val _listsState = MutableStateFlow(DefaultListsState())

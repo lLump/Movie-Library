@@ -3,7 +3,7 @@ package com.example.mymovielibrary.presentation.ui.profile.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.mymovielibrary.data.storage.Store
+import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.base.helper.BaseHelper
@@ -12,7 +12,6 @@ import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent.ApproveToken
 import com.example.mymovielibrary.domain.model.events.AuthEvent.Login
-import com.example.mymovielibrary.domain.model.events.AuthEvent.Logout
 import com.example.mymovielibrary.domain.model.events.ProfileEvent
 import com.example.mymovielibrary.domain.model.events.ProfileEvent.LoadUserScreen
 import com.example.mymovielibrary.domain.model.events.ProfileEvent.SaveLanguage
@@ -62,16 +61,16 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
 
-                Logout -> {
-                    viewModelScope.launch(Dispatchers.IO) {
-                        _profileState.emit(
-                            _profileState.value.copy(
-                                userDetails = UserType.Guest
-                            )
-                        )
-                        authHelper.logout()
-                    }
-                }
+//                Logout -> {
+//                    viewModelScope.launch(Dispatchers.IO) {
+//                        _profileState.emit(
+//                            _profileState.value.copy(
+//                                userDetails = UserType.Guest
+//                            )
+//                        )
+//                        authHelper.logout()
+//                    }
+//                }
             }
 
             is ProfileEvent -> when (event) {

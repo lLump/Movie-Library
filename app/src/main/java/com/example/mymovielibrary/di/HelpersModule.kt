@@ -1,10 +1,10 @@
 package com.example.mymovielibrary.di
 
-import com.example.mymovielibrary.data.account.helper.AccountHelperImpl
-import com.example.mymovielibrary.data.account.repository.AccountRepoImpl
-import com.example.mymovielibrary.data.auth.helper.AuthHelperImpl
-import com.example.mymovielibrary.data.auth.repository.AuthRepoImpl
-import com.example.mymovielibrary.data.auth.repository.UserTmdbInfoImpl
+import com.example.mymovielibrary.data.remote.account.helper.AccountHelperImpl
+import com.example.mymovielibrary.data.remote.account.repository.AccountRepoImpl
+import com.example.mymovielibrary.data.remote.auth.helper.AuthHelperImpl
+import com.example.mymovielibrary.data.remote.auth.repository.AuthRepoImpl
+import com.example.mymovielibrary.data.local.UserTmdbInfoImpl
 import com.example.mymovielibrary.domain.account.helper.AccountHelper
 import com.example.mymovielibrary.domain.auth.helper.AuthHelper
 import com.example.mymovielibrary.domain.lists.repository.ListsRepo

@@ -1,10 +1,10 @@
 package com.example.mymovielibrary.di
 
-import com.example.mymovielibrary.data.lists.adapter.ResultsAdapterFactory
-import com.example.mymovielibrary.data.lists.model.media.MediaItemResponse
-import com.example.mymovielibrary.data.lists.model.media.MovieResponse
-import com.example.mymovielibrary.data.lists.model.media.TVShowResponse
-import com.example.mymovielibrary.data.storage.ApiData
+import com.example.mymovielibrary.data.remote.lists.adapter.ResultsAdapterFactory
+import com.example.mymovielibrary.data.remote.lists.model.media.MediaItemResponse
+import com.example.mymovielibrary.data.remote.lists.model.media.MovieResponse
+import com.example.mymovielibrary.data.remote.lists.model.media.TVShowResponse
+import com.example.mymovielibrary.data.local.storage.ApiData
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import dagger.Module

@@ -12,5 +12,4 @@ sealed interface ProfileEvent: AccountEvent {
 sealed interface AuthEvent: AccountEvent {
     data object ApproveToken : AuthEvent
     data object Login : AuthEvent
-    data object Logout : AuthEvent
 }
