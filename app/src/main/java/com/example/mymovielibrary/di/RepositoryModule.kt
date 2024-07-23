@@ -1,7 +1,7 @@
 package com.example.mymovielibrary.di
 
 import android.content.Context
-import com.example.mymovielibrary.data.local.UserTmdbInfoImpl
+import com.example.mymovielibrary.data.local.LocalInfoManagerImpl
 import com.example.mymovielibrary.data.remote.account.api.AccountApi
 import com.example.mymovielibrary.data.remote.account.repository.AccountRepoImpl
 import com.example.mymovielibrary.data.remote.auth.api.AuthApi
@@ -12,6 +12,7 @@ import com.example.mymovielibrary.data.remote.lists.api.MediaManagerApi
 import com.example.mymovielibrary.data.remote.lists.repository.CollectionRepoImpl
 import com.example.mymovielibrary.data.remote.lists.repository.ListsRepoImpl
 import com.example.mymovielibrary.data.remote.lists.repository.MediaManagerRepoRepoImpl
+import com.example.mymovielibrary.domain.account.repository.AccountRepo
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
 import com.example.mymovielibrary.domain.lists.repository.ListsRepo
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
@@ -31,7 +32,7 @@ class RepositoryModule {
     }
 
     @Provides
-    fun profileRepository(api: AccountApi): AccountRepoImpl {
+    fun profileRepository(api: AccountApi): AccountRepo {
         return AccountRepoImpl(api)
     }
 
@@ -51,8 +52,8 @@ class RepositoryModule {
     }
 
     @Provides
-    fun userTmdbInfo(@ApplicationContext context: Context): UserTmdbInfoImpl {
-        return UserTmdbInfoImpl(context)
+    fun userPrefs(@ApplicationContext context: Context): LocalInfoManagerImpl {
+        return LocalInfoManagerImpl(context)
     }
 
 }

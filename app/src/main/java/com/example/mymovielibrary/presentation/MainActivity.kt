@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import com.example.mymovielibrary.data.local.UserTmdbInfoImpl
+import com.example.mymovielibrary.data.local.LocalInfoManagerImpl
 import com.example.mymovielibrary.presentation.navigation.AppNavigation
 import com.example.mymovielibrary.presentation.ui.theme.MyMovieLibraryTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         installSplashScreen()
-        UserTmdbInfoImpl(this).getLocalSaveUserInfoIfExist()
+        LocalInfoManagerImpl(this).loadUserInfoFromPrefsToSingletonIfExist()
 
         setContent {
             MyMovieLibraryTheme {

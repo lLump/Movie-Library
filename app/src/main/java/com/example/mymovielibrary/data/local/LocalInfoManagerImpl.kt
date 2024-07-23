@@ -5,34 +5,42 @@ import android.content.SharedPreferences
 import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.data.local.storage.Store.clear
 
-class UserTmdbInfoImpl(context: Context) {
+class LocalInfoManagerImpl(context: Context) {
     private val sharedPrefs: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
     private val editor = sharedPrefs.edit()
 
-    fun clearInfo() {
+    fun clearInfo() { // when logout
         Store.tmdbData.clear()
         editor.clear().apply()
     }
 
     fun saveUserInfo(accountIdV4: String, sessionId: String, accessToken: String) {
+        saveUserInfoIntoPrefs(accountIdV4, sessionId, accessToken)
+        saveUserInfoIntoSingleton(accountIdV4, sessionId, accessToken)
+    }
+
+    fun loadUserInfoFromPrefsToSingletonIfExist() { // for MainActivity
+        getInfoIfExist { isSaved, accountId, sessionId, token ->
+            if (isSaved) {
+                saveUserInfoIntoSingleton(accountId, sessionId, token) //TODO language ISO
+            }
+        }
+    }
+
+    private fun saveUserInfoIntoSingleton(accountIdV4: String, sessionId: String, accessToken: String) {
+        Store.run {
+            this.tmdbData.accountIdV4 = accountIdV4
+            this.tmdbData.sessionId = sessionId
+            this.tmdbData.accessToken = accessToken
+        }
+    }
+
+    private fun saveUserInfoIntoPrefs(accountIdV4: String, sessionId: String, accessToken: String) {
         editor.run {
             putString("account_id_v4", accountIdV4)
             putString("session_id", sessionId)
             putString("access_token", accessToken)
             apply()
-        }
-    }
-
-    fun getLocalSaveUserInfoIfExist() {
-        getInfoIfExist { isSaved, accountId, sessionId, token ->
-            if (isSaved) {
-                Store.run {
-                    this.tmdbData.accountIdV4 = accountId
-                    this.tmdbData.sessionId = sessionId
-                    this.tmdbData.accessToken = token
-                    //TODO language ISO
-                }
-            }
         }
     }
 

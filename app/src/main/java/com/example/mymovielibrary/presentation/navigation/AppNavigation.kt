@@ -55,7 +55,7 @@ fun AppNavigation(isTokenApproved: Boolean) {
             // FIXME there is a bug, when user click "back" too fast (on screen without bar), views become half transparent
         },
         content = { padding ->
-            NavHost(navController = navController, startDestination = Home) {
+            NavHost(navController = navController, startDestination = if (!isTokenApproved) Home else Profile) {
                 //BottomNavBar
                 composable<Home> {
                     HomeScreen(padding)
