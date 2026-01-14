@@ -124,7 +124,7 @@ fun ProfileScreen(
                 UserProfile((profile.userDetails as UserType.LoggedIn).profile, profile.userStats, navigateTo)
                 IconButton(
                     modifier = Modifier.align(Alignment.TopEnd),
-                    onClick = { viewModel.onEvent(AuthEvent.Logout) }
+                    onClick = { navigateTo(NavigationRoute.Settings) }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Settings,

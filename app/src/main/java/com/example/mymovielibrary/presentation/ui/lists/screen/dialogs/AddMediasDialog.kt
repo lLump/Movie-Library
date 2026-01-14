@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mymovielibrary.R
-import com.example.mymovielibrary.data.storage.Store
+import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.domain.lists.model.enums.ListType
 
 private data class ListTypeInfo(

@@ -30,6 +30,7 @@ import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Lists
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.MediaDetails
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Profile
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Settings
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalList
 import com.example.mymovielibrary.presentation.ui.lists.screen.ChosenCollectionScreen
 import com.example.mymovielibrary.presentation.ui.lists.screen.ListsScreen
@@ -38,6 +39,8 @@ import com.example.mymovielibrary.presentation.ui.lists.viewModel.CollectionView
 import com.example.mymovielibrary.presentation.ui.lists.viewModel.DefaultListsViewModel
 import com.example.mymovielibrary.presentation.ui.lists.viewModel.ListViewModel
 import com.example.mymovielibrary.presentation.ui.profile.screen.ProfileScreen
+import com.example.mymovielibrary.presentation.ui.settings.screen.SettingsScreen
+import com.example.mymovielibrary.presentation.ui.settings.viewmodel.SettingsViewModel
 
 @Composable
 fun AppNavigation(isTokenApproved: Boolean) {
@@ -52,7 +55,7 @@ fun AppNavigation(isTokenApproved: Boolean) {
             // FIXME there is a bug, when user click "back" too fast (on screen without bar), views become half transparent
         },
         content = { padding ->
-            NavHost(navController = navController, startDestination = Home) {
+            NavHost(navController = navController, startDestination = if (!isTokenApproved) Home else Profile) {
                 //BottomNavBar
                 composable<Home> {
                     HomeScreen(padding)
@@ -118,8 +121,17 @@ fun AppNavigation(isTokenApproved: Boolean) {
                         }
                     )
                 }
+
                 composable<MediaDetails> {
                     HomeScreen(padding)
+                }
+
+                composable<Settings> {
+                    val viewModel: SettingsViewModel = hiltViewModel()
+//                    val state by viewModel
+                    SettingsScreen(
+                        onEvent = viewModel::onEvent,
+                    )
                 }
             }
         }
