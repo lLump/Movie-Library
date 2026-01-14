@@ -17,7 +17,11 @@ sealed interface NavigationRoute {
 
     @Serializable
     data class CollectionDetails(val collectionId: Int): NavigationRoute
+
     @Serializable
     data class MediaDetails(val mediaId: Int): NavigationRoute
+
+    @Serializable
+    data object Settings : NavigationRoute
 
 }

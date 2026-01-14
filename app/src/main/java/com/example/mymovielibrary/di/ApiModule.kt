@@ -1,10 +1,10 @@
 package com.example.mymovielibrary.di
 
-import com.example.mymovielibrary.data.account.api.AccountApi
-import com.example.mymovielibrary.data.auth.api.AuthApi
-import com.example.mymovielibrary.data.lists.api.CollectionApi
-import com.example.mymovielibrary.data.lists.api.ListApi
-import com.example.mymovielibrary.data.lists.api.MediaManagerApi
+import com.example.mymovielibrary.data.remote.account.api.AccountApi
+import com.example.mymovielibrary.data.remote.auth.api.AuthApi
+import com.example.mymovielibrary.data.remote.lists.api.CollectionApi
+import com.example.mymovielibrary.data.remote.lists.api.ListApi
+import com.example.mymovielibrary.data.remote.lists.api.MediaManagerApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
