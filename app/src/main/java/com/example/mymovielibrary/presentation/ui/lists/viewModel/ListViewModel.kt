@@ -7,17 +7,21 @@ import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.lists.model.sortedByTitle
 import com.example.mymovielibrary.domain.lists.repository.ListsRepo
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
+import com.example.mymovielibrary.domain.model.events.CollectionEvent
 import com.example.mymovielibrary.domain.model.events.MediaEvent
 import com.example.mymovielibrary.domain.model.events.MediaEvent.DeleteItems
 import com.example.mymovielibrary.domain.model.events.MediaEvent.LoadChosenList
 import com.example.mymovielibrary.domain.model.events.MediaEvent.PutItemsInCollection
 import com.example.mymovielibrary.domain.model.events.MediaEvent.PutItemsInList
+import com.example.mymovielibrary.domain.model.events.MediaEvent.ToggleMediaCheck
+import com.example.mymovielibrary.domain.model.events.MediaEvent.ClearMediaChecks
 import com.example.mymovielibrary.presentation.ui.lists.state.ListState
 import com.example.mymovielibrary.presentation.ui.lists.viewModel.helper.MediaInserter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -58,6 +62,8 @@ class ListViewModel @Inject constructor(
                     isAdding = true
                 )
             }
+            is ToggleMediaCheck -> toggleMediaChecked(event.id)
+            ClearMediaChecks -> clearMediaChecks()
         }
     }
 
@@ -68,7 +74,7 @@ class ListViewModel @Inject constructor(
                     ListType.WATCHLIST -> getWatchlist()
                     ListType.RATED -> getRated()
                     ListType.FAVORITE -> getFavorites()
-                    ListType.COLLECTION -> TODO()
+                    ListType.COLLECTION -> TODO("Impossible scenario(?)")
                 }
             }
             _listState.emit(
@@ -99,7 +105,7 @@ class ListViewModel @Inject constructor(
         return (favMovies + favTvs).sortedByTitle()
     }
 
-    private suspend fun clearChosenItemsInState(ids: List<Int>) {
+    private suspend fun clearChosenItemsInState(ids: Set<Int>) {
         val newList = _listState.value.chosenList.filter { it.id !in ids }
         _listState.emit(
             ListState(
@@ -110,7 +116,23 @@ class ListViewModel @Inject constructor(
         )
     }
 
-    private fun getCheckedItems(ids: List<Int>): List<MediaItem> {
+    private fun getCheckedItems(ids: Set<Int>): List<MediaItem> {
         return _listState.value.chosenList.filter { it.id in ids }
+    }
+
+    private fun toggleMediaChecked(id: Int) {
+        _listState.update { state ->
+            state.copy(
+                checkedMedias =
+                    if (id in state.checkedMedias)
+                        state.checkedMedias - id
+                    else
+                        state.checkedMedias + id
+            )
+        }
+    }
+
+    private fun clearMediaChecks() {
+        _listState.update { it.copy(checkedMedias = emptySet()) }
     }
 }

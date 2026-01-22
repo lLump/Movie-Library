@@ -338,7 +338,7 @@ private fun CollectionItemList(item: UserCollection, chosenCollection: () -> Uni
 }
 
 @Composable
-fun CreateCollectionItemList(onCreate: () -> Unit) {
+private fun CreateCollectionItemList(onCreate: () -> Unit) {
     Card(
         onClick = onCreate,
         modifier = Modifier

@@ -104,7 +104,6 @@ fun MediaListItem(
                     contentDescription = null,
                 )
                 Text(
-//                    text = mediaItem.rating.toString() + " (${mediaItem.rateCount})",
                     text = DecimalFormat("#.0").format(mediaItem.rating),
                     modifier = Modifier.padding(top = 6.dp),
                     style = Typography.labelLarge
@@ -132,6 +131,7 @@ fun MediaGridList(
     list: List<MediaItem>,
     navigateTo: (NavigationRoute) -> Unit,
     isEditMode: Boolean = false,
+    checkedMedias: Set<Int> = emptySet(),
     itemChecked: (Int) -> Unit = {},
 ) {
     LazyVerticalGrid(
@@ -147,8 +147,7 @@ fun MediaGridList(
                 .padding(bottom = 8.dp, start = 4.dp, end = 4.dp)
                 .clip(RoundedCornerShape(12.dp))
             ) {
-                var itemSelected by remember { mutableStateOf(false) }
-
+                val isChecked = mediaItem.id in checkedMedias
                 MediaListItem(
                     mediaItem = mediaItem,
                     modifier = Modifier
@@ -156,7 +155,6 @@ fun MediaGridList(
                         .clip(RoundedCornerShape(12.dp))
                         .clickable {
                             if (isEditMode) {
-                                itemSelected = !itemSelected
                                 itemChecked(mediaItem.id)
                             } else {
                                 navigateTo(NavigationRoute.MediaDetails(mediaItem.id))
@@ -166,11 +164,13 @@ fun MediaGridList(
                 )
                 if (isEditMode) {
                     Checkbox(
-                        modifier = Modifier.align(Alignment.TopEnd),
-                        checked = itemSelected,
-                        onCheckedChange = { } //nothing because of logic above. Otherwise bugging often
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(top = 4.dp, end = 4.dp),
+                        checked = isChecked,
+                        onCheckedChange = null
                     )
-                } else itemSelected = false
+                }
             }
         }
     }

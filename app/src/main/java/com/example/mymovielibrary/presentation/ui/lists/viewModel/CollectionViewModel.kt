@@ -16,6 +16,8 @@ import com.example.mymovielibrary.domain.model.events.CollectionEvent.PutItemsIn
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.UpdateCollection
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.UpdateCollectionBackgroundImage
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.UpdateCollectionSortType
+import com.example.mymovielibrary.domain.model.events.CollectionEvent.ToggleMediaCheck
+import com.example.mymovielibrary.domain.model.events.CollectionEvent.ClearMediaChecks
 import com.example.mymovielibrary.presentation.ui.lists.state.CollectionState
 import com.example.mymovielibrary.presentation.ui.lists.viewModel.helper.MediaInserter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -62,6 +65,8 @@ class CollectionViewModel @Inject constructor(
             is DeleteItems -> deleteCheckedItems(event.ids)
             is ClearCollection -> clearCollection(event.collectionId)
             is DeleteCollection -> deleteCollection(event.collectionId)
+            is ToggleMediaCheck -> toggleMediaChecked(event.id)
+            ClearMediaChecks -> clearMediaChecks()
         }
     }
 
@@ -90,7 +95,22 @@ class CollectionViewModel @Inject constructor(
         }
     }
 
-    private fun deleteCheckedItems(ids: List<Int>) {
+    private fun toggleMediaChecked(id: Int) {
+        _collectionState.update { state ->
+            state.copy(
+                checkedMedias =
+                    if (id in state.checkedMedias)
+                        state.checkedMedias - id
+                    else
+                        state.checkedMedias + id
+            )
+        }
+    }
+
+    private fun clearMediaChecks() {
+        _collectionState.update { it.copy(checkedMedias = emptySet()) }
+    }
+    private fun deleteCheckedItems(ids: Set<Int>) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 deleteCheckedItemsInApi(ids)
@@ -99,7 +119,7 @@ class CollectionViewModel @Inject constructor(
         }
     }
 
-    private suspend fun deleteCheckedItemsInState(ids: List<Int>) {
+    private suspend fun deleteCheckedItemsInState(ids: Set<Int>) {
         val newMovies = _collectionState.value.collection.movies.filter { it.id !in ids }
         _collectionState.emit(
             _collectionState.value.copy(
@@ -118,7 +138,7 @@ class CollectionViewModel @Inject constructor(
         loadChosenCollection(_collectionState.value.collection.id) //to update banner (Collection info)
     }
 
-    private suspend fun deleteCheckedItemsInApi(ids: List<Int>) {
+    private suspend fun deleteCheckedItemsInApi(ids: Set<Int>) {
         viewModelScope.launch(Dispatchers.IO) {
             val itemsToDelete = getCheckedItems(ids)
             val body = mediasToJson(itemsToDelete)
@@ -167,7 +187,7 @@ class CollectionViewModel @Inject constructor(
         return stringBuilder.toString()
     }
 
-    private fun getCheckedItems(ids: List<Int>): List<MediaItem> {
+    private fun getCheckedItems(ids: Set<Int>): List<MediaItem> {
         return _collectionState.value.collection.movies.filter { it.id in ids }
     }
 }

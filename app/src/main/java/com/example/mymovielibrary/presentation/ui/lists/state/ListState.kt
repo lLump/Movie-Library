@@ -6,4 +6,5 @@ data class ListState(
     val isLoading: Boolean = true,
     val chosenList: List<MediaItem> = emptyList(),
     val currentItems: Int = 0,
+    val checkedMedias: Set<Int> = emptySet()
 )

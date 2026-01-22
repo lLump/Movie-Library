@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -49,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -93,7 +95,7 @@ fun ChosenCollectionScreen(
     var confirmDialogOptions by remember { mutableStateOf(ConfirmDialogOptions.DEFAULT)}
 
     var expandedMenu by remember { mutableStateOf(false) }
-    var checkedItems by remember { mutableStateOf(listOf<Int>()) }
+    val checkedItems = state.checkedMedias
 
     val context = LocalContext.current //fixme
 
@@ -208,7 +210,7 @@ fun ChosenCollectionScreen(
                             }
                             IconButton(onClick = {
                                 uiMode = UiModeType.DEFAULT
-                                checkedItems = listOf() //clear checked when exit
+                                onEvent(CollectionEvent.ClearMediaChecks) //clear checked when exit
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.Close,
@@ -237,16 +239,18 @@ fun ChosenCollectionScreen(
                     AddMediasDialog(
                         currentCollectionId = collectionId,
                         onDismiss = {
-                            checkedItems = listOf()
+                            onEvent(CollectionEvent.ClearMediaChecks)
                             currentDialog = UiDialogType.NO_DIALOG
                         },
                         onListChosen = { listType ->
                             onEvent(CollectionEvent.PutItemsInList(checkedItems, listType))
                             showToast(context, toastText)
+                            onEvent(CollectionEvent.ClearMediaChecks)
                         },
                         onCollectionChosen = { collectionId ->
                             onEvent(CollectionEvent.PutItemsInCollection(checkedItems,collectionId))
                             showToast(context, toastText)
+                            onEvent(CollectionEvent.ClearMediaChecks)
                         }
                     )
                 }
@@ -289,7 +293,7 @@ fun ChosenCollectionScreen(
                                         context = context,
                                         text = "${checkedItems.count()} " + context.getString(R.string.media_items) + " " + context.getString(R.string.successful_deleted))
                                     uiMode = UiModeType.DEFAULT
-                                    checkedItems = listOf()
+                                    onEvent(CollectionEvent.ClearMediaChecks)
                                 }
 
                                 ConfirmDialogOptions.DEFAULT -> {}
@@ -328,12 +332,8 @@ fun ChosenCollectionScreen(
                         state = state,
                         navigateTo = navigateTo,
                         uiMode = uiMode,
-                        itemChecked = { checkedItem ->
-                            if (checkedItem in checkedItems) {
-                                checkedItems = checkedItems.filter { it != checkedItem }
-                            } else {
-                                checkedItems = checkedItems + checkedItem
-                            }
+                        itemChecked = { checkedItemIndex ->
+                            onEvent(CollectionEvent.ToggleMediaCheck(checkedItemIndex))
                         },
                         imageSelected = { imagePath ->
                             onEvent(CollectionEvent.UpdateCollectionBackgroundImage(imagePath))
@@ -371,7 +371,9 @@ private fun CollectionScreenContent(
                 details = state.collection,
             )
         }
-        items(state.collection.movies.chunked(3)) { rowItems ->
+        items(
+            items = state.collection.movies.chunked(3)
+        ) { rowItems ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -386,7 +388,7 @@ private fun CollectionScreenContent(
                             .padding(bottom = 8.dp, start = 4.dp, end = 4.dp)
                             .clip(RoundedCornerShape(12.dp))
                     ) {
-                        var itemSelected by remember { mutableStateOf(false) }
+                        val isChecked = media.id in state.checkedMedias
                         MediaListItem(
                             mediaItem = media,
                             modifier = Modifier
@@ -400,7 +402,6 @@ private fun CollectionScreenContent(
                                         }
 
                                         UiModeType.EDIT_MODE -> {
-                                            itemSelected = !itemSelected
                                             itemChecked(media.id)
                                         }
 
@@ -412,12 +413,16 @@ private fun CollectionScreenContent(
                             imageHeight = 130.dp
                         )
                         when (uiMode) {
-                            UiModeType.DEFAULT -> itemSelected = false
+                            UiModeType.DEFAULT -> {
+//                                isChecked = false
+                            }
                             UiModeType.EDIT_MODE -> {
                                 Checkbox(
-                                    modifier = Modifier.align(Alignment.TopEnd),
-                                    checked = itemSelected,
-                                    onCheckedChange = { } //nothing because of logic above. Otherwise bugging often fixme
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(top = 4.dp, end = 4.dp),
+                                    checked = isChecked,
+                                    onCheckedChange = null
                                 )
                             }
 

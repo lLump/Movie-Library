@@ -54,10 +54,8 @@ fun UniversalListScreen(
 
     var isEditMode by remember { mutableStateOf(false) }
     var currentDialog by remember { mutableStateOf(UiDialogType.NO_DIALOG) }
-//    var confirmDialogOptions by remember { mutableStateOf(ConfirmDialogOptions.DEFAULT)}
 
-    var checkedItems by remember { mutableStateOf(listOf<Int>()) }
-
+    val checkedItems = state.checkedMedias
     val context = LocalContext.current //fixme
 
     Scaffold(
@@ -111,7 +109,7 @@ fun UniversalListScreen(
                         }
                         IconButton(onClick = {
                             isEditMode = false
-                            checkedItems = listOf() //clear checked when exit
+                            onEvent(MediaEvent.ClearMediaChecks)
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Close,
@@ -153,7 +151,7 @@ fun UniversalListScreen(
                                 )
                             )
                             isEditMode = false
-                            checkedItems = listOf()
+                            onEvent(MediaEvent.ClearMediaChecks)
 //                        }
                     },
 //                    dialogOptions = confirmDialogOptions,
@@ -181,13 +179,10 @@ fun UniversalListScreen(
                 MediaGridList(
                     list = state.chosenList,
                     isEditMode = isEditMode,
+                    checkedMedias = checkedItems,
                     navigateTo = navigateTo
                 ) { checkedItem ->
-                    if (checkedItem in checkedItems) {
-                        checkedItems = checkedItems.filter { it != checkedItem }
-                    } else {
-                        checkedItems = checkedItems + checkedItem
-                    }
+                    onEvent(MediaEvent.ToggleMediaCheck(checkedItem))
                 }
             }
         }

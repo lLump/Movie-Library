@@ -15,5 +15,6 @@ data class CollectionState(
         backdropPath = null,
         itemsCount = "",
         public = true
-    )
+    ),
+    val checkedMedias: Set<Int> = emptySet()
 )
