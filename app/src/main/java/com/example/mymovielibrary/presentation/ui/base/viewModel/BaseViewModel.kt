@@ -1,4 +1,4 @@
-package com.example.mymovielibrary.domain.base.viewModel
+package com.example.mymovielibrary.presentation.ui.base.viewModel
 
 import androidx.lifecycle.ViewModel
 import com.example.mymovielibrary.domain.model.handlers.DataError

@@ -2,8 +2,8 @@ package com.example.mymovielibrary.di
 
 import com.example.mymovielibrary.data.remote.account.api.AccountApi
 import com.example.mymovielibrary.data.remote.auth.api.AuthApi
-import com.example.mymovielibrary.data.remote.lists.api.CollectionApi
-import com.example.mymovielibrary.data.remote.lists.api.ListApi
+import com.example.mymovielibrary.data.remote.lists.api.CollectionManagerApi
+import com.example.mymovielibrary.data.remote.lists.api.UserListsApi
 import com.example.mymovielibrary.data.remote.lists.api.MediaManagerApi
 import dagger.Module
 import dagger.Provides
@@ -26,13 +26,13 @@ class ApiModule {
     }
 
     @Provides
-    fun listApi(retrofit: Retrofit): ListApi {
-        return retrofit.create(ListApi::class.java)
+    fun listApi(retrofit: Retrofit): UserListsApi {
+        return retrofit.create(UserListsApi::class.java)
     }
 
     @Provides
-    fun collectionApi(retrofit: Retrofit): CollectionApi {
-        return retrofit.create(CollectionApi::class.java)
+    fun collectionApi(retrofit: Retrofit): CollectionManagerApi {
+        return retrofit.create(CollectionManagerApi::class.java)
     }
 
     @Provides

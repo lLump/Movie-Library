@@ -6,7 +6,7 @@ import com.example.mymovielibrary.data.remote.account.model.toProfileDetails
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.account.model.ProfileDetails
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
-import com.example.mymovielibrary.domain.base.repository.BaseRepository
+import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
 

@@ -6,7 +6,7 @@ import com.example.mymovielibrary.data.remote.lists.model.media.TVShowsResponse
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface ListApi {
+interface UserListsApi {
     // Collections
     @GET("4/account/{account_object_id}/lists")
     suspend fun getUserCollections(@Path("account_object_id") accountId: String): UserCollectionsResponse

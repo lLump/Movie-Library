@@ -32,6 +32,7 @@ import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Profile
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Settings
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalList
+import com.example.mymovielibrary.presentation.ui.home.screen.HomeScreen
 import com.example.mymovielibrary.presentation.ui.lists.screen.ChosenCollectionScreen
 import com.example.mymovielibrary.presentation.ui.lists.screen.ListsScreen
 import com.example.mymovielibrary.presentation.ui.lists.screen.UniversalListScreen
@@ -58,7 +59,10 @@ fun AppNavigation(isTokenApproved: Boolean) {
             NavHost(navController = navController, startDestination = if (!isTokenApproved) Home else Profile) {
                 //BottomNavBar
                 composable<Home> {
-                    HomeScreen(padding)
+                    HomeScreen(
+                        paddingValues = padding,
+                        onMovieClick = {}
+                    )
                 }
                 composable<Lists> {
                     val viewModel: DefaultListsViewModel = hiltViewModel()
@@ -123,7 +127,7 @@ fun AppNavigation(isTokenApproved: Boolean) {
                 }
 
                 composable<MediaDetails> {
-                    HomeScreen(padding)
+                    MediaScreen(padding)
                 }
 
                 composable<Settings> {
@@ -178,7 +182,7 @@ private fun NavHostController.setupDestinationListener(visibilityBottomBar: Muta
 //}
 
 @Composable
-fun HomeScreen(padding: PaddingValues) {
+fun MediaScreen(padding: PaddingValues) {
     Box(
         modifier = Modifier
             .fillMaxSize()

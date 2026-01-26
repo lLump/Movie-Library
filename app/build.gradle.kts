@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.mymovielibrary"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.mymovielibrary"
@@ -65,9 +65,10 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0") //AsyncImage (Coil)
     implementation("androidx.core:core-splashscreen:1.0.1") //splashScreen
 
-//    implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material3:material3-android:1.2.1")
-    implementation ("androidx.compose.material:material-icons-extended:1.6.7") //additional icons
+    implementation(platform("androidx.compose:compose-bom:2026.01.00"))
+    implementation("androidx.compose.material3:material3")
+    implementation("com.google.android.material:material:1.13.0")
+    implementation ("androidx.compose.material:material-icons-extended:1.7.8") //additional icons
 //    implementation("androidx.palette:palette-ktx:1.0.0")
 
     implementation("com.squareup.retrofit2:retrofit:$retrofit")
@@ -90,7 +91,6 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.activity:activity-compose:1.9.0")
-    implementation(platform("androidx.compose:compose-bom:2024.05.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")

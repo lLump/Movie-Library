@@ -1,9 +1,9 @@
 package com.example.mymovielibrary.data.remote.lists.repository
 
-import com.example.mymovielibrary.data.remote.lists.api.CollectionApi
+import com.example.mymovielibrary.data.remote.lists.api.CollectionManagerApi
 import com.example.mymovielibrary.data.remote.lists.model.collection.toCollectionDetails
 import com.example.mymovielibrary.data.local.storage.Store
-import com.example.mymovielibrary.domain.base.repository.BaseRepository
+import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.lists.model.CollectionDetails
 import com.example.mymovielibrary.domain.lists.model.enums.SortType
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
@@ -12,7 +12,7 @@ import com.example.mymovielibrary.domain.model.handlers.Result
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class CollectionRepoImpl(private val api: CollectionApi) : CollectionRepo, BaseRepository() {
+class CollectionRepoImpl(private val api: CollectionManagerApi) : CollectionRepo, BaseRepository() {
     private val accessToken: String
         get() = "Bearer ${Store.tmdbData.accessToken}"
 

@@ -1,7 +1,7 @@
 package com.example.mymovielibrary.presentation.ui.lists.viewModel
 
 import androidx.lifecycle.viewModelScope
-import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
+import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.enums.SortType
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo

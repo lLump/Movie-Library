@@ -1,13 +1,12 @@
 package com.example.mymovielibrary.presentation.ui.lists.viewModel
 
 import androidx.lifecycle.viewModelScope
-import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
+import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.lists.model.sortedByTitle
 import com.example.mymovielibrary.domain.lists.repository.ListsRepo
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
-import com.example.mymovielibrary.domain.model.events.CollectionEvent
 import com.example.mymovielibrary.domain.model.events.MediaEvent
 import com.example.mymovielibrary.domain.model.events.MediaEvent.DeleteItems
 import com.example.mymovielibrary.domain.model.events.MediaEvent.LoadChosenList

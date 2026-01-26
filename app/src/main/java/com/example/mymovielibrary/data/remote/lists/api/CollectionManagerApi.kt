@@ -13,7 +13,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface CollectionApi {
+interface CollectionManagerApi {
 
     @GET("4/list/{list_id}")
     suspend fun getCollectionDetails(@Path("list_id") listId: Int): CollectionDetailsResponse

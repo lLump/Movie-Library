@@ -2,8 +2,7 @@ package com.example.mymovielibrary.data.remote.lists.model.collection
 
 import com.example.mymovielibrary.data.remote.lists.model.media.MovieResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.TVShowResponse
-import com.example.mymovielibrary.data.remote.lists.model.media.toMovie
-import com.example.mymovielibrary.data.remote.lists.model.media.toTvShow
+import com.example.mymovielibrary.data.remote.lists.model.media.toMediaUI
 import com.example.mymovielibrary.domain.lists.model.CollectionDetails
 import com.example.mymovielibrary.domain.lists.model.UserCollection
 import java.util.Locale
@@ -25,14 +24,11 @@ fun CollectionResponse.toUserCollection() = UserCollection(
 
 fun CollectionDetailsResponse.toCollectionDetails(): CollectionDetails {
     val movies = results.map {
-        val movie = when (it) {
-            is MovieResponse -> it.toMovie()
-//            is TVShowResponse -> it.toTvShow()
-            else -> {
-                (it as TVShowResponse).toTvShow()
-            }
+        when (it) {
+            is MovieResponse -> it.toMediaUI()
+            is TVShowResponse -> it.toMediaUI()
+            else -> throw Exception("Unreal mediaType exception")
         }
-        movie
     }
     return CollectionDetails(
         id = id,

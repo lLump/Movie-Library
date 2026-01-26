@@ -6,8 +6,8 @@ import com.example.mymovielibrary.data.remote.account.api.AccountApi
 import com.example.mymovielibrary.data.remote.account.repository.AccountRepoImpl
 import com.example.mymovielibrary.data.remote.auth.api.AuthApi
 import com.example.mymovielibrary.data.remote.auth.repository.AuthRepoImpl
-import com.example.mymovielibrary.data.remote.lists.api.CollectionApi
-import com.example.mymovielibrary.data.remote.lists.api.ListApi
+import com.example.mymovielibrary.data.remote.lists.api.CollectionManagerApi
+import com.example.mymovielibrary.data.remote.lists.api.UserListsApi
 import com.example.mymovielibrary.data.remote.lists.api.MediaManagerApi
 import com.example.mymovielibrary.data.remote.lists.repository.CollectionRepoImpl
 import com.example.mymovielibrary.data.remote.lists.repository.ListsRepoImpl
@@ -37,12 +37,12 @@ class RepositoryModule {
     }
 
     @Provides
-    fun listRepo(api: ListApi): ListsRepo {
+    fun listRepo(api: UserListsApi): ListsRepo {
         return ListsRepoImpl(api)
     }
 
     @Provides
-    fun collectionRepo(api: CollectionApi): CollectionRepo {
+    fun collectionRepo(api: CollectionManagerApi): CollectionRepo {
         return CollectionRepoImpl(api)
     }
 

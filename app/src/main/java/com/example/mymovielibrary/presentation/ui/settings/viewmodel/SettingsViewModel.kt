@@ -2,7 +2,7 @@ package com.example.mymovielibrary.presentation.ui.settings.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.data.local.storage.Store
-import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
+import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.model.events.SettingsEvent
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.ChangeCountry
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.ChangeResponseLanguage

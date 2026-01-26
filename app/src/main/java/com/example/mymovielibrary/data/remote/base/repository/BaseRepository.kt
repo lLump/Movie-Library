@@ -1,9 +1,9 @@
-package com.example.mymovielibrary.domain.base.repository
+package com.example.mymovielibrary.data.remote.base.repository
 
 import android.util.Log
+import retrofit2.HttpException
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
-import retrofit2.HttpException
 
 abstract class BaseRepository {
     suspend fun <T> safeApiCall(errorMessage: String, request: suspend () -> T): Result<T, DataError> {

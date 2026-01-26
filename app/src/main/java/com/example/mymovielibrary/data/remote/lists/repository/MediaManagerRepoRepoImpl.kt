@@ -2,7 +2,7 @@ package com.example.mymovielibrary.data.remote.lists.repository
 
 import com.example.mymovielibrary.data.remote.lists.api.MediaManagerApi
 import com.example.mymovielibrary.data.local.storage.Store
-import com.example.mymovielibrary.domain.base.repository.BaseRepository
+import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result

@@ -86,6 +86,8 @@ import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewM
 import com.example.mymovielibrary.presentation.ui.theme.Typography
 import com.example.mymovielibrary.presentation.ui.util.ShowToast
 import com.example.mymovielibrary.presentation.ui.util.UiEvent
+import com.example.mymovielibrary.presentation.ui.util.UiEvent.Error
+import com.example.mymovielibrary.presentation.ui.util.UiEvent.Initial
 
 @Composable
 fun ProfileScreen(
@@ -110,8 +112,8 @@ fun ProfileScreen(
     }
 
     when (uiEvents) {
-        is UiEvent.Error -> ShowToast(message = (uiEvents as UiEvent.Error).error.asString())
-        UiEvent.Initial -> {}
+        is Error -> ShowToast(message = (uiEvents as Error).error.asString())
+        Initial -> {}
     }
 
     // Screen UI

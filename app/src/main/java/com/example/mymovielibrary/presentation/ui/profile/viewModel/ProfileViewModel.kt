@@ -7,7 +7,7 @@ import com.example.mymovielibrary.data.local.LocalInfoManagerImpl
 import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.data.remote.auth.repository.AuthRepoImpl
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
-import com.example.mymovielibrary.domain.base.viewModel.BaseViewModel
+import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.repository.ListsRepo
 import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent
@@ -124,7 +124,7 @@ class ProfileViewModel @Inject constructor(
             return null //request error
         } else {
             val displayProfile = ProfileDisplay(
-                avatarPath = profileDetails.avatarPath ?: "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg", //default photo path
+                avatarPath = profileDetails.avatarPath ?: "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg", //default photo path todo(not found)
                 username = profileDetails.username,
 //                stats = getUserStats(),
 //                    name = profileDetails.name,

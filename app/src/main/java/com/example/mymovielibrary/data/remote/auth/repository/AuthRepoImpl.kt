@@ -2,7 +2,7 @@ package com.example.mymovielibrary.data.remote.auth.repository
 
 import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.data.remote.auth.api.AuthApi
-import com.example.mymovielibrary.domain.base.repository.BaseRepository
+import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
 import okhttp3.MediaType.Companion.toMediaType
