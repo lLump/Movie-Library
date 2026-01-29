@@ -6,10 +6,10 @@ data class MediaItem (
     val isMovie: Boolean,
     val date: String,
     val rating: Double,
-    val rateCount: Int,
-    val popularity: Double,
+    val rateCount: Int, //
+    val popularity: Double, //
     val posterPath: String,
-    val backdropPath: String
+    val backdropPath: String // + add genres
 )
 
 fun List<MediaItem>.sortedByTitle() = this.sortedBy { it.title }

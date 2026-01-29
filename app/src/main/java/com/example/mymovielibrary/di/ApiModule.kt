@@ -3,6 +3,7 @@ package com.example.mymovielibrary.di
 import com.example.mymovielibrary.data.remote.account.api.AccountApi
 import com.example.mymovielibrary.data.remote.auth.api.AuthApi
 import com.example.mymovielibrary.data.remote.lists.api.CollectionManagerApi
+import com.example.mymovielibrary.data.remote.lists.api.HomeListsApi
 import com.example.mymovielibrary.data.remote.lists.api.UserListsApi
 import com.example.mymovielibrary.data.remote.lists.api.MediaManagerApi
 import dagger.Module
@@ -28,6 +29,11 @@ class ApiModule {
     @Provides
     fun listApi(retrofit: Retrofit): UserListsApi {
         return retrofit.create(UserListsApi::class.java)
+    }
+
+    @Provides
+    fun homeListsApi(retrofit: Retrofit): HomeListsApi {
+        return retrofit.create(HomeListsApi::class.java)
     }
 
     @Provides

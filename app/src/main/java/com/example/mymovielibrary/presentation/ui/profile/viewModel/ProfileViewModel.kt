@@ -8,7 +8,7 @@ import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.data.remote.auth.repository.AuthRepoImpl
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
 import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
-import com.example.mymovielibrary.domain.lists.repository.ListsRepo
+import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent.ApproveToken
@@ -35,7 +35,7 @@ class ProfileViewModel @Inject constructor(
     private val authRepo: AuthRepoImpl,
     private val userPrefs: LocalInfoManagerImpl,
     private val accConfig: AccountRepo,
-    private val listsRepo: ListsRepo,
+    private val userListsRepo: UserListsRepo,
 ): BaseViewModel() {
 
     private val _token = MutableLiveData<String>()
@@ -96,12 +96,12 @@ class ProfileViewModel @Inject constructor(
     }
 
     private suspend fun loadUserStats(): UserStats = coroutineScope {
-        val taskFavMovie = async { request { listsRepo.getFavoriteMovies() } }
-        val taskFavTv = async { request { listsRepo.getFavoriteTvShows() } }
-        val taskRatedMovie = async { request { listsRepo.getRatedMovies() } }
-        val taskRatedTv = async { request { listsRepo.getRatedTvShows() } }
-        val taskWatchlistMovie = async { request { listsRepo.getWatchlistMovies() } }
-        val taskWatchlistTv = async { request { listsRepo.getWatchlistTvShows() } }
+        val taskFavMovie = async { request { userListsRepo.getFavoriteMovies() } }
+        val taskFavTv = async { request { userListsRepo.getFavoriteTvShows() } }
+        val taskRatedMovie = async { request { userListsRepo.getRatedMovies() } }
+        val taskRatedTv = async { request { userListsRepo.getRatedTvShows() } }
+        val taskWatchlistMovie = async { request { userListsRepo.getWatchlistMovies() } }
+        val taskWatchlistTv = async { request { userListsRepo.getWatchlistTvShows() } }
 
         val favoritesMovie = taskFavMovie.await() ?: listOf()
         val favoritesTv = taskFavTv.await() ?: listOf()

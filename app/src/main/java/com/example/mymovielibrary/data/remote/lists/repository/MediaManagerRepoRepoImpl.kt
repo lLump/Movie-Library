@@ -10,8 +10,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class MediaManagerRepoRepoImpl(private val api: MediaManagerApi): MediaManagerRepo, BaseRepository() {
-    private val accessToken: String
-        get() = "Bearer ${Store.tmdbData.accessToken}"
 
     override suspend fun addOrDeleteInFavorite(
         mediaId: Int,

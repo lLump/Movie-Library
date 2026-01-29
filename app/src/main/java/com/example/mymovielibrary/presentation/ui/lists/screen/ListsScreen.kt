@@ -60,7 +60,7 @@ import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.model.events.ListEvent
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
 import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.CollectionDialog
-import com.example.mymovielibrary.presentation.ui.lists.state.DefaultListsState
+import com.example.mymovielibrary.presentation.ui.lists.state.UserListsState
 import com.example.mymovielibrary.presentation.ui.lists.util.CollectionMark
 import com.example.mymovielibrary.presentation.ui.lists.util.MediaListItem
 import com.example.mymovielibrary.presentation.ui.theme.Typography
@@ -68,7 +68,7 @@ import com.example.mymovielibrary.presentation.ui.theme.Typography
 @Composable
 fun ListsScreen(
     onEvent: (ListEvent) -> Unit,
-    state: DefaultListsState,
+    state: UserListsState,
     navigateTo: (NavigationRoute) -> Unit,
     paddingValues: PaddingValues,
 ) {
@@ -92,7 +92,7 @@ fun ListsScreen(
 
 @Composable
 private fun ListsScreenContent(
-    state: DefaultListsState,
+    state: UserListsState,
     onEvent: (ListEvent) -> Unit,
     navigateTo: (NavigationRoute) -> Unit,
 ) {

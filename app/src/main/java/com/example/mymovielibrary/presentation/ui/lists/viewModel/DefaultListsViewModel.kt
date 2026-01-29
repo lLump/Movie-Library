@@ -4,12 +4,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.model.sortedByTitle
-import com.example.mymovielibrary.domain.lists.repository.ListsRepo
+import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.model.events.ListEvent
 import com.example.mymovielibrary.domain.model.events.ListEvent.CreateCollection
 import com.example.mymovielibrary.domain.model.events.ListEvent.LoadScreen
 import com.example.mymovielibrary.domain.use_cases.CollectionCreator
-import com.example.mymovielibrary.presentation.ui.lists.state.DefaultListsState
+import com.example.mymovielibrary.presentation.ui.lists.state.UserListsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -21,11 +21,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DefaultListsViewModel @Inject constructor(
-    private val listsRepo: ListsRepo,
+    private val userListsRepo: UserListsRepo,
     private val collectionCreator: CollectionCreator
 ): BaseViewModel() {
 
-    private val _listsState = MutableStateFlow(DefaultListsState())
+    private val _listsState = MutableStateFlow(UserListsState())
     val listsState = _listsState.asStateFlow()
 
     fun onEvent(event: ListEvent) {
@@ -41,7 +41,7 @@ class DefaultListsViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 _listsState.emit(
                     _listsState.value.copy(
-                        userCollections = request { listsRepo.getUserCollections() } ?: listOf()
+                        userCollections = request { userListsRepo.getUserCollections() } ?: listOf()
                     )
                 )
             }
@@ -50,13 +50,13 @@ class DefaultListsViewModel @Inject constructor(
 
     private fun loadAllListOnScreen() {
         viewModelScope.launch(Dispatchers.IO) {
-            val taskCollections = async { request { listsRepo.getUserCollections() } }
-            val taskFavMovie = async { request { listsRepo.getFavoriteMovies() } }
-            val taskFavTv = async { request { listsRepo.getFavoriteTvShows() } }
-            val taskRatedMovie = async { request { listsRepo.getRatedMovies() } }
-            val taskRatedTv = async { request { listsRepo.getRatedTvShows() } }
-            val taskWatchlistMovie = async { request { listsRepo.getWatchlistMovies() } }
-            val taskWatchlistTv = async { request { listsRepo.getWatchlistTvShows() } }
+            val taskCollections = async { request { userListsRepo.getUserCollections() } }
+            val taskFavMovie = async { request { userListsRepo.getFavoriteMovies() } }
+            val taskFavTv = async { request { userListsRepo.getFavoriteTvShows() } }
+            val taskRatedMovie = async { request { userListsRepo.getRatedMovies() } }
+            val taskRatedTv = async { request { userListsRepo.getRatedTvShows() } }
+            val taskWatchlistMovie = async { request { userListsRepo.getWatchlistMovies() } }
+            val taskWatchlistTv = async { request { userListsRepo.getWatchlistTvShows() } }
 
             val collections = taskCollections.await()
             val favoritesMovie = taskFavMovie.await()
@@ -68,7 +68,7 @@ class DefaultListsViewModel @Inject constructor(
 
             withContext(Dispatchers.Main) {
                 _listsState.emit(
-                    DefaultListsState(
+                    UserListsState(
                         isLoading = false,
                         userCollections = collections ?: listOf(),
                         watchlist = (watchlistMovie ?: listOf()) + (watchlistTv ?: listOf()).sortedByTitle(),

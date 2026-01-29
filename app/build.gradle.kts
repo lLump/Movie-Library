@@ -58,6 +58,7 @@ kapt {
 }
 
 dependencies {
+    implementation("androidx.compose.foundation:foundation-layout:1.10.1")
     val retrofit = "2.9.0"
     val daggerHilt = "2.49"
     val moshi = "1.15.0"
@@ -65,11 +66,11 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0") //AsyncImage (Coil)
     implementation("androidx.core:core-splashscreen:1.0.1") //splashScreen
 
-    implementation(platform("androidx.compose:compose-bom:2026.01.00"))
+    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
     implementation("androidx.compose.material3:material3")
     implementation("com.google.android.material:material:1.13.0")
     implementation ("androidx.compose.material:material-icons-extended:1.7.8") //additional icons
-//    implementation("androidx.palette:palette-ktx:1.0.0")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
 
     implementation("com.squareup.retrofit2:retrofit:$retrofit")
     implementation("com.squareup.retrofit2:converter-moshi:$retrofit")

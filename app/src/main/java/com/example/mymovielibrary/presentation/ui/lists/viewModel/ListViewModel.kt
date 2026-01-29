@@ -5,7 +5,7 @@ import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.lists.model.sortedByTitle
-import com.example.mymovielibrary.domain.lists.repository.ListsRepo
+import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
 import com.example.mymovielibrary.domain.model.events.MediaEvent
 import com.example.mymovielibrary.domain.model.events.MediaEvent.DeleteItems
@@ -14,7 +14,7 @@ import com.example.mymovielibrary.domain.model.events.MediaEvent.PutItemsInColle
 import com.example.mymovielibrary.domain.model.events.MediaEvent.PutItemsInList
 import com.example.mymovielibrary.domain.model.events.MediaEvent.ToggleMediaCheck
 import com.example.mymovielibrary.domain.model.events.MediaEvent.ClearMediaChecks
-import com.example.mymovielibrary.presentation.ui.lists.state.ListState
+import com.example.mymovielibrary.presentation.ui.lists.state.UniversalListState
 import com.example.mymovielibrary.presentation.ui.lists.viewModel.helper.MediaInserter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -27,10 +27,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ListViewModel @Inject constructor(
-    private val listsRepo: ListsRepo,
+    private val userListsRepo: UserListsRepo,
     mediaManager: MediaManagerRepo,
 ): BaseViewModel() {
-    private val _listState = MutableStateFlow(ListState())
+    private val _listState = MutableStateFlow(UniversalListState())
     val listState = _listState.asStateFlow()
 
     private val mediaHelper = MediaInserter(mediaManager)
@@ -77,7 +77,7 @@ class ListViewModel @Inject constructor(
                 }
             }
             _listState.emit(
-                ListState(
+                UniversalListState(
                     isLoading = false,
                     chosenList = currentList,
                     currentItems = currentList.size
@@ -87,27 +87,27 @@ class ListViewModel @Inject constructor(
     }
 
     private suspend fun getWatchlist(): List<MediaItem> {
-        val watchMovies = request { listsRepo.getWatchlistMovies() } ?: return emptyList()
-        val watchTvs = request { listsRepo.getWatchlistTvShows() } ?: return emptyList()
+        val watchMovies = request { userListsRepo.getWatchlistMovies() } ?: return emptyList()
+        val watchTvs = request { userListsRepo.getWatchlistTvShows() } ?: return emptyList()
         return (watchMovies + watchTvs).sortedByTitle()
     }
 
     private suspend fun getRated(): List<MediaItem> {
-        val ratedMovies = request { listsRepo.getRatedMovies() } ?: return emptyList()
-        val ratedTvs = request { listsRepo.getRatedTvShows() } ?: return emptyList()
+        val ratedMovies = request { userListsRepo.getRatedMovies() } ?: return emptyList()
+        val ratedTvs = request { userListsRepo.getRatedTvShows() } ?: return emptyList()
         return (ratedMovies + ratedTvs).sortedByTitle()
     }
 
     private suspend fun getFavorites(): List<MediaItem> {
-        val favMovies = request { listsRepo.getFavoriteMovies() } ?: return emptyList()
-        val favTvs = request { listsRepo.getFavoriteTvShows() } ?: return emptyList()
+        val favMovies = request { userListsRepo.getFavoriteMovies() } ?: return emptyList()
+        val favTvs = request { userListsRepo.getFavoriteTvShows() } ?: return emptyList()
         return (favMovies + favTvs).sortedByTitle()
     }
 
     private suspend fun clearChosenItemsInState(ids: Set<Int>) {
         val newList = _listState.value.chosenList.filter { it.id !in ids }
         _listState.emit(
-            ListState(
+            UniversalListState(
                 isLoading = false,
                 chosenList = newList,
                 currentItems = newList.count()

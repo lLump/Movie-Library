@@ -78,4 +78,9 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
 
+    <string name="on_today">Today</string>
+    <string name="on_week">On week</string>
+    <string name="trending">Trending now:</string>
+
+
 </resources>

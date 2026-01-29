@@ -1,5 +1,7 @@
-package com.example.mymovielibrary.data.remote.lists.model.media
+package com.example.mymovielibrary.data.remote.lists.util
 
+import com.example.mymovielibrary.data.remote.lists.model.media.MovieResponse
+import com.example.mymovielibrary.data.remote.lists.model.media.TVShowResponse
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 
 fun MovieResponse.toMediaUI(): MediaItem {

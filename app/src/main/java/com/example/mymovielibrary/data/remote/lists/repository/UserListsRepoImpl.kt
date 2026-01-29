@@ -1,17 +1,17 @@
 package com.example.mymovielibrary.data.remote.lists.repository
 
 import com.example.mymovielibrary.data.remote.lists.api.UserListsApi
-import com.example.mymovielibrary.data.remote.lists.model.collection.toUserCollection
+import com.example.mymovielibrary.data.remote.lists.util.toUserCollection
 import com.example.mymovielibrary.data.local.storage.Store
-import com.example.mymovielibrary.data.remote.lists.model.media.toMediaUI
+import com.example.mymovielibrary.data.remote.lists.util.toMediaUI
 import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.UserCollection
-import com.example.mymovielibrary.domain.lists.repository.ListsRepo
+import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
 
-class ListsRepoImpl(private val api: UserListsApi) : ListsRepo, BaseRepository() {
+class UserListsRepoImpl(private val api: UserListsApi) : UserListsRepo, BaseRepository() {
 
     override suspend fun getUserCollections(): Result<List<UserCollection>, DataError> {
         return safeApiCall(errorMessage = "API User collections ERROR") {
@@ -30,7 +30,7 @@ class ListsRepoImpl(private val api: UserListsApi) : ListsRepo, BaseRepository()
     }
 
     override suspend fun getFavoriteTvShows(): Result<List<MediaItem>, DataError> {
-        return safeApiCall(errorMessage = "API Favorite Movies ERROR") {
+        return safeApiCall(errorMessage = "API Favorite TV Shows ERROR") {
             val response = api.getFavoriteTvShows(Store.tmdbData.accountIdV4)
 
             response.results.map { it.toMediaUI() }

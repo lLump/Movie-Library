@@ -35,7 +35,7 @@ import com.example.mymovielibrary.presentation.ui.lists.model.UiDialogType
 import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.AddMediasDialog
 import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.ConfirmDialog
 import com.example.mymovielibrary.presentation.ui.lists.screen.dialogs.ConfirmDialogOptions
-import com.example.mymovielibrary.presentation.ui.lists.state.ListState
+import com.example.mymovielibrary.presentation.ui.lists.state.UniversalListState
 import com.example.mymovielibrary.presentation.ui.lists.util.MediaGridList
 import com.example.mymovielibrary.presentation.ui.util.showToast
 
@@ -43,7 +43,7 @@ import com.example.mymovielibrary.presentation.ui.util.showToast
 @Composable
 fun UniversalListScreen(
     onEvent: (MediaEvent) -> Unit,
-    state: ListState,
+    state: UniversalListState,
     listType: ListType,
     onBackPress: () -> Unit,
     navigateTo: (NavigationRoute) -> Unit,

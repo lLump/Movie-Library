@@ -1,8 +1,9 @@
-package com.example.mymovielibrary.data.remote.lists.model.collection
+package com.example.mymovielibrary.data.remote.lists.util
 
+import com.example.mymovielibrary.data.remote.lists.model.collection.CollectionDetailsResponse
+import com.example.mymovielibrary.data.remote.lists.model.collection.CollectionResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.MovieResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.TVShowResponse
-import com.example.mymovielibrary.data.remote.lists.model.media.toMediaUI
 import com.example.mymovielibrary.domain.lists.model.CollectionDetails
 import com.example.mymovielibrary.domain.lists.model.UserCollection
 import java.util.Locale

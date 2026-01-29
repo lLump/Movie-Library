@@ -7,14 +7,17 @@ import com.example.mymovielibrary.data.remote.account.repository.AccountRepoImpl
 import com.example.mymovielibrary.data.remote.auth.api.AuthApi
 import com.example.mymovielibrary.data.remote.auth.repository.AuthRepoImpl
 import com.example.mymovielibrary.data.remote.lists.api.CollectionManagerApi
+import com.example.mymovielibrary.data.remote.lists.api.HomeListsApi
 import com.example.mymovielibrary.data.remote.lists.api.UserListsApi
 import com.example.mymovielibrary.data.remote.lists.api.MediaManagerApi
 import com.example.mymovielibrary.data.remote.lists.repository.CollectionRepoImpl
-import com.example.mymovielibrary.data.remote.lists.repository.ListsRepoImpl
+import com.example.mymovielibrary.data.remote.lists.repository.HomeListsRepoImpl
+import com.example.mymovielibrary.data.remote.lists.repository.UserListsRepoImpl
 import com.example.mymovielibrary.data.remote.lists.repository.MediaManagerRepoRepoImpl
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
-import com.example.mymovielibrary.domain.lists.repository.ListsRepo
+import com.example.mymovielibrary.domain.lists.repository.HomeListsRepo
+import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
 import dagger.Module
 import dagger.Provides
@@ -37,8 +40,13 @@ class RepositoryModule {
     }
 
     @Provides
-    fun listRepo(api: UserListsApi): ListsRepo {
-        return ListsRepoImpl(api)
+    fun userListsRepo(api: UserListsApi): UserListsRepo {
+        return UserListsRepoImpl(api)
+    }
+
+    @Provides
+    fun homeListsRepo(api: HomeListsApi): HomeListsRepo {
+        return HomeListsRepoImpl(api)
     }
 
     @Provides

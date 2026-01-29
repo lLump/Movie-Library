@@ -3,7 +3,7 @@ package com.example.mymovielibrary.presentation.ui.lists.state
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.UserCollection
 
-data class DefaultListsState (
+data class UserListsState (
     val isLoading: Boolean = true,
     val userCollections: List<UserCollection> = emptyList(),
     val watchlist: List<MediaItem> = emptyList(),

@@ -33,6 +33,7 @@ import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Settings
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalList
 import com.example.mymovielibrary.presentation.ui.home.screen.HomeScreen
+import com.example.mymovielibrary.presentation.ui.home.viewModel.HomeViewModel
 import com.example.mymovielibrary.presentation.ui.lists.screen.ChosenCollectionScreen
 import com.example.mymovielibrary.presentation.ui.lists.screen.ListsScreen
 import com.example.mymovielibrary.presentation.ui.lists.screen.UniversalListScreen
@@ -59,7 +60,11 @@ fun AppNavigation(isTokenApproved: Boolean) {
             NavHost(navController = navController, startDestination = if (!isTokenApproved) Home else Profile) {
                 //BottomNavBar
                 composable<Home> {
+                    val viewModel: HomeViewModel = hiltViewModel()
+                    val state by viewModel.listsState.collectAsState()
                     HomeScreen(
+                        onEvent = viewModel::onEvent,
+                        state = state,
                         paddingValues = padding,
                         onMovieClick = {}
                     )

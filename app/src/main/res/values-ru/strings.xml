@@ -25,7 +25,7 @@
     <string name="watched">Просмотрено</string>
     <string name="watchlist">В планах</string>
     <string name="rated">Оценено</string>
-    <string name="favorite">Любимых</string>
+    <string name="favorite">Любимые</string>
     <string name="collections">Мои коллекции</string>
     <string name="choose_language">Выберите язык</string>
     <string name="updated">"Изменено: "</string>
@@ -65,6 +65,9 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="create">Создать</string>
+    <string name="on_today">Сегодня</string>
+    <string name="on_week">На неделе</string>
+    <string name="trending">В тренде:</string>
     <!--Profile-->
 
     <!--Lists-->

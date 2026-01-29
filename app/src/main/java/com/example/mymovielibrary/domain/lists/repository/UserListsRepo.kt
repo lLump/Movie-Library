@@ -5,7 +5,7 @@ import com.example.mymovielibrary.domain.lists.model.UserCollection
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
 
-interface ListsRepo {
+interface UserListsRepo {
     // Collections
     suspend fun getUserCollections(): Result<List<UserCollection>, DataError>
     // Collections
