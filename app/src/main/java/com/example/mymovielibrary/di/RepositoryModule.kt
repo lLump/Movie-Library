@@ -15,6 +15,7 @@ import com.example.mymovielibrary.data.remote.lists.repository.HomeListsRepoImpl
 import com.example.mymovielibrary.data.remote.lists.repository.UserListsRepoImpl
 import com.example.mymovielibrary.data.remote.lists.repository.MediaManagerRepoRepoImpl
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
+import com.example.mymovielibrary.domain.account.repository.AuthRepo
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
 import com.example.mymovielibrary.domain.lists.repository.HomeListsRepo
 import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
@@ -30,7 +31,7 @@ import dagger.hilt.components.SingletonComponent
 class RepositoryModule {
 
     @Provides
-    fun authRepo(api: AuthApi): AuthRepoImpl {
+    fun authRepo(api: AuthApi): AuthRepo {
         return AuthRepoImpl(api)
     }
 

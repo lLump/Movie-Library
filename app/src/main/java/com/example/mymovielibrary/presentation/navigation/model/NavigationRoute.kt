@@ -22,6 +22,9 @@ sealed interface NavigationRoute {
     data class MediaDetails(val mediaId: Int): NavigationRoute
 
     @Serializable
+    data class PersonDetails(val personId: Int): NavigationRoute
+
+    @Serializable
     data object Settings : NavigationRoute
 
 }

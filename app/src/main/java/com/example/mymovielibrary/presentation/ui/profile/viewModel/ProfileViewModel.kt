@@ -5,8 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.data.local.LocalInfoManagerImpl
 import com.example.mymovielibrary.data.local.storage.Store
-import com.example.mymovielibrary.data.remote.auth.repository.AuthRepoImpl
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
+import com.example.mymovielibrary.domain.account.repository.AuthRepo
 import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.model.events.AccountEvent
@@ -32,7 +32,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val authRepo: AuthRepoImpl,
+    private val authRepo: AuthRepo,
     private val userPrefs: LocalInfoManagerImpl,
     private val accConfig: AccountRepo,
     private val userListsRepo: UserListsRepo,

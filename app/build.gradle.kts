@@ -1,3 +1,7 @@
+import com.android.build.api.variant.BuildConfigField
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -10,12 +14,22 @@ android {
     namespace = "com.example.mymovielibrary"
     compileSdk = 36
 
+    val file = rootProject.file("local.properties")
+    val properties = Properties()
+    properties.load(FileInputStream(file))
+
     defaultConfig {
         applicationId = "com.example.mymovielibrary"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        buildConfigField(
+            "String",
+            "SAFE_API_KEY",
+            "\"${properties.getProperty("API_KEY")}\""
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -41,6 +55,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.4"
@@ -58,7 +73,6 @@ kapt {
 }
 
 dependencies {
-    implementation("androidx.compose.foundation:foundation-layout:1.10.1")
     val retrofit = "2.9.0"
     val daggerHilt = "2.49"
     val moshi = "1.15.0"

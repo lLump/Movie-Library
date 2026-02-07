@@ -31,7 +31,7 @@ class MediaInserter(
 
             ListType.RATED -> {
                 checkedItems.forEach { media ->
-                    mediaManager.addOrDeleteRating( //не реализовано
+                    mediaManager.addOrDeleteRating( //todo не реализовано
                         mediaId = media.id,
                         isMovie = media.isMovie,
                         isAdding = isAdding

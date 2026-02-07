@@ -132,7 +132,7 @@ class CollectionViewModel @Inject constructor(
         )
         // SERVER BUG FIXME
         // вся инфа на сервере не успевает обновиться
-        // тупой костыль, чем больше удалено единовременно элементов, тем дольше изменяються детали
+        // тупой костыль, чем больше удалено единовременно элементов, тем дольше изменяются детали
         // да так что 5+ за раз, обновляется более 10 секунд, еще и не один раз с изначально неверными данными
         delay((1500 * ids.count()).toLong())
         loadChosenCollection(_collectionState.value.collection.id) //to update banner (Collection info)

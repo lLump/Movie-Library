@@ -87,7 +87,6 @@ class CollectionRepoImpl(private val api: CollectionManagerApi) : CollectionRepo
 
     override suspend fun deleteCollection(collectionId: Int): Result<Boolean, DataError> {
         return safeApiCall(errorMessage = "Collection deleting unsuccessful") {
-//            val response = api.deleteCollection(collectionId, "Bearer ${Store.tmdbData.accessToken}")
             val response = api.deleteCollection(
                 collectionId,
                 token = accessToken,

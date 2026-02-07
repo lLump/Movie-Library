@@ -67,7 +67,7 @@ fun UniversalListScreen(
                             ListType.WATCHLIST -> stringResource(id = R.string.watchlist)
                             ListType.RATED -> stringResource(id = R.string.rated)
                             ListType.FAVORITE -> stringResource(id = R.string.favorite)
-                            else -> ""
+                            ListType.COLLECTION -> "Impossible scenario"
                         } + " (${state.currentItems})"
                     )
                 },

@@ -68,6 +68,10 @@
     <string name="on_today">Сегодня</string>
     <string name="on_week">На неделе</string>
     <string name="trending">В тренде:</string>
+    <string name="settings">Настройки</string>
+    <string name="adult_content">Контент для взрослых</string>
+    <string name="show_immediately">Показывать сразу</string>
+    <string name="hide_adult">Скрыть деликатный контент</string>
     <!--Profile-->
 
     <!--Lists-->

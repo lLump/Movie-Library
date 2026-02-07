@@ -2,6 +2,11 @@ package com.example.mymovielibrary.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val LightGreen = Color(0xFF00C58D)
+val DeepBlue = Color(0xFF201F2D)
+val DeepDarkBlue = Color(0xFF18181F)
+
+//Default below
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)

@@ -1,7 +1,7 @@
 package com.example.mymovielibrary.di
 
+import com.example.mymovielibrary.BuildConfig
 import com.example.mymovielibrary.data.remote.lists.adapter.ResultsAdapterFactory
-import com.example.mymovielibrary.data.local.storage.ApiData
 import com.example.mymovielibrary.data.remote.lists.model.media.MediaItemResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.MovieResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.TVShowResponse
@@ -46,7 +46,7 @@ class RetrofitModule {
         .addInterceptor {
             val request = it.request().newBuilder()
                 .addHeader("accept", "application/json")
-                .addHeader("Authorization", "Bearer ${ApiData.BEARER}")
+                .addHeader("Authorization", "Bearer ${BuildConfig.SAFE_API_KEY}")
                 .build()
             it.proceed(request)
         }.build()

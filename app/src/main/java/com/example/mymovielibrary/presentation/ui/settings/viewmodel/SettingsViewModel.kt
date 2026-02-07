@@ -2,6 +2,7 @@ package com.example.mymovielibrary.presentation.ui.settings.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.data.local.storage.Store
+import com.example.mymovielibrary.domain.account.repository.AccountRepo
 import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.model.events.SettingsEvent
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.ChangeCountry
@@ -15,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-
+    private val accountRepo: AccountRepo
 ): BaseViewModel() {
 
 //    private val _settingsState by lazy { MutableStateFlow<SettingsState> }
@@ -26,7 +27,7 @@ class SettingsViewModel @Inject constructor(
             is ChangeCountry -> TODO()
             is ChangeResponseLanguage -> saveNewLanguage(event.language)
             is CollectionsToStatistics -> TODO()
-            Logout -> TODO()
+            Logout -> { }
         }
     }
 
@@ -43,7 +44,7 @@ class SettingsViewModel @Inject constructor(
 
     }
 
-    private fun logout() {
-
+    private suspend fun logout() {
+        accountRepo.logout()
     }
 }

@@ -2,7 +2,11 @@ package com.example.mymovielibrary.data.remote.account.api
 
 import com.example.mymovielibrary.data.remote.account.model.AccountDetailsResponse
 import com.example.mymovielibrary.data.remote.account.model.LanguageResponse
+import com.example.mymovielibrary.data.remote.auth.model.DefaultResponse
+import okhttp3.RequestBody
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.HTTP
 import retrofit2.http.Query
 
 interface AccountApi {
@@ -12,8 +16,11 @@ interface AccountApi {
         @Query("session_id") sessionId: String
     ): AccountDetailsResponse
 
-    //fixme вынести отсюда
     @GET("3/configuration/languages")
     suspend fun getLanguages(): Array<LanguageResponse>
 
+    @HTTP(method = "DELETE", path = "4/auth/access_token", hasBody = true)
+    suspend fun logout(
+        @Body requestBody: RequestBody,
+    ): DefaultResponse
 }

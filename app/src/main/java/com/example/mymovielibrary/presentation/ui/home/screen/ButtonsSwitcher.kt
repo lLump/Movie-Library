@@ -148,7 +148,8 @@ fun SingleChoiceButtons(
     SingleChoiceSegmentedButtonRow(modifier = modifier) {
         SegmentedButton(
             modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(bottomStart = 24.dp, topStart = 24.dp),
+//            shape = RoundedCornerShape(bottomStart = 24.dp, topStart = 24.dp),
+            shape = RoundedCornerShape(0.dp),
             onClick = {
                 selectedIndex = 0
                 onChoice(selectedIndex)
@@ -156,7 +157,10 @@ fun SingleChoiceButtons(
             selected = 0 == selectedIndex,
             icon = {},
         ) {
-            Text(text = stringResource(id = firstTextId))
+            Text(
+                text = stringResource(id = firstTextId),
+                fontSize = 18.sp
+            )
         }
         SegmentedButton(
             modifier = Modifier.weight(1f),
@@ -168,7 +172,10 @@ fun SingleChoiceButtons(
             selected = 1 == selectedIndex,
             icon = {},
         ) {
-            Text(text = stringResource(id = secondTextId))
+            Text(
+                text = stringResource(id = secondTextId),
+                fontSize = 18.sp
+            )
         }
     }
 }

@@ -9,6 +9,8 @@ import com.example.mymovielibrary.domain.account.repository.AccountRepo
 import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 
 class AccountRepoImpl(private val api: AccountApi) : AccountRepo, BaseRepository() {
 
@@ -25,6 +27,17 @@ class AccountRepoImpl(private val api: AccountApi) : AccountRepo, BaseRepository
             val response = api.getLanguages()
 
             response.map { it.toLanguageDetails() }
+        }
+    }
+
+    override suspend fun logout(): Result<Boolean, DataError> {
+        return safeApiCall("Logout Error") {
+            val mediaType = "application/json".toMediaType()
+            val body = "{\"access_token\":\"$accessToken\"}".toRequestBody(mediaType)
+
+            val response = api.logout(body)
+
+            response.success
         }
     }
 }

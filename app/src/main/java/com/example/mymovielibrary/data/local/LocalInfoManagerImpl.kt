@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.data.local.storage.Store.clear
 
-class LocalInfoManagerImpl(context: Context) {
+class LocalInfoManagerImpl(context: Context) { //todo (Create interface)
     private val sharedPrefs: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
     private val editor = sharedPrefs.edit()
 

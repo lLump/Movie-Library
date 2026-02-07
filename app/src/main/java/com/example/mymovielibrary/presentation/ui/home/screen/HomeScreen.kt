@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.data.remote.lists.model.enums.TimeWindow
@@ -149,12 +150,14 @@ private fun TopTrendingSection(
                 modifier = Modifier
                     .padding(start = 16.dp)
                     .weight(1f)
+                    .alpha(0.8f)
                     .align(Alignment.CenterVertically),
-                style = MaterialTheme.typography.titleLarge,
+//                style = MaterialTheme.typography.titleLarge,
+                fontSize = 16.sp,
                 text =  stringResource(R.string.trending))
             SingleChoiceButtons(
                 modifier = Modifier
-                    .alpha(0.7f)
+                    .alpha(0.8f)
                     .align(Alignment.CenterVertically),
                 onChoice = {
                     when (it) {

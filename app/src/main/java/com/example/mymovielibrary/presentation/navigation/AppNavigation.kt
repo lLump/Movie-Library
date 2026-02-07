@@ -29,6 +29,7 @@ import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Home
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Lists
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.MediaDetails
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.PersonDetails
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Profile
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Settings
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalList
@@ -49,7 +50,7 @@ fun AppNavigation(isTokenApproved: Boolean) {
     val navController = rememberNavController()
 
     val visibilityBottomBar = remember { mutableStateOf(true) }
-    navController.setupDestinationListener(visibilityBottomBar)
+    navController.setupDestinationListener(visibilityBottomBar) // for show/hide bottomBar
 
     Scaffold(
         bottomBar = {
@@ -132,6 +133,12 @@ fun AppNavigation(isTokenApproved: Boolean) {
                 }
 
                 composable<MediaDetails> {
+                    val args = it.toRoute<MediaDetails>() //contain mediaId
+                    MediaScreen(padding)
+                }
+
+                composable<PersonDetails> {
+                    val args = it.toRoute<PersonDetails>() //contain personId
                     MediaScreen(padding)
                 }
 
@@ -140,6 +147,7 @@ fun AppNavigation(isTokenApproved: Boolean) {
 //                    val state by viewModel
                     SettingsScreen(
                         onEvent = viewModel::onEvent,
+                        onBackPress = { navController.navigateUp() }
                     )
                 }
             }
@@ -154,7 +162,6 @@ private fun redirectToUrl(url: String, context: Context) {
 
 private fun NavHostController.setupDestinationListener(visibilityBottomBar: MutableState<Boolean>) {
     this.addOnDestinationChangedListener { _, destination, _ ->
-//        val currentRoute = this.currentBackStackEntry?.destination?.route
         val currentRoute = destination.route
         val formattedRoute = currentRoute?.substringAfterLast(".")?.substringBefore("/") ?: "null"
         visibilityBottomBar.value = when {
@@ -164,6 +171,8 @@ private fun NavHostController.setupDestinationListener(visibilityBottomBar: Muta
             UniversalList.toString().contains(formattedRoute) -> false
             CollectionDetails.toString().contains(formattedRoute) -> false
             MediaDetails.toString().contains(formattedRoute) -> false
+            PersonDetails.toString().contains(formattedRoute) -> false
+            Settings.toString().contains(formattedRoute) -> false
             else -> true
         }
     }
@@ -193,6 +202,6 @@ fun MediaScreen(padding: PaddingValues) {
             .fillMaxSize()
             .padding(padding)
     ) {
-        Text(text = "HOME", modifier = Modifier.fillMaxWidth())
+        Text(text = "MEDIA", modifier = Modifier.fillMaxWidth())
     }
 }

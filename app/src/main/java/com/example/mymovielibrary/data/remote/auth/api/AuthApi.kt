@@ -26,11 +26,6 @@ interface AuthApi {
         @Body requestBody: RequestBody,
         @Header("content_type") type: String = "application/json"
     ): AccessTokenV4
-
-    @HTTP(method = "DELETE", path = "4/auth/access_token", hasBody = true)
-    suspend fun logout(
-        @Body requestBody: RequestBody,
-    ): DefaultResponse
     // ----------------------------------------- //
 
     // V3 API Below
