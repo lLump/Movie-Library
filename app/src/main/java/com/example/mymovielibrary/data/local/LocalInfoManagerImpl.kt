@@ -2,57 +2,47 @@ package com.example.mymovielibrary.data.local
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.mymovielibrary.data.local.storage.Store
-import com.example.mymovielibrary.data.local.storage.Store.clear
-import com.example.mymovielibrary.domain.local.LocalInfoManager
+import androidx.core.content.edit
+import com.example.mymovielibrary.domain.local.LocalStoreWriter
+import com.example.mymovielibrary.domain.local.LocalStoreReader
 
-class LocalInfoManagerImpl(context: Context): LocalInfoManager { //todo (Create interface)
+class LocalInfoManagerImpl(context: Context): LocalStoreWriter, LocalStoreReader {
     private val sharedPrefs: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
-    private val editor = sharedPrefs.edit()
+
+    override val requestToken: String?
+        get() = sharedPrefs.getString("request_token", null)
+
+    override val accessToken: String?
+        get() = sharedPrefs.getString("access_token", null)
+
+    override val sessionId: String?
+        get() = sharedPrefs.getString("session_id", null)
+
+    override val accountIdV4: String?
+        get() = sharedPrefs.getString("account_id_v4", null)
+
+    override val accountIdV3: Int
+        get() = sharedPrefs.getInt("account_id_v3", 0)
+
+    override val iso639: String
+        get() = sharedPrefs.getString("iso639", "en")!!
+
+    override val iso3166: String
+        get() = sharedPrefs.getString("iso3166", "US")!!
 
     override fun clearInfo() { // when logout
-        Store.tmdbData.clear()
-        editor.clear().apply()
+        sharedPrefs.edit { clear().apply() }
     }
+
+    override fun saveTempRequestToken(token: String) { sharedPrefs.edit { putString("request_token", token).apply() } }
+    override fun saveAccountIdV3(id: Int) { sharedPrefs.edit { putInt("account_id_v3", id).apply() } }
 
     override fun saveUserInfo(accountIdV4: String, sessionId: String, accessToken: String) {
-        saveUserInfoIntoPrefs(accountIdV4, sessionId, accessToken)
-        saveUserInfoIntoSingleton(accountIdV4, sessionId, accessToken)
-    }
-
-    fun loadUserInfoFromPrefsToSingletonIfExist() { // for MainActivity
-        getInfoIfExist { isSaved, accountId, sessionId, token ->
-            if (isSaved) {
-                saveUserInfoIntoSingleton(accountId, sessionId, token) //TODO language ISO
-            }
-        }
-    }
-
-    private fun saveUserInfoIntoSingleton(accountIdV4: String, sessionId: String, accessToken: String) {
-        Store.run {
-            this.tmdbData.accountIdV4 = accountIdV4
-            this.tmdbData.sessionId = sessionId
-            this.tmdbData.accessToken = accessToken
-        }
-    }
-
-    private fun saveUserInfoIntoPrefs(accountIdV4: String, sessionId: String, accessToken: String) {
-        editor.run {
+        sharedPrefs.edit {
             putString("account_id_v4", accountIdV4)
             putString("session_id", sessionId)
             putString("access_token", accessToken)
             apply()
         }
-    }
-
-    private fun getInfoIfExist(info: (Boolean, String, String, String) -> Unit) {
-        val accountId = sharedPrefs.getString("account_id_v4", "noId") as String
-        val sessionId = sharedPrefs.getString("session_id", "noSessionId") as String
-        val accessToken = sharedPrefs.getString("access_token", "noToken") as String
-
-        //fixme (always true)
-        if (accountId.isNotEmpty() || sessionId.isNotEmpty() || accessToken.isNotEmpty()) {
-            info(true, accountId, sessionId, accessToken)
-        } else info(false, accountId, sessionId, accessToken)
     }
 }

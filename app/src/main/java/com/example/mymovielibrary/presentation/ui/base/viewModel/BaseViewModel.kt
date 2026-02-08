@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 
 abstract class BaseViewModel: ViewModel() {
     private val eventChannel = Channel<UiEvent>()
-    val events = eventChannel.receiveAsFlow()
+    val uiEvents = eventChannel.receiveAsFlow()
 
     suspend fun sendUiEvent(event: UiEvent) {
         eventChannel.send(event)
@@ -20,7 +20,8 @@ abstract class BaseViewModel: ViewModel() {
         return when (val result = request.invoke()) {
             is Result.Success -> result.data
             is Result.Error -> {
-                eventChannel.send(UiEvent.Error(result.asErrorUiText()))
+//                eventChannel.send(UiEvent.Error(result.asErrorUiText())) //stop coroutine forever if no one listening
+//                eventChannel.trySend(UiEvent.Error(result.asErrorUiText())) // do not stop (not suspend)
                 null
             }
         }

@@ -8,8 +8,9 @@ data class ProfileState(
 )
 
 sealed interface UserType {
-    data object Guest : UserType
     data object Loading: UserType
+    data object Guest : UserType
+    data class NeedApproval(val requestToken: String) : UserType
     data class LoggedIn(val profile: ProfileDisplay) : UserType
 }
 

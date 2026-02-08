@@ -42,8 +42,10 @@ import com.example.mymovielibrary.presentation.ui.lists.viewModel.CollectionView
 import com.example.mymovielibrary.presentation.ui.lists.viewModel.DefaultListsViewModel
 import com.example.mymovielibrary.presentation.ui.lists.viewModel.ListViewModel
 import com.example.mymovielibrary.presentation.ui.profile.screen.ProfileScreen
+import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
 import com.example.mymovielibrary.presentation.ui.settings.screen.SettingsScreen
 import com.example.mymovielibrary.presentation.ui.settings.viewmodel.SettingsViewModel
+import com.example.mymovielibrary.presentation.ui.util.UiEvent
 
 @Composable
 fun AppNavigation(isTokenApproved: Boolean) {
@@ -83,7 +85,14 @@ fun AppNavigation(isTokenApproved: Boolean) {
                     )
                 }
                 composable<Profile> {
+                    val viewModel: ProfileViewModel = hiltViewModel()
+                    val state by viewModel.profileState.collectAsState()
+//                    val uiEvents by viewModel.uiEvents.collectAsState(UiEvent.Initial)
+
                     ProfileScreen(
+//                        token = viewModel.token,
+                        onEvent = viewModel::onEvent,
+                        state = state,
                         isFromApproving = isTokenApproved,
                         redirectToUrl = { url ->
                             redirectToUrl(url, navController.context)

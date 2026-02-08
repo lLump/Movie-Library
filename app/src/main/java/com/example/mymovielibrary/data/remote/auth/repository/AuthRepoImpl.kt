@@ -4,12 +4,13 @@ import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.data.remote.auth.api.AuthApi
 import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.account.repository.AuthRepo
+import com.example.mymovielibrary.domain.local.LocalStoreReader
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class AuthRepoImpl(private val api: AuthApi) : BaseRepository(), AuthRepo {
+class AuthRepoImpl(private val api: AuthApi, localStore: LocalStoreReader) : BaseRepository(localStore), AuthRepo { //todo (не наследоваться от базового)
 
     override suspend fun createRequestTokenV4(): Result<String, DataError> {
         return safeApiCall("Request Token create failed") {

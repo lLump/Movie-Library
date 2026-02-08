@@ -7,12 +7,15 @@ import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.lists.model.CollectionDetails
 import com.example.mymovielibrary.domain.lists.model.enums.SortType
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
+import com.example.mymovielibrary.domain.local.LocalStoreReader
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class CollectionRepoImpl(private val api: CollectionManagerApi) : CollectionRepo, BaseRepository() {
+class CollectionRepoImpl(private val api: CollectionManagerApi, localStore: LocalStoreReader) : CollectionRepo, BaseRepository(localStore) {
+    private val accessToken: String
+        get() = "Bearer ${localStore.accessToken}"
 
     override suspend fun getCollectionDetails(listId: Int): Result<CollectionDetails, DataError> {
         return safeApiCall(errorMessage = "API Collection details ERROR") {
@@ -90,7 +93,7 @@ class CollectionRepoImpl(private val api: CollectionManagerApi) : CollectionRepo
             val response = api.deleteCollection(
                 collectionId,
                 token = accessToken,
-                sessionId = Store.tmdbData.sessionId
+                sessionId = localStore.sessionId ?: throw Exception("No sessionId provided in deleteCollection")
             )
 
             response.success
@@ -100,7 +103,7 @@ class CollectionRepoImpl(private val api: CollectionManagerApi) : CollectionRepo
     override suspend fun createCollection(name: String, description: String, isPublic: Boolean): Result<Boolean, DataError> {
         return safeApiCall(errorMessage = "Collection creating Failed") {
             val mediaType = "application/json".toMediaType()
-            val body = "{\"description\":\"$description\",\"name\":\"$name\",\"iso_3166_1\":\"${Store.tmdbData.iso3166}\",\"iso_639_1\":\"${Store.tmdbData.iso639}\",\"public\":$isPublic}".toRequestBody(mediaType)
+            val body = "{\"description\":\"$description\",\"name\":\"$name\",\"iso_3166_1\":\"${localStore.iso3166}\",\"iso_639_1\":\"${localStore.iso639}\",\"public\":$isPublic}".toRequestBody(mediaType)
 
             val response = api.createCollection(body, accessToken)
             response.success

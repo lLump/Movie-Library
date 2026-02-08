@@ -1,25 +1,19 @@
 package com.example.mymovielibrary.presentation.ui.profile.viewModel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
 import com.example.mymovielibrary.domain.account.repository.AuthRepo
 import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
-import com.example.mymovielibrary.domain.local.LocalInfoManager
+import com.example.mymovielibrary.domain.local.LocalStoreReader
+import com.example.mymovielibrary.domain.local.LocalStoreWriter
 import com.example.mymovielibrary.domain.model.events.AccountEvent
-import com.example.mymovielibrary.domain.model.events.AuthEvent
-import com.example.mymovielibrary.domain.model.events.AuthEvent.ApproveToken
-import com.example.mymovielibrary.domain.model.events.AuthEvent.Login
-import com.example.mymovielibrary.domain.model.events.ProfileEvent
-import com.example.mymovielibrary.domain.model.events.ProfileEvent.LoadUserScreen
-import com.example.mymovielibrary.domain.model.events.ProfileEvent.SaveLanguage
+import com.example.mymovielibrary.domain.model.events.AccountEvent.*
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileState
 import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
 import com.example.mymovielibrary.presentation.ui.profile.state.UserType
+import com.example.mymovielibrary.presentation.ui.profile.state.UserType.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -33,40 +27,36 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepo: AuthRepo,
-    private val userPrefs: LocalInfoManager,
+    private val localStoreReader: LocalStoreReader,
+    private val localStoreWriter: LocalStoreWriter,
     private val accConfig: AccountRepo,
     private val userListsRepo: UserListsRepo,
 ): BaseViewModel() {
-
-    private val _token = MutableLiveData<String>()
-    val token: LiveData<String> = _token
-
     private val _profileState = MutableStateFlow(ProfileState())
     val profileState = _profileState.asStateFlow()
 
     fun onEvent(event: AccountEvent) {
         when (event) {
-            is AuthEvent -> when (event) {
-                Login -> {
-                    viewModelScope.launch(Dispatchers.IO) {
-                        val token = getRequestToken()
-                        _token.postValue(token)
-                        Store.tmdbData.requestToken = token
+            Login -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    val token = getRequestToken()
+                    localStoreWriter.saveTempRequestToken(token)
+                    withContext(Dispatchers.Main) {
+                        _profileState.emit(
+                            ProfileState(
+                                userDetails = NeedApproval(token),
+                            )
+                        )
                     }
                 }
-                //not _token.value because of it deletes after approving (redirecting to url -> restart app)
-                ApproveToken -> {
-                    viewModelScope.launch(Dispatchers.IO) {
-                        finishAuth(Store.tmdbData.requestToken)
+            }
+            ApproveToken -> { // когда вернулся с сайта
+                viewModelScope.launch(Dispatchers.IO) {
+                    finishAuth(localStoreReader.requestToken ?: throw Exception("RequestToken was not provided"))
 //                        loadProfile() //fixme загружало лишь инфу профиля, без статистики
-                    }
                 }
             }
-
-            is ProfileEvent -> when (event) {
-                LoadUserScreen -> loadUserScreen()
-                is SaveLanguage -> Store.tmdbData.iso639 = event.language.iso //FIXME
-            }
+            LoadUserScreen -> loadUserScreen()
         }
     }
 
@@ -80,9 +70,9 @@ class ProfileViewModel @Inject constructor(
 
             val userDetails =
                 if (profileDisplay != null)
-                    UserType.LoggedIn(profileDisplay)
+                    LoggedIn(profileDisplay)
                 else
-                    UserType.Guest
+                    Guest
 
             withContext(Dispatchers.Main) {
                 _profileState.emit(
@@ -119,9 +109,9 @@ class ProfileViewModel @Inject constructor(
     }
 
     private suspend fun loadProfileData(): ProfileDisplay? {
-        val profileDetails = request { accConfig.getProfileDetails(Store.tmdbData.sessionId) }
+        val profileDetails = request { accConfig.getProfileDetails() }
         if (profileDetails == null) {
-            return null //request error
+            return null //fixme request error
         } else {
             val displayProfile = ProfileDisplay(
                 avatarPath = profileDetails.avatarPath ?: "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg", //default photo path todo(not found)
@@ -130,18 +120,22 @@ class ProfileViewModel @Inject constructor(
 //                    name = profileDetails.name,
                 languageIso = profileDetails.languageIso,
             )
-            Store.tmdbData.accountIdV3 = profileDetails.id //fixme
+            localStoreWriter.saveAccountIdV3(profileDetails.id)
             return displayProfile
         }
     }
 
-    private suspend fun getRequestToken() = request { authRepo.createRequestTokenV4() } ?: "noToken"
+    private suspend fun getRequestToken() = request { authRepo.createRequestTokenV4() } ?: throw Exception("createRequestToken == null") //fixme(сомнительно)
 
     private suspend fun finishAuth(requestToken: String) {
         val (accountId, token) = request { authRepo.createAccessTokenV4(requestToken) }
-            ?: Pair("noId", "noToken")
-        val sessionId = request { authRepo.getSessionIdV4(token) } ?: "noSessionId"
+            ?: Pair("", "")
+        val sessionId = request { authRepo.getSessionIdV4(token) } ?: throw Exception("getSessionIdV4 == null") //fixme(сомнительно)
 
-        userPrefs.saveUserInfo(accountId, sessionId, token) //local save into prefs & store
+        localStoreWriter.saveUserInfo(
+            accountIdV4 = accountId,
+            sessionId = sessionId,
+            accessToken = token
+        )
     }
 }

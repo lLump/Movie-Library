@@ -8,5 +8,4 @@ interface AuthRepo {
     suspend fun createAccessTokenV4(requestToken: String): Result<Pair<String, String>, DataError>
     suspend fun getSessionIdV4(accessToken: String): Result<String, DataError>
     suspend fun getGuestSessionId(): Result<String, DataError>
-//    suspend fun logout(): Result<Boolean, DataError>
     }

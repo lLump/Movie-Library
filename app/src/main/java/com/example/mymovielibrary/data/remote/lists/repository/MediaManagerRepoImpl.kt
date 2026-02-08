@@ -1,15 +1,17 @@
 package com.example.mymovielibrary.data.remote.lists.repository
 
 import com.example.mymovielibrary.data.remote.lists.api.MediaManagerApi
-import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
+import com.example.mymovielibrary.domain.local.LocalStoreReader
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class MediaManagerRepoRepoImpl(private val api: MediaManagerApi): MediaManagerRepo, BaseRepository() {
+class MediaManagerRepoImpl(private val api: MediaManagerApi, localStore: LocalStoreReader): MediaManagerRepo, BaseRepository(localStore) {
+    private val accountId: Int
+        get() = localStore.accountIdV3 ?: throw Exception("No AccountIdV3 provided in MediaManagerRepo")
 
     override suspend fun addOrDeleteInFavorite(
         mediaId: Int,
@@ -22,7 +24,7 @@ class MediaManagerRepoRepoImpl(private val api: MediaManagerApi): MediaManagerRe
             val body = "{\"media_type\":\"$movieType\",\"media_id\":$mediaId,\"favorite\":$isAdding}".toRequestBody(mediaType)
 
             val response = api.addOrDeleteInFavorite(
-                accountIdV3 = Store.tmdbData.accountIdV3.toString(),
+                accountIdV3 = accountId.toString(),
                 requestBody = body,
             )
 
@@ -41,7 +43,7 @@ class MediaManagerRepoRepoImpl(private val api: MediaManagerApi): MediaManagerRe
             val body = "{\"media_type\":\"$movieType\",\"media_id\":$mediaId,\"watchlist\":$isAdding}".toRequestBody(mediaType)
 
             val response = api.addOrDeleteInWatchlist(
-                accountIdV3 = Store.tmdbData.accountIdV3.toString(),
+                accountIdV3 = accountId.toString(),
                 requestBody = body,
             )
 
@@ -77,7 +79,7 @@ class MediaManagerRepoRepoImpl(private val api: MediaManagerApi): MediaManagerRe
             val mediaType = "application/json".toMediaType()
             val body = jsonBody.toRequestBody(mediaType)
 
-            val response = api.addItemsToCollection(collectionId, body, accessToken)
+            val response = api.addItemsToCollection(collectionId, body, "Bearer ${localStore.accessToken}")
 
             response.success
         }

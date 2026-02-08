@@ -1,15 +1,12 @@
 package com.example.mymovielibrary.data.remote.base.repository
 
 import android.util.Log
-import com.example.mymovielibrary.data.local.storage.Store
+import com.example.mymovielibrary.domain.local.LocalStoreReader
 import retrofit2.HttpException
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
 
-abstract class BaseRepository {
-    val accessToken: String
-        get() = "Bearer ${Store.tmdbData.accessToken}"
-
+abstract class BaseRepository(protected val localStore: LocalStoreReader) {
     suspend fun <T> safeApiCall(errorMessage: String, request: suspend () -> T): Result<T, DataError> {
         return try {
             Result.Success(request.invoke())

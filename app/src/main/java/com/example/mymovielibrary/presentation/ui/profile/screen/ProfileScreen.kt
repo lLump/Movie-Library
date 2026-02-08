@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,8 +33,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,13 +41,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -64,66 +58,47 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import coil.compose.AsyncImage
 import com.example.mymovielibrary.R
-import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.image.ProfileSize
 import com.example.mymovielibrary.domain.lists.model.enums.ListType
-import com.example.mymovielibrary.domain.model.events.AuthEvent
-import com.example.mymovielibrary.domain.model.events.ProfileEvent
+import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Lists
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalList
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
+import com.example.mymovielibrary.presentation.ui.profile.state.ProfileState
 import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
 import com.example.mymovielibrary.presentation.ui.profile.state.UserType
-import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
 import com.example.mymovielibrary.presentation.ui.theme.Typography
-import com.example.mymovielibrary.presentation.ui.util.ShowToast
-import com.example.mymovielibrary.presentation.ui.util.UiEvent
-import com.example.mymovielibrary.presentation.ui.util.UiEvent.Error
-import com.example.mymovielibrary.presentation.ui.util.UiEvent.Initial
-
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = hiltViewModel(),
+    state: ProfileState,
+    onEvent: (AccountEvent) -> Unit,
     redirectToUrl: (String) -> Unit,
     navigateTo: (NavigationRoute) -> Unit,
     isFromApproving: Boolean
 ) {
-    val profile by viewModel.profileState.collectAsState()
-    val uiEvents by viewModel.events.collectAsState(UiEvent.Initial)
-
-    if (profile.userDetails is UserType.Guest) { // if guest -> observe token
-        ObserveToken(LocalLifecycleOwner.current, viewModel.token, redirectToUrl)
-    } else { // при LoadUserDetails происходит 401 из-за чего в тоаст идет ошибка, и только потом userType.LoggedIn
-             // и только после approveToken загружаются детали. В else после approve немного медленее работает (loadUserScreen)
-        LaunchedEffect(Unit) {
-            viewModel.onEvent(ProfileEvent.LoadUserScreen)  // load details if not guest
-            if (isFromApproving) {                          // check if user from login
-                viewModel.onEvent(AuthEvent.ApproveToken)   // approving also load details
-            }
+    LaunchedEffect(Unit) {
+        if (isFromApproving) {                // check if user from login
+            onEvent(AccountEvent.ApproveToken)
         }
+        onEvent(AccountEvent.LoadUserScreen)
     }
 
-    when (uiEvents) {
-        is Error -> ShowToast(message = (uiEvents as Error).error.asString())
-        Initial -> {}
-    }
+//    when (uiEvents) {
+//        is Error -> ShowToast(message = (uiEvents as Error).error.asString())
+//        Initial -> {}
+//    }
 
     // Screen UI
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        when (profile.userDetails) {
+        when (state.userDetails) {
             is UserType.LoggedIn -> {
-                UserProfile((profile.userDetails as UserType.LoggedIn).profile, profile.userStats, navigateTo)
+                UserProfile(state.userDetails.profile, state.userStats, navigateTo)
                 IconButton(
                     modifier = Modifier.align(Alignment.TopEnd),
                     onClick = { navigateTo(NavigationRoute.Settings) }
@@ -137,7 +112,7 @@ fun ProfileScreen(
 
             UserType.Guest -> {
                 GuestProfile(
-                    onLoginClick = { viewModel.onEvent(AuthEvent.Login) },
+                    onLoginClick = { onEvent(AccountEvent.Login) },
                     onRegisterClick = { redirectToUrl("https://www.themoviedb.org/signup") }
                 )
             }
@@ -148,6 +123,10 @@ fun ProfileScreen(
                         .align(Alignment.TopCenter)
                         .padding(top = 16.dp)
                 )
+            }
+
+            is UserType.NeedApproval -> {
+                redirectToUrl("https://www.themoviedb.org/auth/access?request_token=${state.userDetails.requestToken}")
             }
         }
 //            IconButton(
@@ -474,23 +453,5 @@ private fun ImdbProfileButton(imdbProfileUrl: Bitmap, currentVibrantColor: Color
             Modifier.padding(start = 8.dp),
             color = currentVibrantColor,
         )
-    }
-}
-
-@Composable
-private fun ObserveToken(
-    lifecycle: LifecycleOwner,
-    token: LiveData<String>,
-    redirectToApprove: (String) -> Unit
-) {
-    DisposableEffect(token) {
-        val url = "https://www.themoviedb.org/auth/access?request_token="
-        val observer = Observer<String> { requestToken ->
-            redirectToApprove(url + requestToken)
-        }
-        token.observe(lifecycle, observer)
-        onDispose {
-            token.removeObserver(observer)
-        }
     }
 }

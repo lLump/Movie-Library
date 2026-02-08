@@ -109,7 +109,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.12.3")
 
     //    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1") // нарисована одна кнопка в ButtonsSwitcher (не используется)
-    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    implementation(platform("androidx.compose:compose-bom:2026.01.01"))
     implementation("com.google.android.material:material:1.13.0") // for current theme
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended:1.7.8") //additional icons

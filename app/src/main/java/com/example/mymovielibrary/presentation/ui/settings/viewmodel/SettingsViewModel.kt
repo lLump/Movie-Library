@@ -8,6 +8,7 @@ import com.example.mymovielibrary.domain.model.events.SettingsEvent
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.ChangeCountry
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.ChangeResponseLanguage
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.CollectionsToStatistics
+import com.example.mymovielibrary.domain.model.events.SettingsEvent.SaveLanguage
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.Logout
 import com.example.mymovielibrary.presentation.ui.settings.state.SettingsState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,9 +28,10 @@ class SettingsViewModel @Inject constructor(
 
     fun onEvent(event: SettingsEvent) {
         when (event) {
-            is ChangeCountry -> TODO()
+            is ChangeCountry -> {}
             is ChangeResponseLanguage -> saveNewLanguage(event.language)
-            is CollectionsToStatistics -> TODO()
+            is CollectionsToStatistics -> {}
+            is SaveLanguage -> { }
             Logout -> { }
         }
     }
@@ -38,8 +40,6 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.Default) {
             val iso639 = language.substringBefore("-")
             val iso3166 = language.substringAfter("-")
-            Store.tmdbData.iso639 = iso639
-            Store.tmdbData.iso3166 = iso3166
         }
     }
 
