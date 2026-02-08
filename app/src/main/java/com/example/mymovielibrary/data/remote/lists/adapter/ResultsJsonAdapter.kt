@@ -42,7 +42,5 @@ class ResultsJsonAdapter(private val adapter: JsonAdapter<MediaItemResponse>) : 
 
     @ToJson
     @MediaItemAdapter
-    override fun toJson(p0: JsonWriter, p1: List<MediaItemResponse>?) {
-        TODO("Never gonna be implemented")
-    }
+    override fun toJson(p0: JsonWriter, p1: List<MediaItemResponse>?) {}
 }

@@ -9,8 +9,11 @@ import com.example.mymovielibrary.domain.model.events.SettingsEvent.ChangeCountr
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.ChangeResponseLanguage
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.CollectionsToStatistics
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.Logout
+import com.example.mymovielibrary.presentation.ui.settings.state.SettingsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,8 +22,8 @@ class SettingsViewModel @Inject constructor(
     private val accountRepo: AccountRepo
 ): BaseViewModel() {
 
-//    private val _settingsState by lazy { MutableStateFlow<SettingsState> }
-//    val settingsState = _settingsState.asStateFlow()
+    private val _settingsState = MutableStateFlow(SettingsState())
+    val settingsState = _settingsState.asStateFlow()
 
     fun onEvent(event: SettingsEvent) {
         when (event) {

@@ -72,19 +72,19 @@ kapt {
     correctErrorTypes = true
 }
 
+configurations.all {
+    resolutionStrategy {
+        force("org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3")
+    }
+}
+
 dependencies {
     val retrofit = "2.9.0"
     val daggerHilt = "2.49"
-    val moshi = "1.15.0"
+    val moshi = "1.15.2"
 
-    implementation("io.coil-kt:coil-compose:2.6.0") //AsyncImage (Coil)
-    implementation("androidx.core:core-splashscreen:1.0.1") //splashScreen
-
-    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
-    implementation("androidx.compose.material3:material3")
-    implementation("com.google.android.material:material:1.13.0")
-    implementation ("androidx.compose.material:material-icons-extended:1.7.8") //additional icons
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
+    implementation("io.coil-kt:coil-compose:2.7.0") //AsyncImage (Coil)
+    implementation("androidx.core:core-splashscreen:1.2.0") //splashScreen
 
     implementation("com.squareup.retrofit2:retrofit:$retrofit")
     implementation("com.squareup.retrofit2:converter-moshi:$retrofit")
@@ -94,27 +94,28 @@ dependencies {
     implementation("com.squareup.moshi:moshi-adapters:$moshi")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshi")
 
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.10.0")
 
     implementation("com.google.dagger:hilt-android:$daggerHilt")
     kapt("com.google.dagger:hilt-compiler:$daggerHilt")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("androidx.navigation:navigation-compose:2.8.0-beta02")
+    implementation("androidx.navigation:navigation-compose:2.9.7")
+
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
 
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation("androidx.core:core-ktx:1.17.0")
+    implementation("androidx.activity:activity-compose:1.12.3")
+
+    //    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1") // нарисована одна кнопка в ButtonsSwitcher (не используется)
+    implementation(platform("androidx.compose:compose-bom:2024.12.01"))
+    implementation("com.google.android.material:material:1.13.0") // for current theme
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8") //additional icons
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-//    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-//    androidTestImplementation(platform("androidx.compose:compose-bom:2024.03.00"))
-//    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }

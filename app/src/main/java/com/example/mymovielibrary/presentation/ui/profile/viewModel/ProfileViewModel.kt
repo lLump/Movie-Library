@@ -3,12 +3,12 @@ package com.example.mymovielibrary.presentation.ui.profile.viewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.mymovielibrary.data.local.LocalInfoManagerImpl
 import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
 import com.example.mymovielibrary.domain.account.repository.AuthRepo
 import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
+import com.example.mymovielibrary.domain.local.LocalInfoManager
 import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent
 import com.example.mymovielibrary.domain.model.events.AuthEvent.ApproveToken
@@ -33,7 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepo: AuthRepo,
-    private val userPrefs: LocalInfoManagerImpl,
+    private val userPrefs: LocalInfoManager,
     private val accConfig: AccountRepo,
     private val userListsRepo: UserListsRepo,
 ): BaseViewModel() {
@@ -130,7 +130,7 @@ class ProfileViewModel @Inject constructor(
 //                    name = profileDetails.name,
                 languageIso = profileDetails.languageIso,
             )
-            Store.tmdbData.accountIdV3 = profileDetails.id
+            Store.tmdbData.accountIdV3 = profileDetails.id //fixme
             return displayProfile
         }
     }

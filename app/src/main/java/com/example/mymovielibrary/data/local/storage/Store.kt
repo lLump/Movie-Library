@@ -2,7 +2,7 @@ package com.example.mymovielibrary.data.local.storage
 
 object Store {
     var tmdbData: TmdbData = TmdbData()
-    var userCollections: List<Pair<Int, String>> = listOf()
+    var userCollections: List<Pair<Int, String>> = listOf() //fixme для отображения кастомных списков в меню добавления
 
     fun TmdbData.clear() {
         requestToken = "noToken"

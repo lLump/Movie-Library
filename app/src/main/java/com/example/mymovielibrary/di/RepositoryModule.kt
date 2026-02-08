@@ -20,6 +20,7 @@ import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
 import com.example.mymovielibrary.domain.lists.repository.HomeListsRepo
 import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
+import com.example.mymovielibrary.domain.local.LocalInfoManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -61,7 +62,7 @@ class RepositoryModule {
     }
 
     @Provides
-    fun userPrefs(@ApplicationContext context: Context): LocalInfoManagerImpl {
+    fun userPrefs(@ApplicationContext context: Context): LocalInfoManager {
         return LocalInfoManagerImpl(context)
     }
 

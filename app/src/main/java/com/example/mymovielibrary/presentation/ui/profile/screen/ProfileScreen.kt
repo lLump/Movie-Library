@@ -478,45 +478,6 @@ private fun ImdbProfileButton(imdbProfileUrl: Bitmap, currentVibrantColor: Color
 }
 
 @Composable
-private fun LanguageMenu(languagesList: List<LanguageDetails>, onEvent: (ProfileEvent) -> Unit) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Box {
-        Text(
-            text = stringResource(id = R.string.choose_language),
-            modifier = Modifier
-                .padding(8.dp)
-                .clickable { expanded = true },
-            color = Color.Blue
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.CenterStart)
-        ) {
-            languagesList.forEach { language ->
-                DropdownMenuItem(
-                    text = {
-                        Row {
-                            Text(text = language.name)
-                            //                            Spacer(modifier = Modifier.width(4.dp))
-                            //                            Divider(color = Color.Black, modifier = Modifier.fillMaxHeight())
-                            //                            Spacer(modifier = Modifier.width(4.dp))
-                            //                            Text(text = language.iso)
-                        }
-                    },
-                    onClick = {
-                        onEvent(ProfileEvent.SaveLanguage(language))
-                        expanded = false
-                    })
-            }
-        }
-    }
-}
-
-@Composable
 private fun ObserveToken(
     lifecycle: LifecycleOwner,
     token: LiveData<String>,

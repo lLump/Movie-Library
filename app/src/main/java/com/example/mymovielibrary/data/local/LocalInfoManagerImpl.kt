@@ -4,17 +4,18 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.data.local.storage.Store.clear
+import com.example.mymovielibrary.domain.local.LocalInfoManager
 
-class LocalInfoManagerImpl(context: Context) { //todo (Create interface)
+class LocalInfoManagerImpl(context: Context): LocalInfoManager { //todo (Create interface)
     private val sharedPrefs: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
     private val editor = sharedPrefs.edit()
 
-    fun clearInfo() { // when logout
+    override fun clearInfo() { // when logout
         Store.tmdbData.clear()
         editor.clear().apply()
     }
 
-    fun saveUserInfo(accountIdV4: String, sessionId: String, accessToken: String) {
+    override fun saveUserInfo(accountIdV4: String, sessionId: String, accessToken: String) {
         saveUserInfoIntoPrefs(accountIdV4, sessionId, accessToken)
         saveUserInfoIntoSingleton(accountIdV4, sessionId, accessToken)
     }
