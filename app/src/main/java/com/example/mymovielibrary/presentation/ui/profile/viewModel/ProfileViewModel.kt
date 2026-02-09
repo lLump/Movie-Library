@@ -64,7 +64,7 @@ class ProfileViewModel @Inject constructor(
                             )
                         )
                     }
-                    finishAuth(localStoreReader.requestToken ?: throw Exception("RequestToken was not provided"))
+//                    finishAuth(localStoreReader.requestToken ?: throw Exception("RequestToken was not provided"))
                     loadUserScreen()
                 }
             }
@@ -137,6 +137,7 @@ class ProfileViewModel @Inject constructor(
 //                    name = profileDetails.name,
             languageIso = profileDetails.languageIso,
         )
+
         localStoreWriter.saveAccountIdV3(profileDetails.id)
         return LoggedIn(displayProfile)
     }

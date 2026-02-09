@@ -1,16 +1,28 @@
 package com.example.mymovielibrary.data.remote.auth.repository
 
-import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.data.remote.auth.api.AuthApi
 import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.account.repository.AuthRepo
 import com.example.mymovielibrary.domain.local.LocalStoreReader
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
+import com.example.mymovielibrary.domain.state.AuthState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class AuthRepoImpl(private val api: AuthApi, localStore: LocalStoreReader) : BaseRepository(localStore), AuthRepo { //todo (не наследоваться от базового)
+class AuthRepoImpl(private val api: AuthApi, localStore: LocalStoreReader) : BaseRepository(localStore), AuthRepo {
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Loading)
+    override val authState: Flow<AuthState> = _authState.asStateFlow()
+
+    init {
+        _authState.value = //restoreAuthState
+            if (localStore.accessToken.isNullOrEmpty()) { // && localStore.sessionId.isNullOrEmpty() излишне
+                AuthState.Guest
+            } else AuthState.Authorized
+    }
 
     override suspend fun createRequestTokenV4(): Result<String, DataError> {
         return safeApiCall("Request Token create failed") {
@@ -56,4 +68,6 @@ class AuthRepoImpl(private val api: AuthApi, localStore: LocalStoreReader) : Bas
             response.guest_session_id
         }
     }
+
+    override suspend fun authorizeUser() { _authState.value = AuthState.FromAuthorize }
 }

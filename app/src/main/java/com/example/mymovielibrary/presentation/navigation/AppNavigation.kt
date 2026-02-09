@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -24,6 +25,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.mymovielibrary.domain.lists.model.enums.ListType
+import com.example.mymovielibrary.domain.state.AuthState
+import com.example.mymovielibrary.domain.state.AuthState.*
 import com.example.mymovielibrary.presentation.navigation.bottomBar.MyBottomBar
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.CollectionDetails
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Home
@@ -45,14 +48,30 @@ import com.example.mymovielibrary.presentation.ui.profile.screen.ProfileScreen
 import com.example.mymovielibrary.presentation.ui.profile.viewModel.ProfileViewModel
 import com.example.mymovielibrary.presentation.ui.settings.screen.SettingsScreen
 import com.example.mymovielibrary.presentation.ui.settings.viewmodel.SettingsViewModel
-import com.example.mymovielibrary.presentation.ui.util.UiEvent
 
 @Composable
-fun AppNavigation(isTokenApproved: Boolean) {
+fun AppNavigation(authState: AuthState) {
     val navController = rememberNavController()
 
     val visibilityBottomBar = remember { mutableStateOf(true) }
     navController.setupDestinationListener(visibilityBottomBar) // for show/hide bottomBar
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            Authorized -> {}
+            Loading -> {}
+            Guest -> {
+                navController.navigate(Home) {
+                    popUpTo(0)
+                }
+            }
+            FromAuthorize -> {
+                navController.navigate(Profile) {
+                    popUpTo(0)
+                }
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -60,7 +79,7 @@ fun AppNavigation(isTokenApproved: Boolean) {
             // FIXME there is a bug, when user click "back" too fast (on screen without bar), views become half transparent
         },
         content = { padding ->
-            NavHost(navController = navController, startDestination = if (!isTokenApproved) Home else Profile) {
+            NavHost(navController = navController, startDestination = Home) {
                 //BottomNavBar
                 composable<Home> {
                     val viewModel: HomeViewModel = hiltViewModel()
@@ -92,7 +111,6 @@ fun AppNavigation(isTokenApproved: Boolean) {
                     ProfileScreen(
                         onEvent = viewModel::onEvent,
                         state = state,
-                        isFromApproving = isTokenApproved,
                         redirectToUrl = { url ->
                             redirectToUrl(url, navController.context)
                         },

@@ -77,17 +77,8 @@ fun ProfileScreen(
     onEvent: (AccountEvent) -> Unit,
     redirectToUrl: (String) -> Unit,
     navigateTo: (NavigationRoute) -> Unit,
-    isFromApproving: Boolean
 ) {
-    LaunchedEffect(Unit) {
-        if (isFromApproving && !state.isApproved) { // check if user from login (site)
-            onEvent(AccountEvent.ApproveToken)
-        } else {
-//            onEvent(AccountEvent.LoadUserScreen)
-        }
-
-    }
-
+    
 //    when (uiEvents) {
 //        is Error -> ShowToast(message = (uiEvents as Error).error.asString())
 //        Initial -> {}
