@@ -90,7 +90,6 @@ fun AppNavigation(isTokenApproved: Boolean) {
 //                    val uiEvents by viewModel.uiEvents.collectAsState(UiEvent.Initial)
 
                     ProfileScreen(
-//                        token = viewModel.token,
                         onEvent = viewModel::onEvent,
                         state = state,
                         isFromApproving = isTokenApproved,

@@ -35,7 +35,11 @@ class LocalInfoManagerImpl(context: Context): LocalStoreWriter, LocalStoreReader
     }
 
     override fun saveTempRequestToken(token: String) { sharedPrefs.edit { putString("request_token", token).apply() } }
-    override fun saveAccountIdV3(id: Int) { sharedPrefs.edit { putInt("account_id_v3", id).apply() } }
+    override fun saveAccountIdV3(id: Int) {
+        if (accountIdV3 == 0) { // to prevent overriding again and again when userProfile loads
+            sharedPrefs.edit { putInt("account_id_v3", id).apply() }
+        }
+    }
 
     override fun saveUserInfo(accountIdV4: String, sessionId: String, accessToken: String) {
         sharedPrefs.edit {

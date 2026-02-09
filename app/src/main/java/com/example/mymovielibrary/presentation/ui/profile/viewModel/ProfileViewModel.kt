@@ -35,6 +35,10 @@ class ProfileViewModel @Inject constructor(
     private val _profileState = MutableStateFlow(ProfileState())
     val profileState = _profileState.asStateFlow()
 
+    init {
+        loadUserScreen()
+    }
+
     fun onEvent(event: AccountEvent) {
         when (event) {
             Login -> {
@@ -44,6 +48,7 @@ class ProfileViewModel @Inject constructor(
                     withContext(Dispatchers.Main) {
                         _profileState.emit(
                             ProfileState(
+                                isApproved = false,
                                 userDetails = NeedApproval(token),
                             )
                         )
@@ -52,8 +57,15 @@ class ProfileViewModel @Inject constructor(
             }
             ApproveToken -> { // когда вернулся с сайта
                 viewModelScope.launch(Dispatchers.IO) {
+                    withContext(Dispatchers.Main) {
+                        _profileState.emit(
+                            ProfileState(
+                                userDetails = Loading
+                            )
+                        )
+                    }
                     finishAuth(localStoreReader.requestToken ?: throw Exception("RequestToken was not provided"))
-//                        loadProfile() //fixme загружало лишь инфу профиля, без статистики
+                    loadUserScreen()
                 }
             }
             LoadUserScreen -> loadUserScreen()
@@ -62,21 +74,27 @@ class ProfileViewModel @Inject constructor(
 
     private fun loadUserScreen() {
         viewModelScope.launch(Dispatchers.IO) {
+            if (localStoreReader.accessToken.isNullOrEmpty()) {
+                withContext(Dispatchers.Main) {
+                    _profileState.emit(
+                        ProfileState(
+                            isApproved = false,
+                            userDetails = Guest,
+                        )
+                    )
+                }
+                return@launch
+            }
             val userStatsTask = async { loadUserStats() }
             val profileTask = async { loadProfileData() }
 
             val userStats = userStatsTask.await()
-            val profileDisplay = profileTask.await()
-
-            val userDetails =
-                if (profileDisplay != null)
-                    LoggedIn(profileDisplay)
-                else
-                    Guest
+            val userDetails = profileTask.await()
 
             withContext(Dispatchers.Main) {
                 _profileState.emit(
                     ProfileState(
+                        isApproved = true,
                         userDetails = userDetails,
                         userStats = userStats
                     )
@@ -108,21 +126,19 @@ class ProfileViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadProfileData(): ProfileDisplay? {
+    private suspend fun loadProfileData(): UserType {
         val profileDetails = request { accConfig.getProfileDetails() }
-        if (profileDetails == null) {
-            return null //fixme request error
-        } else {
-            val displayProfile = ProfileDisplay(
-                avatarPath = profileDetails.avatarPath ?: "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg", //default photo path todo(not found)
-                username = profileDetails.username,
+            ?: return Guest
+        val displayProfile = ProfileDisplay(
+            avatarPath = profileDetails.avatarPath
+                ?: "2Fj7wrz6ikBMZXx6NBwjDMH3JpHWh.jpg", //default photo path todo(not found)
+            username = profileDetails.username,
 //                stats = getUserStats(),
 //                    name = profileDetails.name,
-                languageIso = profileDetails.languageIso,
-            )
-            localStoreWriter.saveAccountIdV3(profileDetails.id)
-            return displayProfile
-        }
+            languageIso = profileDetails.languageIso,
+        )
+        localStoreWriter.saveAccountIdV3(profileDetails.id)
+        return LoggedIn(displayProfile)
     }
 
     private suspend fun getRequestToken() = request { authRepo.createRequestTokenV4() } ?: throw Exception("createRequestToken == null") //fixme(сомнительно)

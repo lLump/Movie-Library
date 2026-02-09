@@ -17,7 +17,6 @@ class AccountRepoImpl(private val api: AccountApi, localStore: LocalStoreReader)
     override suspend fun getProfileDetails(): Result<ProfileDetails, DataError> {
         return safeApiCall("Request ProfileDetails failed") {
             val response = api.getAccountDetails(localStore.sessionId ?: throw Exception("No sessionId provided in getProfileDetails"))
-
             response.toProfileDetails()
         }
     }

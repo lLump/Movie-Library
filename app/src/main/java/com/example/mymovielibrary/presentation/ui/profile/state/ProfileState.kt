@@ -3,6 +3,7 @@ package com.example.mymovielibrary.presentation.ui.profile.state
 data class ProfileState(
     val userDetails: UserType = UserType.Loading,
     val userStats: UserStats = UserStats("", "", "", ""),
+    val isApproved: Boolean = false
 //    val tmdbLanguage: LanguageDetails = LanguageDetails("English", "en"),
 //    val appLanguage: String = "",
 )

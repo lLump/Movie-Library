@@ -80,10 +80,12 @@ fun ProfileScreen(
     isFromApproving: Boolean
 ) {
     LaunchedEffect(Unit) {
-        if (isFromApproving) {                // check if user from login
+        if (isFromApproving && !state.isApproved) { // check if user from login (site)
             onEvent(AccountEvent.ApproveToken)
+        } else {
+//            onEvent(AccountEvent.LoadUserScreen)
         }
-        onEvent(AccountEvent.LoadUserScreen)
+
     }
 
 //    when (uiEvents) {
