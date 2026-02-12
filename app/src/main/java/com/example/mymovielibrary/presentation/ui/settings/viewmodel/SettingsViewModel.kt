@@ -34,7 +34,7 @@ class SettingsViewModel @Inject constructor(
             is ChangeResponseLanguage -> saveNewLanguage(event.language)
             is CollectionsToStatistics -> {}
             is SaveLanguage -> { }
-            Logout -> { }
+            Logout -> logout()
         }
     }
 
@@ -51,8 +51,11 @@ class SettingsViewModel @Inject constructor(
 
     }
 
-    private suspend fun logout() {
-        accountRepo.logout()
+    private fun logout() {
+        viewModelScope.launch {
+            localStore.clearInfo()
+            accountRepo.logout()
+        }
     }
 
     private fun getIsoByName(name: String): String {

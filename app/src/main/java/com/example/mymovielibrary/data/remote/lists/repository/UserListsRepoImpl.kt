@@ -2,8 +2,7 @@ package com.example.mymovielibrary.data.remote.lists.repository
 
 import com.example.mymovielibrary.data.remote.lists.api.UserListsApi
 import com.example.mymovielibrary.data.remote.lists.util.toUserCollection
-import com.example.mymovielibrary.data.local.storage.Store
-import com.example.mymovielibrary.data.remote.lists.util.toMediaUI
+import com.example.mymovielibrary.data.remote.lists.util.toMediaItem
 import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.UserCollection
@@ -28,7 +27,7 @@ class UserListsRepoImpl(private val api: UserListsApi, localStore: LocalStoreRea
         return safeApiCall(errorMessage = "API Favorite Movies ERROR") {
             val response = api.getFavoriteMovies(accountId)
 
-            response.results.map { it.toMediaUI() }
+            response.results.map { it.toMediaItem() }
         }
     }
 
@@ -36,7 +35,7 @@ class UserListsRepoImpl(private val api: UserListsApi, localStore: LocalStoreRea
         return safeApiCall(errorMessage = "API Favorite TV Shows ERROR") {
             val response = api.getFavoriteTvShows(accountId)
 
-            response.results.map { it.toMediaUI() }
+            response.results.map { it.toMediaItem() }
         }
     }
 
@@ -44,7 +43,7 @@ class UserListsRepoImpl(private val api: UserListsApi, localStore: LocalStoreRea
         return safeApiCall(errorMessage = "API Rated Movies ERROR") {
             val response = api.getRatedMovies(accountId)
 
-            response.results.map { it.toMediaUI() }
+            response.results.map { it.toMediaItem() }
         }
     }
 
@@ -52,7 +51,7 @@ class UserListsRepoImpl(private val api: UserListsApi, localStore: LocalStoreRea
         return safeApiCall(errorMessage = "API Rated TV Shows ERROR") {
             val response = api.getRatedTvShows(accountId)
 
-            response.results.map { it.toMediaUI() }
+            response.results.map { it.toMediaItem() }
         }
     }
 
@@ -60,7 +59,7 @@ class UserListsRepoImpl(private val api: UserListsApi, localStore: LocalStoreRea
         return safeApiCall(errorMessage = "API Watchlist Movies ERROR") {
             val response = api.getWatchlistMovies(accountId)
 
-            response.results.map { it.toMediaUI() }
+            response.results.map { it.toMediaItem() }
         }
     }
 
@@ -68,7 +67,7 @@ class UserListsRepoImpl(private val api: UserListsApi, localStore: LocalStoreRea
         return safeApiCall(errorMessage = "API Watchlist TV Shows ERROR") {
             val response = api.getWatchlistTvShows(accountId)
 
-            response.results.map { it.toMediaUI() }
+            response.results.map { it.toMediaItem() }
         }
     }
 }

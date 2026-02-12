@@ -14,11 +14,6 @@ class LocalInfoManagerImpl(context: Context): LocalStoreWriter, LocalStoreReader
 
     override val accessToken: String?
         get() = sharedPrefs.getString("access_token", null)
-    //мини задачка
-//    override val accessToken: String? = null
-//        get() = if (field.isNullOrEmpty()) {
-//            sharedPrefs.getString("access_token", null)
-//        } else field
 
     override val sessionId: String?
         get() = sharedPrefs.getString("session_id", null)

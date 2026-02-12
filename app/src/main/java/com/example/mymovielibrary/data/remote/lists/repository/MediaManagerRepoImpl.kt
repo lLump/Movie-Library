@@ -79,7 +79,7 @@ class MediaManagerRepoImpl(private val api: MediaManagerApi, localStore: LocalSt
             val mediaType = "application/json".toMediaType()
             val body = jsonBody.toRequestBody(mediaType)
 
-            val response = api.addItemsToCollection(collectionId, body, "Bearer ${localStore.accessToken}")
+            val response = api.addItemsToCollection(collectionId, body)
 
             response.success
         }

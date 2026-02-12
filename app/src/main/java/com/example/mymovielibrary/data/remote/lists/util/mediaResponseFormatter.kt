@@ -4,7 +4,7 @@ import com.example.mymovielibrary.data.remote.lists.model.media.MovieResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.TVShowResponse
 import com.example.mymovielibrary.domain.lists.model.MediaItem
 
-fun MovieResponse.toMediaUI(): MediaItem {
+fun MovieResponse.toMediaItem(): MediaItem {
     return MediaItem(
         id = id,
         title = title,
@@ -18,7 +18,7 @@ fun MovieResponse.toMediaUI(): MediaItem {
     )
 }
 
-fun TVShowResponse.toMediaUI(): MediaItem {
+fun TVShowResponse.toMediaItem(): MediaItem {
     return MediaItem(
         id = id,
         title = name,

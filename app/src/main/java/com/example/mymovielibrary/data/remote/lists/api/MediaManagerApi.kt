@@ -15,7 +15,6 @@ interface MediaManagerApi {
     suspend fun addItemsToCollection(
         @Path("list_id") listId: Int,
         @Body requestBody: RequestBody,
-        @Header("Authorization") accessToken: String,
         @Header("content-type") type: String = "application/json"
     ): DefaultResponse
     // в ответе так же приходит массив, с success: Boolean для каждого mediaItem

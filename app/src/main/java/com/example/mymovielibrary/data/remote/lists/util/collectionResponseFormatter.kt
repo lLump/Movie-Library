@@ -26,8 +26,8 @@ fun CollectionResponse.toUserCollection() = UserCollection(
 fun CollectionDetailsResponse.toCollectionDetails(): CollectionDetails {
     val movies = results.map {
         when (it) {
-            is MovieResponse -> it.toMediaUI()
-            is TVShowResponse -> it.toMediaUI()
+            is MovieResponse -> it.toMediaItem()
+            is TVShowResponse -> it.toMediaItem()
             else -> throw Exception("Unreal mediaType exception")
         }
     }
