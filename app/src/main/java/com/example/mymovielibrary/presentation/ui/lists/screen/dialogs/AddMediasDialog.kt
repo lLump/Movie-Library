@@ -39,7 +39,7 @@ private data class ListTypeInfo(
 )
 
 @Composable
-fun AddMediasDialog(
+fun AddMediasDialog( //also from mediaDetails
     currentList: ListType? = null,
     currentCollectionId: Int? = null,
     onDismiss: () -> Unit,

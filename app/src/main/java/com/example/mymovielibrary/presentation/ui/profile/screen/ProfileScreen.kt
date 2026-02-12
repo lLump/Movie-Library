@@ -78,7 +78,7 @@ fun ProfileScreen(
     redirectToUrl: (String) -> Unit,
     navigateTo: (NavigationRoute) -> Unit,
 ) {
-    
+
 //    when (uiEvents) {
 //        is Error -> ShowToast(message = (uiEvents as Error).error.asString())
 //        Initial -> {}

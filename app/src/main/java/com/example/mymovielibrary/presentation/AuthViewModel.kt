@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class AuthViewModel @Inject constructor(
     private val authRepo: AuthRepo,
     private val localStoreReader: LocalStoreReader,
     private val localStoreWriter: LocalStoreWriter

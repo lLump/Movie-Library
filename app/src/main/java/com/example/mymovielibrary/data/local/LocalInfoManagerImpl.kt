@@ -14,6 +14,11 @@ class LocalInfoManagerImpl(context: Context): LocalStoreWriter, LocalStoreReader
 
     override val accessToken: String?
         get() = sharedPrefs.getString("access_token", null)
+    //мини задачка
+//    override val accessToken: String? = null
+//        get() = if (field.isNullOrEmpty()) {
+//            sharedPrefs.getString("access_token", null)
+//        } else field
 
     override val sessionId: String?
         get() = sharedPrefs.getString("session_id", null)
@@ -34,7 +39,10 @@ class LocalInfoManagerImpl(context: Context): LocalStoreWriter, LocalStoreReader
         sharedPrefs.edit { clear().apply() }
     }
 
+    override fun saveNewResponseLanguage(iso639: String) { sharedPrefs.edit { putString("iso639", iso639) } }
+
     override fun saveTempRequestToken(token: String) { sharedPrefs.edit { putString("request_token", token).apply() } }
+
     override fun saveAccountIdV3(id: Int) {
         if (accountIdV3 == 0) { // to prevent overriding again and again when userProfile loads
             sharedPrefs.edit { putInt("account_id_v3", id).apply() }

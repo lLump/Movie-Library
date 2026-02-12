@@ -5,12 +5,14 @@ import com.example.mymovielibrary.data.remote.lists.adapter.ResultsAdapterFactor
 import com.example.mymovielibrary.data.remote.lists.model.media.MediaItemResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.MovieResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.TVShowResponse
+import com.example.mymovielibrary.domain.local.LocalStoreReader
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -42,12 +44,23 @@ class RetrofitModule {
         .build()
 
     @Provides
-    fun httpClient(): OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor {
-            val request = it.request().newBuilder()
-                .addHeader("accept", "application/json")
-                .addHeader("Authorization", "Bearer ${BuildConfig.SAFE_API_KEY}")
-                .build()
-            it.proceed(request)
-        }.build()
+    fun httpClient(interceptor: Interceptor): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .build()
+    }
+
+    @Provides
+    fun languageInterceptor(localStore: LocalStoreReader) = Interceptor { chain ->
+        val original = chain.request()
+        val url = original.url.newBuilder()
+            .addQueryParameter("language", localStore.iso639)
+            .build()
+        val request = original.newBuilder()
+            .url(url)
+            .addHeader("accept", "application/json")
+            .addHeader("Authorization", "Bearer ${BuildConfig.SAFE_API_KEY}")
+            .build()
+        return@Interceptor chain.proceed(request)
+    }
 }

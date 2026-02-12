@@ -17,15 +17,13 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
 
-        if (isFromApproving(intent.scheme)) {
-            viewModel.onTokenApprove()
-        }
+        if (isFromApproving(intent.scheme)) { viewModel.onTokenApprove() }
 
         setContent {
             val authState by viewModel.authState.collectAsState()

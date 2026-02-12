@@ -81,7 +81,9 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            LanguageBlock()
+            LanguageBlock { language ->
+                onEvent(SettingsEvent.ChangeResponseLanguage(language))
+            }
 
             Spacer(Modifier.weight(1f))
 
@@ -158,8 +160,8 @@ private fun RadioOption(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LanguageBlock() {
-    val languages = listOf("Русский", "English", "Українська")
+private fun LanguageBlock(onChoose: (String) -> Unit) {
+    val languages = listOf("English", "Русский", "Українська", "Deutsch", "Français", "Český") //fixme
     var isExpanded by remember { mutableStateOf(false) }
     var selectedLanguage by remember { mutableStateOf(languages.first()) }
 
@@ -220,13 +222,16 @@ private fun LanguageBlock() {
                     shape = RoundedCornerShape(bottomStart = 26.dp, bottomEnd = 26.dp)
                 ) {
                     languages.forEach {
-                        DropdownMenuItem(
-                            text = { Text(it) },
-                            onClick = {
-                                selectedLanguage = it
-                                isExpanded = false
-                            }
-                        )
+                        if (selectedLanguage != it) {
+                            DropdownMenuItem(
+                                text = { Text(it) },
+                                onClick = {
+                                    onChoose(it)
+                                    selectedLanguage = it
+                                    isExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }

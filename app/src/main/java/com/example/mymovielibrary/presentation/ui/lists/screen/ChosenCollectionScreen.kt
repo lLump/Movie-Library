@@ -234,7 +234,7 @@ fun ChosenCollectionScreen(
             )
             when (currentDialog) {
                 UiDialogType.ADD_DIALOG -> {
-                    val toastText = "${checkedItems.count()} " + context.getString(R.string.media_items) + " " + context.getString(R.string.successful_added)
+                    val toastText = "${checkedItems.count()} " + stringResource(R.string.media_items) + " " + stringResource(R.string.successful_added)
 
                     AddMediasDialog(
                         currentCollectionId = collectionId,
