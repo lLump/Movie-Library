@@ -38,5 +38,5 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun isFromApproving(scheme: String?): Boolean = scheme == "http" || scheme == "https"
+    private fun isFromApproving(scheme: String?): Boolean = scheme == "mymovielibrary"
 }

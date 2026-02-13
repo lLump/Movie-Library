@@ -27,7 +27,7 @@ class AuthRepoImpl(private val api: AuthApi, localStore: LocalStoreReader) : Bas
     override suspend fun createRequestTokenV4(): Result<String, DataError> {
         return safeApiCall("Request Token create failed") {
             val mediaType = "application/json".toMediaType()
-            val body = "{\"redirect_to\":\"https://www.example.mymovielibrary:\"}".toRequestBody(mediaType)
+            val body = "{\"redirect_to\":\"mymovielibrary://callback\"}".toRequestBody(mediaType)
 
             val response = api.createRequestTokenV4(body)
             if (!response.success) throw Exception("Request Token create EXCEPTION")
