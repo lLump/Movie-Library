@@ -53,8 +53,8 @@ class SettingsViewModel @Inject constructor(
 
     private fun logout() {
         viewModelScope.launch {
-            localStore.clearInfo()
             accountRepo.logout()
+            localStore.clearInfo()
         }
     }
 
