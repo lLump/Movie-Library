@@ -14,4 +14,5 @@ interface AuthRepo {
     suspend fun getGuestSessionId(): Result<String, DataError>
 
     suspend fun authorizeUser()
+    suspend fun logout(): Result<Boolean, DataError>
 }

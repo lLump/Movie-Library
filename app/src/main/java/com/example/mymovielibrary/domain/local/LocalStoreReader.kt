@@ -1,7 +1,7 @@
 package com.example.mymovielibrary.domain.local
 
 interface LocalStoreReader {
-    val requestToken: String?
+    val tempToken: String?
     val accessToken: String?
     val sessionId: String?
     val accountIdV4: String?

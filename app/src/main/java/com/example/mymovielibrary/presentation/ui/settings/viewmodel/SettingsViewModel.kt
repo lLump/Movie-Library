@@ -3,6 +3,7 @@ package com.example.mymovielibrary.presentation.ui.settings.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
+import com.example.mymovielibrary.domain.account.repository.AuthRepo
 import com.example.mymovielibrary.domain.local.LocalStoreWriter
 import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.model.events.SettingsEvent
@@ -21,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val accountRepo: AccountRepo,
+    private val authRepo: AuthRepo,
+//    private val accountRepo: AccountRepo,
     private val localStore: LocalStoreWriter
 ): BaseViewModel() {
 
@@ -53,7 +55,7 @@ class SettingsViewModel @Inject constructor(
 
     private fun logout() {
         viewModelScope.launch {
-            accountRepo.logout()
+            authRepo.logout()
             localStore.clearInfo()
         }
     }

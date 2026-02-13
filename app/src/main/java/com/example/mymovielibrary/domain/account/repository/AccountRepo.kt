@@ -8,7 +8,4 @@ import com.example.mymovielibrary.domain.model.handlers.Result
 interface AccountRepo {
     suspend fun getProfileDetails(): Result<ProfileDetails, DataError>
     suspend fun getLanguages(): Result<List<LanguageDetails>, DataError>
-
-    suspend fun logout(): Result<Boolean, DataError>
-
 }
