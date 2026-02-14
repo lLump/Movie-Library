@@ -54,8 +54,11 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun logout() {
+        //todo добавить уведомление о успешном логауте
+        //todo уведомить экран профиля о логауте. Пока видимого выхода юзера нет, пока viewModel не пересоздастся
         viewModelScope.launch {
-            authRepo.logout()
+//            val isSuccess = authRepo.logout().getOrThrow()
+            val isSuccess = request { authRepo.logout() }
             localStore.clearInfo()
         }
     }
