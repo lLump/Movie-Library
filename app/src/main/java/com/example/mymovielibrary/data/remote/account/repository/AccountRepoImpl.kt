@@ -28,15 +28,4 @@ class AccountRepoImpl(private val api: AccountApi, localStore: LocalStoreReader)
             response.map { it.toLanguageDetails() }
         }
     }
-
-    override suspend fun logout(): Result<Boolean, DataError> {
-        return safeApiCall("Logout Error") {
-            val mediaType = "application/json".toMediaType()
-            val body = "{\"access_token\":\$accessToken\"}".toRequestBody(mediaType)
-
-            val response = api.logout(body)
-
-            response.success
-        }
-    }
 }

@@ -24,7 +24,7 @@ class AuthViewModel @Inject constructor(
 
     fun onTokenApprove() {
         viewModelScope.launch(Dispatchers.IO) {
-            val (accId, accessToken) = authRepo.createAccessTokenV4(localStoreReader.requestToken!!).getOrThrow()
+            val (accId, accessToken) = authRepo.createAccessTokenV4(localStoreReader.tempToken!!).getOrThrow()
             val sessionId = authRepo.getSessionIdV4(accessToken).getOrThrow()
             localStoreWriter.saveUserInfo(
                 accountIdV4 = accId,

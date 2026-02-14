@@ -27,7 +27,7 @@ class AuthRepoImpl(private val api: AuthApi, localStore: LocalStoreReader) : Bas
     override suspend fun createRequestTokenV4(): Result<String, DataError> {
         return safeApiCall("Request Token create failed") {
             val mediaType = "application/json".toMediaType()
-            val body = "{\"redirect_to\":\"https://www.example.mymovielibrary:\"}".toRequestBody(mediaType)
+            val body = "{\"redirect_to\":\"mymovielibrary://callback\"}".toRequestBody(mediaType)
 
             val response = api.createRequestTokenV4(body)
             if (!response.success) throw Exception("Request Token create EXCEPTION")
@@ -68,6 +68,17 @@ class AuthRepoImpl(private val api: AuthApi, localStore: LocalStoreReader) : Bas
             response.guest_session_id
         }
     }
-
+    //нужно только для того что-бы юзера при логине (после сайта) закидывало в профиль (либо сделать какой-то отдельный экран)
     override suspend fun authorizeUser() { _authState.value = AuthState.FromAuthorize }
+
+    override suspend fun logout(): Result<Boolean, DataError> {
+        return safeApiCall("Logout Error") {
+            val mediaType = "application/json".toMediaType()
+            val body = "{\"access_token\":\"${localStore.accessToken}\"}".toRequestBody(mediaType)
+
+            val response = api.logout(body)
+
+            response.success
+        }
+    }
 }

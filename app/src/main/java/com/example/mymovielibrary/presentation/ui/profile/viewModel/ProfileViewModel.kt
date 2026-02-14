@@ -43,12 +43,11 @@ class ProfileViewModel @Inject constructor(
         when (event) {
             Login -> {
                 viewModelScope.launch(Dispatchers.IO) {
-                    val token = getRequestToken()
+                    val token = getRequestToken() //живет 15 минут. А так смело вынес бы в authViewModel
                     localStoreWriter.saveTempRequestToken(token)
                     withContext(Dispatchers.Main) {
                         _profileState.emit(
                             ProfileState(
-                                isApproved = false,
                                 userDetails = NeedApproval(token),
                             )
                         )
@@ -78,7 +77,6 @@ class ProfileViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     _profileState.emit(
                         ProfileState(
-                            isApproved = false,
                             userDetails = Guest,
                         )
                     )
@@ -94,7 +92,6 @@ class ProfileViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 _profileState.emit(
                     ProfileState(
-                        isApproved = true,
                         userDetails = userDetails,
                         userStats = userStats
                     )
@@ -143,16 +140,4 @@ class ProfileViewModel @Inject constructor(
     }
 
     private suspend fun getRequestToken() = request { authRepo.createRequestTokenV4() } ?: throw Exception("createRequestToken == null") //fixme(сомнительно)
-
-    private suspend fun finishAuth(requestToken: String) {
-        val (accountId, token) = request { authRepo.createAccessTokenV4(requestToken) }
-            ?: Pair("", "")
-        val sessionId = request { authRepo.getSessionIdV4(token) } ?: throw Exception("getSessionIdV4 == null") //fixme(сомнительно)
-
-        localStoreWriter.saveUserInfo(
-            accountIdV4 = accountId,
-            sessionId = sessionId,
-            accessToken = token
-        )
-    }
 }

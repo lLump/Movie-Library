@@ -18,9 +18,4 @@ interface AccountApi {
 
     @GET("3/configuration/languages")
     suspend fun getLanguages(): Array<LanguageResponse>
-
-    @HTTP(method = "DELETE", path = "4/auth/access_token", hasBody = true)
-    suspend fun logout(
-        @Body requestBody: RequestBody,
-    ): DefaultResponse
 }

@@ -9,7 +9,7 @@ import com.example.mymovielibrary.domain.local.LocalStoreReader
 class LocalInfoManagerImpl(context: Context): LocalStoreWriter, LocalStoreReader {
     private val sharedPrefs: SharedPreferences = context.getSharedPreferences("user_info", Context.MODE_PRIVATE)
 
-    override val requestToken: String?
+    override val tempToken: String?
         get() = sharedPrefs.getString("request_token", null)
 
     override val accessToken: String?

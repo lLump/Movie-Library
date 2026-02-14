@@ -1,8 +1,17 @@
 package com.example.mymovielibrary.data.remote.lists.util
 
+import com.example.mymovielibrary.data.remote.lists.model.media.MediaItemResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.MovieResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.TVShowResponse
 import com.example.mymovielibrary.domain.lists.model.MediaItem
+
+
+fun MediaItemResponse.toMediaItem(): MediaItem {
+    return when (this) {
+        is MovieResponse -> this.toMediaItem()
+        is TVShowResponse -> this.toMediaItem()
+    }
+}
 
 fun MovieResponse.toMediaItem(): MediaItem {
     return MediaItem(
