@@ -2,15 +2,14 @@ package com.example.mymovielibrary.presentation.ui.settings.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
-import com.example.mymovielibrary.domain.account.repository.AccountRepo
 import com.example.mymovielibrary.domain.account.repository.AuthRepo
+import com.example.mymovielibrary.domain.local.LocalStoreReader
 import com.example.mymovielibrary.domain.local.LocalStoreWriter
 import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.model.events.SettingsEvent
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.ChangeCountry
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.ChangeResponseLanguage
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.CollectionsToStatistics
-import com.example.mymovielibrary.domain.model.events.SettingsEvent.SaveLanguage
 import com.example.mymovielibrary.domain.model.events.SettingsEvent.Logout
 import com.example.mymovielibrary.presentation.ui.settings.state.SettingsState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,11 +22,11 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val authRepo: AuthRepo,
-//    private val accountRepo: AccountRepo,
-    private val localStore: LocalStoreWriter
+    private val localStoreWriter: LocalStoreWriter,
+    private val localStoreReader: LocalStoreReader
 ): BaseViewModel() {
 
-    private val _settingsState = MutableStateFlow(SettingsState())
+    private val _settingsState = MutableStateFlow(getCurrentSettings())
     val settingsState = _settingsState.asStateFlow()
 
     fun onEvent(event: SettingsEvent) {
@@ -35,22 +34,20 @@ class SettingsViewModel @Inject constructor(
             is ChangeCountry -> {}
             is ChangeResponseLanguage -> saveNewLanguage(event.language)
             is CollectionsToStatistics -> {}
-            is SaveLanguage -> { }
             Logout -> logout()
         }
     }
 
-    private fun saveNewLanguage(language: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val iso639 = getIsoByName(language)
-            localStore.saveNewResponseLanguage(iso639)
-//            val iso639 = language.substringBefore("-")
-//            val iso3166 = language.substringAfter("-")
-        }
+    private fun getCurrentSettings(): SettingsState {
+        val currentIso = localStoreReader.iso639
+        val currentName = getNameByIso(currentIso)
+        return SettingsState(LanguageDetails(name = currentName, iso = currentIso))
     }
 
-    private fun changeCountry(country: String) {
-
+    private fun saveNewLanguage(language: String) {
+        val iso639 = getIsoByName(language)
+        localStoreWriter.saveNewResponseLanguage(iso639)
+        //в стейт сейвить нет смысла
     }
 
     private fun logout() {
@@ -59,8 +56,12 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
 //            val isSuccess = authRepo.logout().getOrThrow()
             val isSuccess = request { authRepo.logout() }
-            localStore.clearInfo()
+            localStoreWriter.clearInfo()
         }
+    }
+
+    private fun getNameByIso(iso: String): String {
+        return getLanguages().find { it.iso == iso }!!.name
     }
 
     private fun getIsoByName(name: String): String {

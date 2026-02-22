@@ -47,13 +47,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mymovielibrary.R
+import com.example.mymovielibrary.domain.account.model.LanguageDetails
 import com.example.mymovielibrary.domain.model.events.SettingsEvent
+import com.example.mymovielibrary.presentation.ui.settings.state.SettingsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     onEvent: (SettingsEvent) -> Unit,
-    onBackPress: () -> Unit
+    onBackPress: () -> Unit,
+    state: SettingsState
 ) {
     Scaffold(
         topBar = {
@@ -81,7 +84,7 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            LanguageBlock { language ->
+            LanguageBlock(state.language) { language ->
                 onEvent(SettingsEvent.ChangeResponseLanguage(language))
             }
 
@@ -160,10 +163,10 @@ private fun RadioOption(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun LanguageBlock(onChoose: (String) -> Unit) {
+private fun LanguageBlock(language: LanguageDetails, onChoose: (String) -> Unit) {
     val languages = listOf("English", "Русский", "Українська", "Deutsch", "Français", "Český") //fixme
     var isExpanded by remember { mutableStateOf(false) }
-    var selectedLanguage by remember { mutableStateOf(languages.first()) }
+    var selectedLanguage by remember { mutableStateOf(language.name) }
 
     val arrowRotation by animateFloatAsState(
         targetValue = if (isExpanded) -180f else 0f,

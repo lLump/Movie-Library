@@ -103,7 +103,8 @@ class CollectionRepoImpl(private val api: CollectionManagerApi, localStore: Loca
     override suspend fun createCollection(name: String, description: String, isPublic: Boolean): Result<Boolean, DataError> {
         return safeApiCall(errorMessage = "Collection creating Failed") {
             val mediaType = "application/json".toMediaType()
-            val body = "{\"description\":\"$description\",\"name\":\"$name\",\"iso_3166_1\":\"${localStore.iso3166}\",\"iso_639_1\":\"${localStore.iso639}\",\"public\":$isPublic}".toRequestBody(mediaType)
+//            val body = "{\"description\":\"$description\",\"name\":\"$name\",\"iso_3166_1\":\"${localStore.iso3166}\",\"iso_639_1\":\"${localStore.iso639}\",\"public\":$isPublic}".toRequestBody(mediaType)
+            val body = "{\"description\":\"$description\",\"name\":\"$name\",\"iso_3166_1\":\"US\",\"iso_639_1\":\"${localStore.iso639}\",\"public\":$isPublic}".toRequestBody(mediaType)
 
             val response = api.createCollection(body, accessToken)
             response.success

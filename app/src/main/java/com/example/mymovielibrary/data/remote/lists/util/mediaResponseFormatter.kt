@@ -10,6 +10,8 @@ fun MediaItemResponse.toMediaItem(): MediaItem {
     return when (this) {
         is MovieResponse -> this.toMediaItem()
         is TVShowResponse -> this.toMediaItem()
+        else -> throw Exception("Unreal mediaType exception")
+
     }
 }
 

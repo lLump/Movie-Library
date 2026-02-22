@@ -36,7 +36,9 @@ class ProfileViewModel @Inject constructor(
     val profileState = _profileState.asStateFlow()
 
     init {
-        loadUserScreen()
+        if (!isUserLoggedOut()) {
+            loadUserScreen()
+        }
     }
 
     fun onEvent(event: AccountEvent) {
@@ -54,35 +56,24 @@ class ProfileViewModel @Inject constructor(
                     }
                 }
             }
-            ApproveToken -> { // когда вернулся с сайта
+            CheckIsUserLoggedOut -> if (isUserLoggedOut()) {
                 viewModelScope.launch(Dispatchers.IO) {
                     withContext(Dispatchers.Main) {
                         _profileState.emit(
                             ProfileState(
-                                userDetails = Loading
+                                userDetails = Guest,
                             )
                         )
                     }
-//                    finishAuth(localStoreReader.requestToken ?: throw Exception("RequestToken was not provided"))
-                    loadUserScreen()
                 }
             }
-            LoadUserScreen -> loadUserScreen()
         }
     }
 
+    private fun isUserLoggedOut(): Boolean = localStoreReader.accessToken.isNullOrEmpty()
+
     private fun loadUserScreen() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (localStoreReader.accessToken.isNullOrEmpty()) {
-                withContext(Dispatchers.Main) {
-                    _profileState.emit(
-                        ProfileState(
-                            userDetails = Guest,
-                        )
-                    )
-                }
-                return@launch
-            }
             val userStatsTask = async { loadUserStats() }
             val profileTask = async { loadProfileData() }
 

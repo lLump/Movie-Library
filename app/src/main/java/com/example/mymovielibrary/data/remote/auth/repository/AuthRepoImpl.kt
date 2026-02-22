@@ -4,6 +4,7 @@ import com.example.mymovielibrary.data.remote.auth.api.AuthApi
 import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.account.repository.AuthRepo
 import com.example.mymovielibrary.domain.local.LocalStoreReader
+import com.example.mymovielibrary.domain.local.LocalStoreWriter
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
 import com.example.mymovielibrary.domain.state.AuthState

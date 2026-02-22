@@ -36,6 +36,7 @@ class HomeViewModel @Inject constructor(
     fun onEvent(event: HomeEvent) {
         when (event) {
             is LoadTrendingMedias -> loadTrending(event.timeWindow)
+
         }
     }
 

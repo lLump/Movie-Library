@@ -27,8 +27,8 @@ class LocalInfoManagerImpl(context: Context): LocalStoreWriter, LocalStoreReader
     override val iso639: String
         get() = sharedPrefs.getString("iso639", "en")!!
 
-    override val iso3166: String
-        get() = sharedPrefs.getString("iso3166", "US")!!
+//    override val iso3166: String
+//        get() = sharedPrefs.getString("iso3166", "US")!!
 
     override fun clearInfo() { // when logout
         sharedPrefs.edit { clear().apply() }

@@ -28,6 +28,7 @@ fun CollectionDetailsResponse.toCollectionDetails(): CollectionDetails {
         when (it) {
             is MovieResponse -> it.toMediaItem()
             is TVShowResponse -> it.toMediaItem()
+            else -> throw Exception("Unreal mediaType exception")
         }
     }
     return CollectionDetails(

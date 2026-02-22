@@ -170,9 +170,10 @@ fun AppNavigation(authState: AuthState) {
 
                 composable<Settings> {
                     val viewModel: SettingsViewModel = hiltViewModel()
-//                    val state by viewModel
+                    val state by viewModel.settingsState.collectAsState()
                     SettingsScreen(
                         onEvent = viewModel::onEvent,
+                        state = state,
                         onBackPress = { navController.navigateUp() }
                     )
                 }

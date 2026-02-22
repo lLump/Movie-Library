@@ -84,6 +84,10 @@ fun ProfileScreen(
 //        Initial -> {}
 //    }
 
+    LaunchedEffect(Unit) {
+        onEvent(AccountEvent.CheckIsUserLoggedOut)
+    }
+
     // Screen UI
     Box(
         modifier = Modifier
