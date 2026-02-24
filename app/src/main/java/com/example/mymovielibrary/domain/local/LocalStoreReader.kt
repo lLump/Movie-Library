@@ -6,7 +6,6 @@ interface LocalStoreReader {
     val sessionId: String?
     val accountIdV4: String?
     val accountIdV3: Int?
-    val iso639: String
 }
 
 /*

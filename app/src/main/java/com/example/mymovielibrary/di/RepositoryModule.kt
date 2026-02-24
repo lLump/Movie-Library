@@ -19,6 +19,7 @@ import com.example.mymovielibrary.domain.lists.repository.HomeListsRepo
 import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
 import com.example.mymovielibrary.domain.local.LocalStoreReader
+import com.example.mymovielibrary.domain.local.SettingsReader
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -49,8 +50,8 @@ class RepositoryModule {
     }
 
     @Provides
-    fun collectionRepo(api: CollectionManagerApi, localStore: LocalStoreReader): CollectionRepo {
-        return CollectionRepoImpl(api, localStore)
+    fun collectionRepo(api: CollectionManagerApi, settings: SettingsReader, localStore: LocalStoreReader): CollectionRepo {
+        return CollectionRepoImpl(api, settings, localStore)
     }
 
     @Provides

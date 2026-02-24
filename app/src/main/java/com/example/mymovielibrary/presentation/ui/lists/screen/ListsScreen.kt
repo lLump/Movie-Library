@@ -73,7 +73,7 @@ fun ListsScreen(
     paddingValues: PaddingValues,
 ) {
     LaunchedEffect(Unit) {
-        onEvent(ListEvent.LoadScreen)
+        onEvent(ListEvent.LoadScreen) //fixme delete
     }
     Box(
         modifier = Modifier

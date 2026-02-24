@@ -1,5 +1,6 @@
 package com.example.mymovielibrary.presentation.ui.lists.state
 
+import com.example.mymovielibrary.domain.account.model.UserCollectionInfo
 import com.example.mymovielibrary.domain.lists.model.CollectionDetails
 
 data class CollectionState(
@@ -16,5 +17,6 @@ data class CollectionState(
         itemsCount = "",
         public = true
     ),
+    val userCollections: List<UserCollectionInfo> = emptyList(),
     val checkedMedias: Set<Int> = emptySet()
 )

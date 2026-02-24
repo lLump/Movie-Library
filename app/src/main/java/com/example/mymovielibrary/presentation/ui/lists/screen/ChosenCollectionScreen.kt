@@ -237,6 +237,7 @@ fun ChosenCollectionScreen(
                     val toastText = "${checkedItems.count()} " + stringResource(R.string.media_items) + " " + stringResource(R.string.successful_added)
 
                     AddMediasDialog(
+                        userCollections = state.userCollections,
                         currentCollectionId = collectionId,
                         onDismiss = {
                             onEvent(CollectionEvent.ClearMediaChecks)

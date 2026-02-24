@@ -6,6 +6,7 @@ import com.example.mymovielibrary.data.remote.lists.model.media.MediaItemRespons
 import com.example.mymovielibrary.data.remote.lists.model.media.MovieResponse
 import com.example.mymovielibrary.data.remote.lists.model.media.TVShowResponse
 import com.example.mymovielibrary.domain.local.LocalStoreReader
+import com.example.mymovielibrary.domain.local.SettingsReader
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
 import dagger.Module
@@ -51,10 +52,10 @@ class RetrofitModule {
     }
 
     @Provides
-    fun languageInterceptor(localStore: LocalStoreReader) = Interceptor { chain ->
+    fun languageInterceptor(localStore: SettingsReader) = Interceptor { chain ->
         val original = chain.request()
         val url = original.url.newBuilder()
-            .addQueryParameter("language", localStore.iso639)
+            .addQueryParameter("language", localStore.language.iso639)
             .build()
         val request = original.newBuilder()
             .url(url)

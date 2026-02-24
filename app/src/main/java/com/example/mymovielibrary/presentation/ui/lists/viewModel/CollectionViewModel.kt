@@ -6,6 +6,8 @@ import com.example.mymovielibrary.domain.lists.model.MediaItem
 import com.example.mymovielibrary.domain.lists.model.enums.SortType
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
+import com.example.mymovielibrary.domain.local.SettingsReader
+import com.example.mymovielibrary.domain.local.SettingsWriter
 import com.example.mymovielibrary.domain.model.events.CollectionEvent
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.ClearCollection
 import com.example.mymovielibrary.domain.model.events.CollectionEvent.DeleteCollection
@@ -34,9 +36,10 @@ import javax.inject.Inject
 class CollectionViewModel @Inject constructor(
     private val collectionRepo: CollectionRepo,
     mediaManager: MediaManagerRepo,
+    settingsReader: SettingsReader
 ) : BaseViewModel() {
 
-    private val _collectionState = MutableStateFlow(CollectionState())
+    private val _collectionState = MutableStateFlow(CollectionState(userCollections = settingsReader.userCollections))
     val collectionState = _collectionState.asStateFlow()
 
     private val mediaHelper = MediaInserter(mediaManager)
@@ -86,12 +89,12 @@ class CollectionViewModel @Inject constructor(
     private suspend fun loadChosenCollection(collectionId: Int) {
         val collectionDetails = request { collectionRepo.getCollectionDetails(collectionId) }
         if (collectionDetails != null) {
-            _collectionState.emit(
-                CollectionState(
+            _collectionState.update { state ->
+                state.copy(
                     isLoading = false,
                     collection = collectionDetails
                 )
-            )
+            }
         }
     }
 
@@ -121,16 +124,17 @@ class CollectionViewModel @Inject constructor(
 
     private suspend fun deleteCheckedItemsInState(ids: Set<Int>) {
         val newMovies = _collectionState.value.collection.movies.filter { it.id !in ids }
-        _collectionState.emit(
-            _collectionState.value.copy(
+        _collectionState.update { state ->
+            state.copy(
                 isLoading = false,
-                collection = _collectionState.value.collection.copy(
+                collection = state.collection.copy(
                     movies = newMovies,
                     itemsCount = newMovies.count().toString(),
                 )
             )
-        )
-        // SERVER BUG FIXME
+        }
+        // тут смешно емитились данные, проверить баг TODO
+        // SERVER BUG
         // вся инфа на сервере не успевает обновиться
         // тупой костыль, чем больше удалено единовременно элементов, тем дольше изменяются детали
         // да так что 5+ за раз, обновляется более 10 секунд, еще и не один раз с изначально неверными данными
@@ -138,7 +142,7 @@ class CollectionViewModel @Inject constructor(
         loadChosenCollection(_collectionState.value.collection.id) //to update banner (Collection info)
     }
 
-    private suspend fun deleteCheckedItemsInApi(ids: Set<Int>) {
+    private fun deleteCheckedItemsInApi(ids: Set<Int>) {
         viewModelScope.launch(Dispatchers.IO) {
             val itemsToDelete = getCheckedItems(ids)
             val body = mediasToJson(itemsToDelete)

@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mymovielibrary.R
-import com.example.mymovielibrary.data.local.storage.Store
+import com.example.mymovielibrary.domain.account.model.UserCollectionInfo
 import com.example.mymovielibrary.domain.lists.model.enums.ListType
 
 private data class ListTypeInfo(
@@ -40,6 +40,7 @@ private data class ListTypeInfo(
 
 @Composable
 fun AddMediasDialog( //also from mediaDetails
+    userCollections: List<UserCollectionInfo>,
     currentList: ListType? = null,
     currentCollectionId: Int? = null,
     onDismiss: () -> Unit,
@@ -89,11 +90,11 @@ fun AddMediasDialog( //also from mediaDetails
                         text = stringResource(R.string.collections) + ":",
                         fontSize = 24.sp,
                     )
-                    Store.userCollections.forEach { (id, name) ->
-                        if (currentCollectionId != id) { //дабы не видеть коллекцию в списке, если диалог вызван из коллекции
+                    userCollections.forEach { collection ->
+                        if (currentCollectionId != collection.id) { //дабы не видеть коллекцию в списке, если диалог вызван из коллекции
                             CollectionTypeField(
-                                text = name,
-                                collectionIdToPick = id,
+                                text = collection.name,
+                                collectionIdToPick = collection.id,
                                 selectedId = selectedCollection
                             ) { pickedCollection ->
                                 selectedCollection = pickedCollection

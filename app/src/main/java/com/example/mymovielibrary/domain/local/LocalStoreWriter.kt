@@ -5,5 +5,4 @@ interface LocalStoreWriter {
     fun saveTempRequestToken(token: String)
     fun saveAccountIdV3(id: Int)
     fun saveUserInfo(accountIdV4: String, sessionId: String, accessToken: String)
-    fun saveNewResponseLanguage(iso639: String)
 }

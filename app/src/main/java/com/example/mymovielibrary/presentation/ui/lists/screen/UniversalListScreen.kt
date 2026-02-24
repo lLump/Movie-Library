@@ -127,6 +127,7 @@ fun UniversalListScreen(
                 UiDialogType.ADD_DIALOG -> {
                     val toastText = "${checkedItems.count()} " + context.getString(R.string.media_items) + " " + context.getString(R.string.successful_added)
                     AddMediasDialog(
+                        userCollections = state.userCollections,
                         currentList = listType,
                         onDismiss = { currentDialog = UiDialogType.NO_DIALOG },
                         onListChosen = { listType ->

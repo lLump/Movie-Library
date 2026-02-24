@@ -13,6 +13,6 @@ data class LanguageResponse(
 fun LanguageResponse.toLanguageDetails(): LanguageDetails {
     return LanguageDetails(
         name = english_name,
-        iso = iso_639_1
+        iso639 = iso_639_1
     )
 }

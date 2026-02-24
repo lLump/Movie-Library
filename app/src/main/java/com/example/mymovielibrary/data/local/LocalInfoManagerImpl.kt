@@ -24,17 +24,9 @@ class LocalInfoManagerImpl(context: Context): LocalStoreWriter, LocalStoreReader
     override val accountIdV3: Int
         get() = sharedPrefs.getInt("account_id_v3", 0)
 
-    override val iso639: String
-        get() = sharedPrefs.getString("iso639", "en")!!
-
-//    override val iso3166: String
-//        get() = sharedPrefs.getString("iso3166", "US")!!
-
     override fun clearInfo() { // when logout
         sharedPrefs.edit { clear().apply() }
     }
-
-    override fun saveNewResponseLanguage(iso639: String) { sharedPrefs.edit { putString("iso639", iso639) } }
 
     override fun saveTempRequestToken(token: String) { sharedPrefs.edit { putString("request_token", token).apply() } }
 

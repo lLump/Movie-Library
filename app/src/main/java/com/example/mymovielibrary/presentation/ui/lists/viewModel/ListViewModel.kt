@@ -7,6 +7,7 @@ import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.lists.model.sortedByTitle
 import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.lists.repository.MediaManagerRepo
+import com.example.mymovielibrary.domain.local.SettingsReader
 import com.example.mymovielibrary.domain.model.events.MediaEvent
 import com.example.mymovielibrary.domain.model.events.MediaEvent.DeleteItems
 import com.example.mymovielibrary.domain.model.events.MediaEvent.LoadChosenList
@@ -29,8 +30,9 @@ import javax.inject.Inject
 class ListViewModel @Inject constructor(
     private val userListsRepo: UserListsRepo,
     mediaManager: MediaManagerRepo,
+    settingsReader: SettingsReader
 ): BaseViewModel() {
-    private val _listState = MutableStateFlow(UniversalListState())
+    private val _listState = MutableStateFlow(UniversalListState(userCollections = settingsReader.userCollections))
     val listState = _listState.asStateFlow()
 
     private val mediaHelper = MediaInserter(mediaManager)
@@ -76,13 +78,13 @@ class ListViewModel @Inject constructor(
                     ListType.COLLECTION -> TODO("Impossible scenario(?)")
                 }
             }
-            _listState.emit(
-                UniversalListState(
+            _listState.update { state ->
+                state.copy(
                     isLoading = false,
                     chosenList = currentList,
                     currentItems = currentList.size
                 )
-            )
+            }
         }
     }
 
@@ -104,15 +106,15 @@ class ListViewModel @Inject constructor(
         return (favMovies + favTvs).sortedByTitle()
     }
 
-    private suspend fun clearChosenItemsInState(ids: Set<Int>) {
+    private fun clearChosenItemsInState(ids: Set<Int>) {
         val newList = _listState.value.chosenList.filter { it.id !in ids }
-        _listState.emit(
-            UniversalListState(
+        _listState.update { state ->
+            state.copy(
                 isLoading = false,
                 chosenList = newList,
                 currentItems = newList.count()
             )
-        )
+        }
     }
 
     private fun getCheckedItems(ids: Set<Int>): List<MediaItem> {

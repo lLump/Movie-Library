@@ -2,18 +2,18 @@ package com.example.mymovielibrary.data.remote.lists.repository
 
 import com.example.mymovielibrary.data.remote.lists.api.CollectionManagerApi
 import com.example.mymovielibrary.data.remote.lists.util.toCollectionDetails
-import com.example.mymovielibrary.data.local.storage.Store
 import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.lists.model.CollectionDetails
 import com.example.mymovielibrary.domain.lists.model.enums.SortType
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
 import com.example.mymovielibrary.domain.local.LocalStoreReader
+import com.example.mymovielibrary.domain.local.SettingsReader
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class CollectionRepoImpl(private val api: CollectionManagerApi, localStore: LocalStoreReader) : CollectionRepo, BaseRepository(localStore) {
+class CollectionRepoImpl(private val api: CollectionManagerApi, private val settings: SettingsReader, localStore: LocalStoreReader) : CollectionRepo, BaseRepository(localStore) {
     private val accessToken: String
         get() = "Bearer ${localStore.accessToken}"
 
@@ -104,7 +104,7 @@ class CollectionRepoImpl(private val api: CollectionManagerApi, localStore: Loca
         return safeApiCall(errorMessage = "Collection creating Failed") {
             val mediaType = "application/json".toMediaType()
 //            val body = "{\"description\":\"$description\",\"name\":\"$name\",\"iso_3166_1\":\"${localStore.iso3166}\",\"iso_639_1\":\"${localStore.iso639}\",\"public\":$isPublic}".toRequestBody(mediaType)
-            val body = "{\"description\":\"$description\",\"name\":\"$name\",\"iso_3166_1\":\"US\",\"iso_639_1\":\"${localStore.iso639}\",\"public\":$isPublic}".toRequestBody(mediaType)
+            val body = "{\"description\":\"$description\",\"name\":\"$name\",\"iso_3166_1\":\"US\",\"iso_639_1\":\"${settings.language.iso639}\",\"public\":$isPublic}".toRequestBody(mediaType)
 
             val response = api.createCollection(body, accessToken)
             response.success
