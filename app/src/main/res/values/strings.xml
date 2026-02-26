@@ -85,6 +85,9 @@
     <string name="adult_content">Adult content</string>
     <string name="show_immediately">Show immediately</string>
     <string name="hide_adult">Hide sensitive content</string>
+    <string name="lists_for_watched">Lists for tracking what you\'ve viewed</string>
+    <string name="lists_for_watched_detailed">Select custom lists that will be counted in the view counter.</string>
+    <string name="logout">Log out of your account</string>
 
 
 </resources>

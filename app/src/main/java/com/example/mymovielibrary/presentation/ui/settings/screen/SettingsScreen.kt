@@ -11,17 +11,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -30,14 +36,20 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RichTooltip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,8 +60,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.mymovielibrary.R
 import com.example.mymovielibrary.domain.account.model.LanguageDetails
+import com.example.mymovielibrary.domain.account.model.UserCollectionInfo
 import com.example.mymovielibrary.domain.model.events.SettingsEvent
 import com.example.mymovielibrary.presentation.ui.settings.state.SettingsState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -87,6 +101,15 @@ fun SettingsScreen(
             LanguageBlock(state.language) { language ->
                 onEvent(SettingsEvent.ChangeResponseLanguage(language))
             }
+
+            Spacer(Modifier.height(8.dp))
+
+            CollectionsToStatistics(
+                customCollections = state.userCollections,
+                selectedCollections = state.selectedCollections,
+                onAddCollection = { onEvent(SettingsEvent.AddCollectionToStatistics(it)) },
+                onDeleteCollection = { onEvent(SettingsEvent.RemoveCollectionFromStatistics(it)) }
+            )
 
             Spacer(Modifier.weight(1f))
 
@@ -175,7 +198,7 @@ private fun LanguageBlock(language: LanguageDetails, onChoose: (String) -> Unit)
     )
 
     Card(
-        shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp, topStart = 8.dp, topEnd = 8.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
@@ -196,9 +219,14 @@ private fun LanguageBlock(language: LanguageDetails, onChoose: (String) -> Unit)
                     modifier = Modifier
                         .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                         .fillMaxWidth()
-                        .clip(if (isExpanded) RoundedCornerShape(topEnd = 26.dp, topStart = 26.dp) else RoundedCornerShape(26.dp))
+                        .clip(
+                            if (isExpanded) RoundedCornerShape(
+                                topEnd = 26.dp,
+                                topStart = 26.dp
+                            ) else RoundedCornerShape(26.dp)
+                        )
                         .background(MaterialTheme.colorScheme.surface)
-                        .clickable(enabled = true, onClick = {/*Click effect*/})
+                        .clickable(enabled = true, onClick = {/*Click effect*/ })
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
@@ -243,6 +271,132 @@ private fun LanguageBlock(language: LanguageDetails, onChoose: (String) -> Unit)
 }
 
 @Composable
+private fun CollectionsToStatistics(
+    customCollections: List<UserCollectionInfo>,
+    selectedCollections: Set<Int>,
+    onAddCollection: (UserCollectionInfo) -> Unit,
+    onDeleteCollection: (UserCollectionInfo) -> Unit
+) {
+    val scrollState = rememberScrollState()
+    Card(
+        shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp, topStart = 8.dp, topEnd = 8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+    ) {
+        Column(
+            modifier = Modifier
+            .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+            .fillMaxWidth()
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.lists_for_watched),
+                    style = MaterialTheme.typography.titleMedium
+                )
+                Spacer(Modifier.weight(1f))
+                CustomInfoTooltip()
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                modifier = Modifier.padding(start = 4.dp),
+                text = stringResource(R.string.lists_for_watched_detailed),
+                style = MaterialTheme.typography.titleSmall
+            )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+            Column(
+                modifier = Modifier
+                    .heightIn(max = 165.dp)
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = 8.dp)
+            ) {
+                customCollections.forEach { collectionInfo ->
+                    val isSelected = selectedCollections.contains(collectionInfo.id)
+                    RowSelectableUserCollection(
+                        collection = collectionInfo,
+                        isSelected = isSelected,
+                        onChoose = {
+                            if (!isSelected) onAddCollection(collectionInfo)
+                            else onDeleteCollection(collectionInfo)
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RowSelectableUserCollection(collection: UserCollectionInfo, isSelected: Boolean, onChoose: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(6.dp))
+            .clickable { onChoose() }
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(start = 8.dp)
+                .align(Alignment.CenterVertically),
+            text = collection.name,
+            style = MaterialTheme.typography.titleSmall
+        )
+        Spacer(Modifier.weight(1f))
+        Checkbox(
+            checked = isSelected,
+            onCheckedChange = { onChoose() }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CustomInfoTooltip(modifier: Modifier = Modifier) {
+    val tooltipState = rememberTooltipState(
+        isPersistent = true
+    )
+    val coroutineScope = rememberCoroutineScope()
+
+    TooltipBox(
+        modifier = modifier,
+        positionProvider = TooltipDefaults.rememberRichTooltipPositionProvider(),
+        tooltip = {
+            RichTooltip(
+                caretShape = TooltipDefaults.caretShape()
+            ) {
+                Text("Some info about asdjsahdklhasjdhaslkdjshadkjhfklsdjfhksldjfhaslkjdshalksjdhdlkjaHFlkjdhsf")
+            }
+        },
+        state = tooltipState
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .clip(CircleShape)
+                .clickable {
+                    coroutineScope.launch {
+                        tooltipState.show()
+                    }
+                },
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Info,
+                contentDescription = "Additional info about custom collections for stats"
+            )
+        }
+    }
+}
+
+@Composable
 private fun LogoutButton(modifier: Modifier, onLogout: () -> Unit) {
     Button(
         onClick = onLogout,
@@ -254,7 +408,7 @@ private fun LogoutButton(modifier: Modifier, onLogout: () -> Unit) {
     ) {
         Text(
             style = MaterialTheme.typography.titleMedium,
-            text = "Выйти из аккаунта",
+            text = stringResource(R.string.logout),
             color = Color.White
         )
     }

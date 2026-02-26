@@ -7,6 +7,7 @@ import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.local.LocalStoreReader
 import com.example.mymovielibrary.domain.local.LocalStoreWriter
+import com.example.mymovielibrary.domain.local.SettingsReader
 import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.domain.model.events.AccountEvent.*
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
@@ -29,6 +30,7 @@ class ProfileViewModel @Inject constructor(
     private val authRepo: AuthRepo,
     private val localStoreReader: LocalStoreReader,
     private val localStoreWriter: LocalStoreWriter,
+    private val settingsReader: SettingsReader,
     private val accConfig: AccountRepo,
     private val userListsRepo: UserListsRepo,
 ): BaseViewModel() {
@@ -107,11 +109,27 @@ class ProfileViewModel @Inject constructor(
         val watchlistTv = taskWatchlistTv.await() ?: listOf()
 
         return@coroutineScope UserStats(
-            watched = "", //TODO watched
+            watched = getChosenCollectionsItemsCount().toString(),
             planned = (watchlistMovie.count() + watchlistTv.count()).toString(),
             rated = (ratedMovie.count() + ratedTv.count()).toString(),
             favorite = (favoritesMovie.count() + favoritesTv.count()).toString()
         )
+    }
+
+    private suspend fun getChosenCollectionsItemsCount(): Int {
+        val userCollections = request { userListsRepo.getUserCollections() } ?: listOf()
+        val chosenCollectionsIds = settingsReader.userCollectionsForStats
+        var count = 0
+        userCollections.forEach {
+            if (chosenCollectionsIds.contains(it.id)) {
+                count += it.itemsCount.toInt()
+            }
+        } /*fixme сейчас каунт завышен, так как элементы в разных списках дублируються
+            нужно запрашивать каждую выбранную коллекцию отдельно и фильтровать
+            + добавить по дефолту rated & favorite
+            + придумать текст на CustomInfoTooltip в настройках
+            */
+        return count
     }
 
     private suspend fun loadProfileData(): UserType {

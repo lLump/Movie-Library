@@ -24,7 +24,7 @@ class SettingsManagerImpl(context: Context): SettingsWriter, SettingsReader {
 
     override val userCollections: List<UserCollectionInfo>
         get() {
-            val raw = settingsPrefs.getString("collections", "")!!
+            val raw = settingsPrefs.getString("collections", "[]")!!
             return try {
                 json.decodeFromString(raw)
             } catch (e: Exception) {
@@ -33,9 +33,9 @@ class SettingsManagerImpl(context: Context): SettingsWriter, SettingsReader {
             }
         }
 
-    override val userCollectionsForStats: List<UserCollectionInfo>
+    override val userCollectionsForStats: List<Int>
         get() {
-            val raw = settingsPrefs.getString("collections_for_stats", "")!!
+            val raw = settingsPrefs.getString("collections_for_stats", "[]")!!
             return try {
                 json.decodeFromString(raw)
             } catch (e: Exception) {
@@ -46,23 +46,32 @@ class SettingsManagerImpl(context: Context): SettingsWriter, SettingsReader {
 
 
     override fun clearInfo() {
-        settingsPrefs.edit { clear().apply() }
+        settingsPrefs.edit { clear() }
     }
 
     override fun saveApiResponseLanguage(languageName: String) {
         val iso = getIsoByName(languageName)
-        settingsPrefs.edit { putString("iso639", iso).apply() }
+        settingsPrefs.edit { putString("iso639", iso) }
     }
 
 
     override fun saveUserCollections(collectionsInfo: List<UserCollectionInfo>) {
         val raw = json.encodeToString(collectionsInfo)
-        settingsPrefs.edit { putString("collections", raw).apply() }
+        settingsPrefs.edit { putString("collections", raw) }
     }
 
-    override fun saveUserCollectionsForStats(collectionsInfo: List<UserCollectionInfo>) {
-        val raw = json.encodeToString(collectionsInfo)
-        settingsPrefs.edit { putString("collections_for_stats", raw).apply() }
+    override fun saveUserCollectionForStats(collectionInfo: UserCollectionInfo) {
+        val currentCollections = userCollectionsForStats.toMutableList()
+        currentCollections.add(collectionInfo.id)
+        val raw = json.encodeToString(currentCollections.toList())
+        settingsPrefs.edit { putString("collections_for_stats", raw) }
+    }
+
+    override fun removeUserCollectionFromStats(collectionInfo: UserCollectionInfo) {
+        val currentCollections = userCollectionsForStats.toMutableList()
+        currentCollections.remove(collectionInfo.id)
+        val raw = json.encodeToString(currentCollections.toList())
+        settingsPrefs.edit { putString("collections_for_stats", raw) }
     }
 
     private fun getNameByIso(iso: String): String {

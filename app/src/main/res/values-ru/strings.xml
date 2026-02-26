@@ -72,6 +72,9 @@
     <string name="adult_content">Контент для взрослых</string>
     <string name="show_immediately">Показывать сразу</string>
     <string name="hide_adult">Скрыть деликатный контент</string>
+    <string name="lists_for_watched">Списки для учёта просмотренного</string>
+    <string name="lists_for_watched_detailed">Выберите пользовательские списки, которые будут засчитываться в счётчик просмотренных.</string>
+    <string name="logout">Выйти из аккаунта</string>
     <!--Profile-->
 
     <!--Lists-->

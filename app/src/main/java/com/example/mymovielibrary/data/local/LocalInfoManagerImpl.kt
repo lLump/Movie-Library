@@ -25,14 +25,14 @@ class LocalInfoManagerImpl(context: Context): LocalStoreWriter, LocalStoreReader
         get() = sharedPrefs.getInt("account_id_v3", 0)
 
     override fun clearInfo() { // when logout
-        sharedPrefs.edit { clear().apply() }
+        sharedPrefs.edit { clear() }
     }
 
     override fun saveTempRequestToken(token: String) { sharedPrefs.edit { putString("request_token", token).apply() } }
 
     override fun saveAccountIdV3(id: Int) {
         if (accountIdV3 == 0) { // to prevent overriding again and again when userProfile loads
-            sharedPrefs.edit { putInt("account_id_v3", id).apply() }
+            sharedPrefs.edit { putInt("account_id_v3", id) }
         }
     }
 
@@ -41,7 +41,6 @@ class LocalInfoManagerImpl(context: Context): LocalStoreWriter, LocalStoreReader
             putString("account_id_v4", accountIdV4)
             putString("session_id", sessionId)
             putString("access_token", accessToken)
-            apply()
         }
     }
 }
