@@ -13,6 +13,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Dispatcher
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -48,6 +49,10 @@ class RetrofitModule {
     fun httpClient(interceptor: Interceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(interceptor)
+            .dispatcher(Dispatcher().apply {
+                maxRequests = 15
+                maxRequestsPerHost = 15
+            })
             .build()
     }
 

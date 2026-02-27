@@ -43,7 +43,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun addCollectionToStats(collection: UserCollectionInfo) {
-        localSettingsWriter.saveUserCollectionForStats(collection)
+        localSettingsWriter.saveUserCollectionForStats(collection) //todo сейвить отсюда списком
         _settingsState.update { state ->
             val newSelected = state.selectedCollections.toMutableSet()
             newSelected.add(collection.id)

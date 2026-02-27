@@ -29,7 +29,7 @@ data class CollectionDetailsResponse(
 
 @JsonClass(generateAdapter = true)
 data class CreatedBy(
-    val avatar_path: String,
+    val avatar_path: String?,
     val gravatar_hash: String,
     val id: String,
     val name: String,

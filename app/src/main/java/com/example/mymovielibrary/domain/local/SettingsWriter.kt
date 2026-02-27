@@ -4,6 +4,7 @@ import com.example.mymovielibrary.domain.account.model.UserCollectionInfo
 
 interface SettingsWriter {
     fun clearInfo()
+    fun showAdultContent(isShow: Boolean)
     fun saveApiResponseLanguage(languageName: String)
     fun saveUserCollections(collectionsInfo: List<UserCollectionInfo>)
     fun saveUserCollectionForStats(collectionInfo: UserCollectionInfo)

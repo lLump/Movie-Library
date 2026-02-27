@@ -3,6 +3,8 @@ package com.example.mymovielibrary.presentation.ui.profile.viewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
 import com.example.mymovielibrary.domain.account.repository.AuthRepo
+import com.example.mymovielibrary.domain.lists.model.MediaItem
+import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
 import com.example.mymovielibrary.presentation.ui.base.viewModel.BaseViewModel
 import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
 import com.example.mymovielibrary.domain.local.LocalStoreReader
@@ -10,6 +12,7 @@ import com.example.mymovielibrary.domain.local.LocalStoreWriter
 import com.example.mymovielibrary.domain.local.SettingsReader
 import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.domain.model.events.AccountEvent.*
+import com.example.mymovielibrary.domain.model.handlers.getOrThrow
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileState
 import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
@@ -18,6 +21,7 @@ import com.example.mymovielibrary.presentation.ui.profile.state.UserType.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,11 +32,12 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val authRepo: AuthRepo,
+    private val accRepo: AccountRepo,
+    private val collectionRepo: CollectionRepo,
+    private val userListsRepo: UserListsRepo,
     private val localStoreReader: LocalStoreReader,
     private val localStoreWriter: LocalStoreWriter,
     private val settingsReader: SettingsReader,
-    private val accConfig: AccountRepo,
-    private val userListsRepo: UserListsRepo,
 ): BaseViewModel() {
     private val _profileState = MutableStateFlow(ProfileState())
     val profileState = _profileState.asStateFlow()
@@ -94,6 +99,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private suspend fun loadUserStats(): UserStats = coroutineScope {
+        val taskWatchedIds = async { getChosenCollectionsMediasIds() }
         val taskFavMovie = async { request { userListsRepo.getFavoriteMovies() } }
         val taskFavTv = async { request { userListsRepo.getFavoriteTvShows() } }
         val taskRatedMovie = async { request { userListsRepo.getRatedMovies() } }
@@ -101,6 +107,7 @@ class ProfileViewModel @Inject constructor(
         val taskWatchlistMovie = async { request { userListsRepo.getWatchlistMovies() } }
         val taskWatchlistTv = async { request { userListsRepo.getWatchlistTvShows() } }
 
+        val watchedIds = taskWatchedIds.await()
         val favoritesMovie = taskFavMovie.await() ?: listOf()
         val favoritesTv = taskFavTv.await() ?: listOf()
         val ratedMovie = taskRatedMovie.await() ?: listOf()
@@ -108,32 +115,38 @@ class ProfileViewModel @Inject constructor(
         val watchlistMovie = taskWatchlistMovie.await() ?: listOf()
         val watchlistTv = taskWatchlistTv.await() ?: listOf()
 
+        val defaultWatchedIds = (ratedMovie + ratedTv + favoritesMovie + favoritesTv).map { it.id }.toSet()
+        watchedIds.addAll(defaultWatchedIds)
+
         return@coroutineScope UserStats(
-            watched = getChosenCollectionsItemsCount().toString(),
+            watched = watchedIds.count().toString(),
             planned = (watchlistMovie.count() + watchlistTv.count()).toString(),
             rated = (ratedMovie.count() + ratedTv.count()).toString(),
             favorite = (favoritesMovie.count() + favoritesTv.count()).toString()
         )
     }
 
-    private suspend fun getChosenCollectionsItemsCount(): Int {
+    private suspend fun getChosenCollectionsMediasIds(): MutableSet<Int> = coroutineScope {
         val userCollections = request { userListsRepo.getUserCollections() } ?: listOf()
-        val chosenCollectionsIds = settingsReader.userCollectionsForStats
-        var count = 0
-        userCollections.forEach {
-            if (chosenCollectionsIds.contains(it.id)) {
-                count += it.itemsCount.toInt()
+        val chosenCollections =
+            userCollections.filter { it.id in settingsReader.userCollectionsForStats }
+
+        return@coroutineScope chosenCollections.map { collection ->
+            async {
+                collectionRepo
+                    .getCollectionDetails(collection.id)
+                    .getOrThrow()
+                    .movies
+                    .map { it.id }
             }
-        } /*fixme сейчас каунт завышен, так как элементы в разных списках дублируються
-            нужно запрашивать каждую выбранную коллекцию отдельно и фильтровать
-            + добавить по дефолту rated & favorite
-            + придумать текст на CustomInfoTooltip в настройках
-            */
-        return count
+        }
+            .awaitAll()
+            .flatten()
+            .toMutableSet()
     }
 
     private suspend fun loadProfileData(): UserType {
-        val profileDetails = request { accConfig.getProfileDetails() }
+        val profileDetails = request { accRepo.getProfileDetails() }
             ?: return Guest
         val displayProfile = ProfileDisplay(
             avatarPath = profileDetails.avatarPath

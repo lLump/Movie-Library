@@ -14,6 +14,9 @@ class SettingsManagerImpl(context: Context): SettingsWriter, SettingsReader {
     private val settingsPrefs: SharedPreferences = context.getSharedPreferences("user_settings", Context.MODE_PRIVATE)
     private val json = Json
 
+    override val isAdult: Boolean
+        get() = settingsPrefs.getBoolean("is_adult", false)
+
     override val language: LanguageDetails
         get() {
             val iso = settingsPrefs.getString("iso639", "en")!!
@@ -47,6 +50,10 @@ class SettingsManagerImpl(context: Context): SettingsWriter, SettingsReader {
 
     override fun clearInfo() {
         settingsPrefs.edit { clear() }
+    }
+
+    override fun showAdultContent(isShow: Boolean) {
+        settingsPrefs.edit { putBoolean("is_adult", isShow) }
     }
 
     override fun saveApiResponseLanguage(languageName: String) {
