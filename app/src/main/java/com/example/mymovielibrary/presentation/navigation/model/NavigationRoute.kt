@@ -5,26 +5,26 @@ import kotlinx.serialization.Serializable
 sealed interface NavigationRoute {
     //    NavBar
     @Serializable
-    data object Home: NavigationRoute
+    data object HomeRoute: NavigationRoute
     @Serializable
-    data object Profile: NavigationRoute
+    data object ProfileRoute: NavigationRoute
     @Serializable
-    data object Lists: NavigationRoute
+    data object ListsRoute: NavigationRoute
     //    NavBar
 
     @Serializable
-    data class UniversalList(val listType: String): NavigationRoute
+    data class UniversalListRoute(val listType: String): NavigationRoute
 
     @Serializable
-    data class CollectionDetails(val collectionId: Int): NavigationRoute
+    data class CollectionDetailsRoute(val collectionId: Int): NavigationRoute
 
     @Serializable
-    data class MediaDetails(val mediaId: Int): NavigationRoute
+    data class MediaDetailsRoute(val mediaId: Int): NavigationRoute
 
     @Serializable
-    data class PersonDetails(val personId: Int): NavigationRoute
+    data class PersonDetailsRoute(val personId: Int): NavigationRoute
 
     @Serializable
-    data object Settings : NavigationRoute
+    data object SettingsRoute : NavigationRoute
 
 }

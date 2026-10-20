@@ -4,6 +4,8 @@ import com.example.mymovielibrary.data.remote.account.api.AccountApi
 import com.example.mymovielibrary.data.remote.account.repository.AccountRepoImpl
 import com.example.mymovielibrary.data.remote.auth.api.AuthApi
 import com.example.mymovielibrary.data.remote.auth.repository.AuthRepoImpl
+import com.example.mymovielibrary.data.remote.details.movie.api.MovieDetailsApi
+import com.example.mymovielibrary.data.remote.details.movie.repository.MovieDetailsRepoImpl
 import com.example.mymovielibrary.data.remote.lists.api.CollectionManagerApi
 import com.example.mymovielibrary.data.remote.lists.api.HomeListsApi
 import com.example.mymovielibrary.data.remote.lists.api.UserListsApi
@@ -14,6 +16,7 @@ import com.example.mymovielibrary.data.remote.lists.repository.UserListsRepoImpl
 import com.example.mymovielibrary.data.remote.lists.repository.MediaManagerRepoImpl
 import com.example.mymovielibrary.domain.account.repository.AccountRepo
 import com.example.mymovielibrary.domain.account.repository.AuthRepo
+import com.example.mymovielibrary.domain.details.movie.repository.MovieDetailsRepo
 import com.example.mymovielibrary.domain.lists.repository.CollectionRepo
 import com.example.mymovielibrary.domain.lists.repository.HomeListsRepo
 import com.example.mymovielibrary.domain.lists.repository.UserListsRepo
@@ -57,6 +60,11 @@ class RepositoryModule {
     @Provides
     fun mediaManager(api: MediaManagerApi, localStore: LocalStoreReader): MediaManagerRepo {
         return MediaManagerRepoImpl(api, localStore)
+    }
+
+    @Provides
+    fun movieDetailsRepo(api: MovieDetailsApi, localStore: LocalStoreReader): MovieDetailsRepo {
+        return MovieDetailsRepoImpl(api, localStore)
     }
 
 }

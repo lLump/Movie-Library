@@ -2,6 +2,7 @@ package com.example.mymovielibrary.di
 
 import com.example.mymovielibrary.data.remote.account.api.AccountApi
 import com.example.mymovielibrary.data.remote.auth.api.AuthApi
+import com.example.mymovielibrary.data.remote.details.movie.api.MovieDetailsApi
 import com.example.mymovielibrary.data.remote.lists.api.CollectionManagerApi
 import com.example.mymovielibrary.data.remote.lists.api.HomeListsApi
 import com.example.mymovielibrary.data.remote.lists.api.UserListsApi
@@ -46,4 +47,8 @@ class ApiModule {
         return retrofit.create(MediaManagerApi::class.java)
     }
 
+    @Provides
+    fun movieDetailsApi(retrofit: Retrofit): MovieDetailsApi {
+        return retrofit.create(MovieDetailsApi::class.java)
+    }
 }

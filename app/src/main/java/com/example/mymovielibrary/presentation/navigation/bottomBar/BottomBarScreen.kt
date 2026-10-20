@@ -16,17 +16,17 @@ sealed class BottomBarScreen(
     var unselectedIcon: ImageVector
 ) {
     data object Home: BottomBarScreen(
-        route = NavigationRoute.Home,
+        route = NavigationRoute.HomeRoute,
         selectedIcon = Icons.Filled.Home,
         unselectedIcon = Icons.Outlined.Home
     )
     data object Lists: BottomBarScreen(
-        route = NavigationRoute.Lists,
+        route = NavigationRoute.ListsRoute,
         selectedIcon = Icons.AutoMirrored.Filled.List,
         unselectedIcon = Icons.AutoMirrored.Outlined.List
     )
     data object Profile: BottomBarScreen(
-        route = NavigationRoute.Profile,
+        route = NavigationRoute.ProfileRoute,
         selectedIcon = Icons.Filled.AccountCircle,
         unselectedIcon = Icons.Outlined.AccountCircle
     )

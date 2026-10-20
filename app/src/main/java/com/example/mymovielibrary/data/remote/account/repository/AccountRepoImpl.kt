@@ -10,8 +10,6 @@ import com.example.mymovielibrary.data.remote.base.repository.BaseRepository
 import com.example.mymovielibrary.domain.local.LocalStoreReader
 import com.example.mymovielibrary.domain.model.handlers.DataError
 import com.example.mymovielibrary.domain.model.handlers.Result
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
 
 class AccountRepoImpl(private val api: AccountApi, localStore: LocalStoreReader) : AccountRepo, BaseRepository(localStore) {
     override suspend fun getProfileDetails(): Result<ProfileDetails, DataError> {

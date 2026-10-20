@@ -28,14 +28,16 @@ import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.state.AuthState
 import com.example.mymovielibrary.domain.state.AuthState.*
 import com.example.mymovielibrary.presentation.navigation.bottomBar.MyBottomBar
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.CollectionDetails
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Home
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Lists
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.MediaDetails
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.PersonDetails
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Profile
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Settings
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalList
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.CollectionDetailsRoute
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.HomeRoute
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.ListsRoute
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.MediaDetailsRoute
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.PersonDetailsRoute
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.ProfileRoute
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.SettingsRoute
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalListRoute
+import com.example.mymovielibrary.presentation.ui.details.media.screen.MediaDetailsScreen
+import com.example.mymovielibrary.presentation.ui.details.media.viewModel.MediaDetailsViewModel
 import com.example.mymovielibrary.presentation.ui.home.screen.HomeScreen
 import com.example.mymovielibrary.presentation.ui.home.viewModel.HomeViewModel
 import com.example.mymovielibrary.presentation.ui.lists.screen.ChosenCollectionScreen
@@ -61,12 +63,12 @@ fun AppNavigation(authState: AuthState) {
             Authorized -> {}
             Loading -> {}
             Guest -> {
-                navController.navigate(Home) {
+                navController.navigate(HomeRoute) {
                     popUpTo(0)
                 }
             }
             FromAuthorize -> {
-                navController.navigate(Profile) {
+                navController.navigate(ProfileRoute) {
                     popUpTo(0)
                 }
             }
@@ -79,9 +81,9 @@ fun AppNavigation(authState: AuthState) {
             // FIXME there is a bug, when user click "back" too fast (on screen without bar), views become half transparent
         },
         content = { padding ->
-            NavHost(navController = navController, startDestination = Home) {
+            NavHost(navController = navController, startDestination = HomeRoute) {
                 //BottomNavBar
-                composable<Home> {
+                composable<HomeRoute> {
                     val viewModel: HomeViewModel = hiltViewModel()
                     val state by viewModel.listsState.collectAsState()
                     HomeScreen(
@@ -91,7 +93,7 @@ fun AppNavigation(authState: AuthState) {
                         onMovieClick = {}
                     )
                 }
-                composable<Lists> {
+                composable<ListsRoute> {
                     val viewModel: DefaultListsViewModel = hiltViewModel()
                     val state by viewModel.listsState.collectAsState()
                     ListsScreen(
@@ -103,7 +105,7 @@ fun AppNavigation(authState: AuthState) {
                         paddingValues = padding
                     )
                 }
-                composable<Profile> {
+                composable<ProfileRoute> {
                     val viewModel: ProfileViewModel = hiltViewModel()
                     val state by viewModel.profileState.collectAsState()
 //                    val uiEvents by viewModel.uiEvents.collectAsState(UiEvent.Initial)
@@ -121,8 +123,8 @@ fun AppNavigation(authState: AuthState) {
                 }
                 //BottomNavBar
 
-                composable<UniversalList> {
-                    val args = it.toRoute<UniversalList>()
+                composable<UniversalListRoute> {
+                    val args = it.toRoute<UniversalListRoute>()
                     val listType = when (args.listType) {
                         "watchlist" -> ListType.WATCHLIST
                         "rated" -> ListType.RATED
@@ -143,8 +145,8 @@ fun AppNavigation(authState: AuthState) {
                     )
                 }
 
-                composable<CollectionDetails> {
-                    val args = it.toRoute<CollectionDetails>()
+                composable<CollectionDetailsRoute> {
+                    val args = it.toRoute<CollectionDetailsRoute>()
                     val viewModel: CollectionViewModel = hiltViewModel()
                     val state by viewModel.collectionState.collectAsState()
                     ChosenCollectionScreen(
@@ -158,17 +160,22 @@ fun AppNavigation(authState: AuthState) {
                     )
                 }
 
-                composable<MediaDetails> {
-                    val args = it.toRoute<MediaDetails>() //contain mediaId
+                composable<MediaDetailsRoute> {
+                    val viewModel: MediaDetailsViewModel = hiltViewModel()
+                    val state by viewModel.mediaDetailsState.collectAsState()
+                    MediaDetailsScreen(
+                        onEvent = viewModel::onEvent,
+                        state = state,
+                        onBackPress = { navController.navigateUp() }
+                    )
+                }
+
+                composable<PersonDetailsRoute> {
+                    val args = it.toRoute<PersonDetailsRoute>() //contain personId
                     MediaScreen(padding)
                 }
 
-                composable<PersonDetails> {
-                    val args = it.toRoute<PersonDetails>() //contain personId
-                    MediaScreen(padding)
-                }
-
-                composable<Settings> {
+                composable<SettingsRoute> {
                     val viewModel: SettingsViewModel = hiltViewModel()
                     val state by viewModel.settingsState.collectAsState()
                     SettingsScreen(
@@ -195,11 +202,11 @@ private fun NavHostController.setupDestinationListener(visibilityBottomBar: Muta
 //            Watchlist.toString().contains(formattedRoute) -> false
 //            Rated.toString().contains(formattedRoute) -> false
 //            Favorites.toString().contains(formattedRoute) -> false
-            UniversalList.toString().contains(formattedRoute) -> false
-            CollectionDetails.toString().contains(formattedRoute) -> false
-            MediaDetails.toString().contains(formattedRoute) -> false
-            PersonDetails.toString().contains(formattedRoute) -> false
-            Settings.toString().contains(formattedRoute) -> false
+            UniversalListRoute.toString().contains(formattedRoute) -> false
+            CollectionDetailsRoute.toString().contains(formattedRoute) -> false
+            MediaDetailsRoute.toString().contains(formattedRoute) -> false
+            PersonDetailsRoute.toString().contains(formattedRoute) -> false
+            SettingsRoute.toString().contains(formattedRoute) -> false
             else -> true
         }
     }

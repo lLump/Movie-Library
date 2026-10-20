@@ -64,8 +64,8 @@ import com.example.mymovielibrary.domain.image.ProfileSize
 import com.example.mymovielibrary.domain.lists.model.enums.ListType
 import com.example.mymovielibrary.domain.model.events.AccountEvent
 import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.Lists
-import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalList
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.ListsRoute
+import com.example.mymovielibrary.presentation.navigation.model.NavigationRoute.UniversalListRoute
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileDisplay
 import com.example.mymovielibrary.presentation.ui.profile.state.ProfileState
 import com.example.mymovielibrary.presentation.ui.profile.state.UserStats
@@ -98,7 +98,7 @@ fun ProfileScreen(
                 UserProfile(state.userDetails.profile, state.userStats, navigateTo)
                 IconButton(
                     modifier = Modifier.align(Alignment.TopEnd),
-                    onClick = { navigateTo(NavigationRoute.Settings) }
+                    onClick = { navigateTo(NavigationRoute.SettingsRoute) }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Settings,
@@ -173,16 +173,16 @@ private fun UserProfile(user: ProfileDisplay, stats: UserStats, toScreen: (Navig
                 .padding(top = 16.dp, start = 8.dp, end = 8.dp)
                 .alpha(0.5f)
             ListButton(modifier = btnModifier, textId = R.string.my_lists, icon = Icons.AutoMirrored.Filled.List) {
-                toScreen(Lists)
+                toScreen(ListsRoute)
             }
             ListButton(modifier = btnModifier, textId = R.string.watchlist, icon = Icons.Default.Bookmarks) {
-                toScreen(UniversalList(ListType.WATCHLIST.route))
+                toScreen(UniversalListRoute(ListType.WATCHLIST.route))
             }
             ListButton(modifier = btnModifier, textId = R.string.rated, icon = Icons.Default.Star) {
-                toScreen(UniversalList(ListType.RATED.route))
+                toScreen(UniversalListRoute(ListType.RATED.route))
             }
             ListButton(modifier = btnModifier,textId = R.string.favorite, icon = Icons.Default.Favorite) {
-                toScreen(UniversalList(ListType.FAVORITE.route))
+                toScreen(UniversalListRoute(ListType.FAVORITE.route))
             }
             Spacer(modifier = Modifier.weight(0.8f))
         }

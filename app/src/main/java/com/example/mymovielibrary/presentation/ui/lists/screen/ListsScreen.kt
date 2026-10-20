@@ -120,19 +120,19 @@ private fun ListsScreenContent(
             listTitleId = R.string.watchlist,
             list = state.watchlist,
             navigateTo = navigateTo,
-            route = NavigationRoute.UniversalList(ListType.WATCHLIST.route)
+            route = NavigationRoute.UniversalListRoute(ListType.WATCHLIST.route)
         )
         MediaRowList(
             listTitleId = R.string.rated,
             list = state.rated,
             navigateTo = navigateTo,
-            route = NavigationRoute.UniversalList(ListType.RATED.route)
+            route = NavigationRoute.UniversalListRoute(ListType.RATED.route)
         )
         MediaRowList(
             listTitleId = R.string.favorite,
             list = state.favorite,
             navigateTo = navigateTo,
-            route = NavigationRoute.UniversalList(ListType.FAVORITE.route)
+            route = NavigationRoute.UniversalListRoute(ListType.FAVORITE.route)
         )
     }
 }
@@ -172,7 +172,7 @@ private fun MediaRowList(
                         .width(135.dp)
                         .shadow(4.dp, RoundedCornerShape(12.dp))
                         .clip(RoundedCornerShape(12.dp)) // без этого, эффект нажатия квадратный
-                        .clickable { navigateTo(NavigationRoute.MediaDetails(mediaItem.id)) },
+                        .clickable { navigateTo(NavigationRoute.MediaDetailsRoute(mediaItem.id)) },
                     imageHeight = 200.dp
                 )
             }
@@ -234,7 +234,7 @@ private fun CollectionsRowList(
         ) {
             items(collections) { collection ->
                 CollectionItemList(item = collection) {
-                    navigateTo(NavigationRoute.CollectionDetails(collection.id))
+                    navigateTo(NavigationRoute.CollectionDetailsRoute(collection.id))
                 }
             }
             item {

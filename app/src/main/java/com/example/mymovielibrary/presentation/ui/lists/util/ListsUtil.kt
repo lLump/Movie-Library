@@ -153,7 +153,7 @@ fun MediaGridList(
                             if (isEditMode) {
                                 itemChecked(mediaItem.id)
                             } else {
-                                navigateTo(NavigationRoute.MediaDetails(mediaItem.id))
+                                navigateTo(NavigationRoute.MediaDetailsRoute(mediaItem.id))
                             }
                         },
                     imageHeight = 150.dp

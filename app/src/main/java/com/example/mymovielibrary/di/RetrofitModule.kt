@@ -9,6 +9,7 @@ import com.example.mymovielibrary.domain.local.LocalStoreReader
 import com.example.mymovielibrary.domain.local.SettingsReader
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,6 +41,7 @@ class RetrofitModule {
                             .withSubtype(MovieResponse::class.java, "movie")
                             .withSubtype(TVShowResponse::class.java, "tv")
                     )
+                    .addLast(KotlinJsonAdapterFactory())
                     .build()
             )
         )
